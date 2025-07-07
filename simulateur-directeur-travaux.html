@@ -1,0 +1,2636 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Manager Simulator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Tone.js for sound effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <style>
+        /* Import Inter font from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a202c, #2d3748); /* Dark gradient background */
+            color: #e2e8f0; /* Light gray text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Hide overflow for transitions */
+        }
+        .card {
+            background-color: #2d3748; /* Slightly lighter dark background for cards */
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+            backdrop-filter: blur(10px); /* Glassmorphism effect */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+            transition: all 0.3s ease-in-out; /* Smooth transition for cards */
+        }
+        .btn {
+            background-color: #4299e1; /* Blue button */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(66, 153, 225, 0.3);
+        }
+        .btn:hover {
+            background-color: #3182ce; /* Darker blue on hover */
+            transform: translateY(-2px) scale(1.02); /* Added scale on hover */
+            box-shadow: 0 6px 15px rgba(66, 153, 225, 0.4);
+        }
+        .metric-value {
+            transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .metric-change-indicator {
+            position: absolute;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(0);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .metric-change-indicator.show {
+            opacity: 1;
+            transform: translateY(-10px);
+            animation: bounce-fade 1s forwards; /* New bounce-fade animation */
+        }
+        @keyframes bounce-fade {
+            0% { opacity: 0; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-25px); }
+        }
+        .positive-change {
+            color: #48bb78; /* Green for positive */
+        }
+        .negative-change {
+            color: #ef4444; /* Red for negative */
+        }
+        .highlight-choice {
+            border-color: #fcd34d !important; /* Yellow border for highlighted choice */
+            box-shadow: 0 0 15px rgba(252, 211, 77, 0.5) !important;
+        }
+        .critical-time {
+            animation: pulse-red 1s infinite alternate;
+        }
+        @keyframes pulse-red {
+            from {
+                transform: scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+        /* Screen transition classes */
+        .screen-hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            z-index: -10;
+        }
+        .screen-visible {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+            z-index: 20; /* Ensure game screen is above start/result */
+        }
+        /* Modal transition classes */
+        .modal-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .modal-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content-hidden {
+            transform: scale(0.95);
+        }
+        .modal-content-visible {
+            transform: scale(1);
+        }
+
+        /* Enhanced Power-up Buttons */
+        .btn-power-up {
+            background: linear-gradient(145deg, #6b46c1, #805ad5); /* Purple gradient */
+            color: white;
+            box-shadow: 0 5px 15px rgba(107, 70, 193, 0.4);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            width: 80px; /* Smaller size for bubble */
+            height: 80px; /* Smaller size for bubble */
+            border-radius: 50%; /* Circular shape */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem; /* Smaller font for text */
+            line-height: 1;
+            text-align: center;
+            padding: 0.5rem;
+        }
+        .btn-power-up:hover {
+            background: linear-gradient(145deg, #805ad5, #9f7aea);
+            transform: translateY(-3px) scale(1.05); /* Added scale on hover */
+            box-shadow: 0 8px 20px rgba(107, 70, 193, 0.6);
+        }
+        .btn-power-up:disabled {
+            background: #4a5568;
+            box-shadow: none;
+            transform: none;
+            cursor: not-allowed;
+        }
+        .btn-power-up::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 1;
+            border-radius: 50%; /* Ensure overlay is also circular */
+        }
+        .btn-power-up:hover::before {
+            opacity: 1;
+        }
+        .btn-power-up > * {
+            position: relative;
+            z-index: 2;
+        }
+        .btn-power-up .text-4xl { /* Adjust icon size within bubble */
+            font-size: 2rem; /* Smaller icon */
+            margin-bottom: 0.25rem;
+        }
+        .btn-power-up .font-semibold {
+            font-size: 0.875rem; /* Smaller text */
+        }
+        .btn-power-up .text-sm {
+            font-size: 0.65rem; /* Even smaller text for count */
+        }
+        .btn-power-up .text-xs {
+            display: none; /* Hide description in bubble for brevity */
+        }
+
+
+        /* Share button styling */
+        .btn-share {
+            background-color: #38b2ac; /* Teal */
+            box-shadow: 0 4px 10px rgba(56, 178, 172, 0.3);
+        }
+        .btn-share:hover {
+            background-color: #319795; /* Darker teal */
+            transform: translateY(-2px) scale(1.02); /* Added scale on hover */
+            box-shadow: 0 6px 15px rgba(56, 178, 172, 0.4);
+        }
+
+        /* Back to main menu button */
+        .btn-back-to-menu {
+            background-color: #a0aec0; /* Gray */
+            color: #2d3748;
+            box-shadow: 0 4px 10px rgba(160, 174, 192, 0.3);
+        }
+        .btn-back-to-menu:hover {
+            background-color: #718096; /* Darker gray */
+            transform: translateY(-2px) scale(1.02); /* Added scale on hover */
+            box-shadow: 0 6px 15px rgba(160, 174, 192, 0.4);
+        }
+
+        /* Quick Event Modal specific styling */
+        #quick-event-modal {
+            background: linear-gradient(160deg, #4a5568, #2d3748); /* Darker gradient for quick event */
+            border: 2px solid #ef4444; /* Red border for urgency */
+            box-shadow: 0 15px 30px rgba(239, 68, 68, 0.4); /* Red glow effect */
+        }
+        #quick-event-timer-display {
+            animation: pulse-red 0.8s infinite alternate; /* More intense pulse for quick event timer */
+        }
+
+        /* Catastrophe Modal Styling */
+        #catastrophe-modal-overlay {
+            background: rgba(0, 0, 0, 0.9); /* Even darker, more opaque background */
+        }
+        #catastrophe-modal {
+            background: linear-gradient(160deg, #330000, #660000); /* Deep red gradient */
+            border: 3px solid #ff0000; /* Bright red border */
+            box-shadow: 0 20px 40px rgba(255, 0, 0, 0.6); /* Intense red glow */
+            animation: shake 0.5s infinite alternate; /* Shaking effect for urgency */
+        }
+        @keyframes shake {
+            0% { transform: translateX(0) scale(0.95); }
+            25% { transform: translateX(-5px) scale(0.95); }
+            50% { transform: translateX(0) scale(0.95); }
+            75% { transform: translateX(5px) scale(0.95); }
+            100% { transform: translateX(0) scale(0.95); }
+        }
+        #catastrophe-modal.modal-content-visible {
+            animation: shake 0.5s infinite alternate, pop-in 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        #catastrophe-timer-display {
+            animation: pulse-red 0.5s infinite alternate; /* Very fast pulse for catastrophe timer */
+            color: #ffdd00; /* Yellow for high contrast */
+        }
+
+        /* Market Event Modal Styling */
+        #market-event-modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        #market-event-modal {
+            background: linear-gradient(160deg, #3a3a3a, #1a1a1a); /* Dark grey gradient */
+            border: 2px solid #63b3ed; /* Light blue border */
+            box-shadow: 0 15px 30px rgba(99, 179, 237, 0.4); /* Blue glow */
+        }
+        #market-event-timer-display {
+            animation: pulse-blue 1s infinite alternate;
+            color: #63b3ed;
+        }
+        @keyframes pulse-blue {
+            from {
+                transform: scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        /* Email Event Modal Styling */
+        #email-event-modal-overlay {
+            background: rgba(0, 0, 0, 0.7);
+        }
+        #email-event-modal {
+            background: linear-gradient(160deg, #2a3a4a, #1a2a3a); /* Dark blue-grey gradient */
+            border: 2px solid #a78bfa; /* Light purple border */
+            box-shadow: 0 15px 30px rgba(167, 139, 250, 0.4); /* Purple glow */
+        }
+
+        /* Call Event Modal Styling */
+        #call-event-modal-overlay {
+            background: rgba(0, 0, 0, 0.85);
+        }
+        #call-event-modal {
+            background: linear-gradient(160deg, #5a2a2a, #3a1a1a); /* Dark red gradient for urgency */
+            border: 2px solid #f87171; /* Light red border */
+            box-shadow: 0 15px 30px rgba(248, 113, 113, 0.5); /* Red glow */
+        }
+        #call-event-timer-display {
+            animation: pulse-red 0.8s infinite alternate;
+            color: #f87171;
+        }
+
+
+        /* Floating Power-ups Container */
+        #floating-power-ups {
+            position: absolute;
+            right: 1rem; /* 16px from the right */
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 15; /* Above game content, below modals */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* Space between bubbles */
+            padding: 1rem;
+            background-color: rgba(45, 55, 72, 0.7); /* Semi-transparent background */
+            border-radius: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        @media (max-width: 768px) { /* Adjust for smaller screens */
+            #floating-power-ups {
+                position: fixed; /* Fixed position for mobile */
+                bottom: 1rem;
+                top: auto;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+                flex-direction: row; /* Row for mobile */
+                width: auto;
+                padding: 0.75rem;
+            }
+            .btn-power-up {
+                width: 60px;
+                height: 60px;
+            }
+            .btn-power-up .text-4xl {
+                font-size: 1.5rem;
+            }
+            .btn-power-up .font-semibold, .btn-power-up .text-sm {
+                display: none; /* Hide text on mobile for bubbles */
+            }
+        }
+
+        /* Character and Speech Bubble Styling */
+        #character-container {
+            position: absolute; /* Changed from fixed to absolute for relative positioning to parent */
+            bottom: 4rem; /* 4rem from the bottom */
+            right: 4rem; /* 4rem from the right */
+            left: auto; /* Ensure left is not set */
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center items horizontally */
+            transition: transform 0.3s ease-out;
+        }
+        #character-avatar {
+            font-size: 6rem; /* Large emoji */
+            line-height: 1;
+            animation: float 3s ease-in-out infinite alternate; /* Subtle floating animation */
+            transition: transform 0.3s ease-out, font-size 0.3s ease-out; /* Smooth transition for emoji changes */
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        #speech-bubble {
+            background-color: #4a5568; /* Darker grey for bubble */
+            color: #e2e8f0;
+            border-radius: 1rem;
+            padding: 1rem;
+            position: relative;
+            margin-bottom: 1rem; /* Space between bubble and character */
+            opacity: 0;
+            transform: translateY(10px) scale(0.9);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 150px;
+            max-width: 250px;
+            text-align: center; /* Center text within the bubble */
+        }
+        #speech-bubble.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            animation: pop-in 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; /* Pop-in animation */
+        }
+        @keyframes pop-in {
+            0% { opacity: 0; transform: translateY(10px) scale(0.5); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        #speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px; /* Position the pointer */
+            right: 50%; /* Pointer from the right side */
+            transform: translateX(50%) rotate(-45deg); /* Adjust rotation and translation for right side */
+            width: 20px;
+            height: 20px;
+            background-color: #4a5568; /* Match bubble background */
+            border-radius: 3px;
+            z-index: -1; /* Behind the bubble content */
+        }
+
+        /* Scenario icon animation */
+        .scenario-icon-animate {
+            animation: bounce-in 0.8s ease-out;
+        }
+        @keyframes bounce-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        /* News Feed Styling */
+        #news-feed-display {
+            background-color: #1a202c; /* Darker background for news feed */
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            height: 200px; /* Fixed height for scrolling */
+            overflow-y: auto; /* Enable scrolling */
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2); /* Inner shadow */
+        }
+        .news-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            color: #cbd5e0;
+            transition: all 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slide-in 0.5s forwards;
+        }
+        .news-item:last-child {
+            border-bottom: none;
+        }
+        .news-item.positive { color: #48bb78; }
+        .news-item.negative { color: #ef4444; }
+        .news-item.neutral { color: #cbd5e0; }
+        .news-item.info { color: #63b3ed; } /* For power-up usage, etc. */
+
+        @keyframes slide-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 bg-opacity-90 z-10 transition-all duration-500 ease-in-out screen-visible">
+        <div class="card p-8 text-center max-w-lg w-full">
+            <h1 class="text-5xl font-extrabold text-white mb-6">Simulateur de Gestion de Projet</h1>
+            <p class="text-lg text-slate-300 mb-8">
+                Devenez Directeur des Travaux et gérez la construction du Canal Seine-Nord Europe.
+                Chaque décision compte !
+            </p>
+            <h2 class="text-3xl font-bold text-amber-400 mb-4">Choisissez votre Difficulté :</h2>
+            <div id="difficulty-selection" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <!-- Difficulty buttons will be rendered here by JS -->
+            </div>
+            <p class="text-lg text-slate-300">Meilleur Score : <span id="high-score-display" class="text-amber-400 font-bold">0</span></p>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="relative w-full max-w-6xl h-[90vh] grid grid-rows-[auto_1fr] md:grid-rows-1 md:grid-cols-[1fr_2fr] gap-6 p-6 bg-slate-800/80 rounded-3xl shadow-2xl transition-all duration-500 ease-in-out screen-hidden">
+        
+        <!-- Left Panel: Metrics -->
+        <div class="flex flex-col space-y-6 overflow-y-auto pr-2">
+            <div class="card p-6 flex-grow">
+                <h2 class="text-2xl font-bold mb-4 text-amber-400">Statistiques du Projet</h2>
+                <div id="metrics-display" class="space-y-3" role="status" aria-live="polite">
+                    <!-- Metrics will be rendered here by JS -->
+                </div>
+            </div>
+            <!-- News Feed and Back to Main Menu button moved to Right Panel -->
+        </div>
+
+        <!-- Right Panel: Scenario, Choices, News Feed and Back to Main Menu -->
+        <div class="flex flex-col space-y-6 overflow-y-auto"> <!-- Added overflow-y-auto here -->
+            <div class="card p-6 flex items-center justify-between">
+                <div class="text-xl font-semibold">
+                    Scénario <span id="current-scenario-display">1</span> / <span id="total-scenarios-display">15</span>
+                </div>
+                <div class="w-1/2 bg-slate-700 rounded-full h-3">
+                    <div id="progress-bar" class="bg-green-500 h-full rounded-full transition-all duration-300 ease-out"></div>
+                </div>
+                <div id="timer-display" class="text-2xl font-bold text-amber-400">⏱️ 0:60</div>
+            </div>
+
+            <div class="card p-6 flex-grow flex flex-col justify-between">
+                <div>
+                    <h2 class="text-4xl font-extrabold mb-4 text-white flex items-center">
+                        <span id="scenario-icon" class="mr-3 text-5xl"></span>
+                        <span id="scenario-title">Titre du Scénario</span>
+                    </h2>
+                    <p id="scenario-text" class="text-lg text-slate-300 mb-6">
+                        Description du scénario.
+                    </p>
+                </div>
+                <div id="choices-container" class="grid grid-cols-1 gap-4">
+                    <!-- Choices will be rendered here by JS -->
+                </div>
+            </div>
+
+            <!-- News Feed moved here -->
+            <div class="card p-6 mt-6">
+                <h2 class="text-2xl font-bold mb-4 text-cyan-400">Fil d'Actualités</h2>
+                <div id="news-feed-display" class="space-y-2">
+                    <!-- News items will be rendered here by JS -->
+                </div>
+            </div>
+
+            <!-- Back to Main Menu button moved here -->
+            <button id="back-to-main-menu-game-btn" class="btn btn-back-to-menu mt-4">Retour au Menu Principal</button>
+        </div>
+
+        <!-- Character and Speech Bubble Container -->
+        <div id="character-container" class="absolute bottom-4 right-4 z-30 flex flex-col items-center">
+            <div id="speech-bubble" class="speech-bubble card p-4 mb-2 text-sm max-w-xs relative opacity-0 transform -translate-y-2"></div>
+            <div id="character-avatar" class="text-6xl">👨‍💼</div> <!-- Project Manager Emoji -->
+        </div>
+    </div>
+
+    <!-- Floating Power-Ups Container -->
+    <div id="floating-power-ups" class="screen-hidden">
+        <h2 class="text-lg font-bold text-purple-300 mb-2 text-center hidden md:block">Bonus</h2>
+        <div id="power-ups-display" class="grid grid-cols-3 gap-2 md:grid-cols-1 md:gap-4">
+            <!-- Power-ups will be rendered here by JS -->
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40 transition-opacity duration-300 modal-hidden">
+        <div id="feedback-modal" class="card p-8 max-w-xl w-full text-center transform scale-95 transition-transform duration-300 modal-content-hidden">
+            <h2 id="feedback-title" class="text-3xl font-bold mb-4 text-white">Conséquences de la décision</h2>
+            <p id="feedback-text" class="text-lg text-slate-300 mb-6"></p>
+            <div id="impact-list" class="space-y-3 mb-8 text-left" role="status" aria-live="polite">
+                <!-- Impacts will be rendered here -->
+            </div>
+            <button id="modal-continue-btn" class="btn">Continuer</button>
+        </div>
+    </div>
+
+    <!-- Quick Event Modal -->
+    <div id="quick-event-modal-overlay" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 transition-opacity duration-300 modal-hidden">
+        <div id="quick-event-modal" class="card p-8 max-w-xl w-full text-center transform scale-95 transition-transform duration-300 modal-content-hidden">
+            <h2 class="text-4xl font-extrabold mb-4 text-red-400 flex items-center justify-center">
+                <span id="quick-event-icon" class="mr-3 text-5xl"></span>
+                <span id="quick-event-title">Événement Rapide !</span>
+            </h2>
+            <p id="quick-event-text" class="text-lg text-slate-300 mb-6"></p>
+            <div id="quick-event-choices-container" class="grid grid-cols-1 gap-4 mb-6">
+                <!-- Quick event choices will be rendered here -->
+            </div>
+            <div id="quick-event-timer-display" class="text-3xl font-bold text-red-500">⏱️ 0:15</div>
+        </div>
+    </div>
+
+    <!-- Catastrophe Modal -->
+    <div id="catastrophe-modal-overlay" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 transition-opacity duration-300 modal-hidden">
+        <div id="catastrophe-modal" class="card p-8 max-w-xl w-full text-center transform scale-95 transition-transform duration-300 modal-content-hidden">
+            <h2 class="text-5xl font-extrabold mb-4 text-red-600 flex items-center justify-center">
+                <span id="catastrophe-icon" class="mr-4 text-6xl"></span>
+                <span id="catastrophe-title">CATASTROPHE MAJEURE !</span>
+            </h2>
+            <p id="catastrophe-text" class="text-xl text-red-200 mb-6">Une crise sans précédent menace le projet !</p>
+            <div id="catastrophe-choices-container" class="grid grid-cols-1 gap-4 mb-6">
+                <!-- Catastrophe choices will be rendered here -->
+            </div>
+            <div id="catastrophe-timer-display" class="text-4xl font-bold text-yellow-400">⏱️ 0:05</div>
+        </div>
+    </div>
+
+    <!-- Market Event Modal (New) -->
+    <div id="market-event-modal-overlay" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 transition-opacity duration-300 modal-hidden">
+        <div id="market-event-modal" class="card p-8 max-w-xl w-full text-center transform scale-95 transition-transform duration-300 modal-content-hidden">
+            <h2 class="text-4xl font-extrabold mb-4 text-blue-400 flex items-center justify-center">
+                <span id="market-event-icon" class="mr-3 text-5xl"></span>
+                <span id="market-event-title">Fluctuation du Marché !</span>
+            </h2>
+            <p id="market-event-text" class="text-lg text-slate-300 mb-6"></p>
+            <div id="market-impact-list" class="space-y-3 mb-8 text-left" role="status" aria-live="polite">
+                <!-- Market impacts will be rendered here -->
+            </div>
+            <div id="market-event-timer-display" class="text-3xl font-bold text-blue-500">⏱️ 0:05</div>
+        </div>
+    </div>
+
+    <!-- Email Event Modal (New) -->
+    <div id="email-event-modal-overlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 transition-opacity duration-300 modal-hidden">
+        <div id="email-event-modal" class="card p-8 max-w-xl w-full text-center transform scale-95 transition-transform duration-300 modal-content-hidden">
+            <h2 class="text-3xl font-bold mb-4 text-purple-400 flex items-center justify-center">
+                <span class="mr-3 text-4xl">✉️</span>
+                <span id="email-event-title">Nouvel E-mail !</span>
+            </h2>
+            <p class="text-sm text-slate-400 mb-2 text-left">De: <span id="email-sender" class="font-semibold"></span></p>
+            <p class="text-sm text-slate-400 mb-4 text-left">Objet: <span id="email-subject" class="font-semibold"></span></p>
+            <p id="email-body" class="text-lg text-slate-300 mb-6 text-left"></p>
+            <div id="email-choices-container" class="grid grid-cols-1 gap-4 mb-6">
+                <!-- Email choices will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Call Event Modal (New) -->
+    <div id="call-event-modal-overlay" class="fixed inset-0 bg-black bg-opacity-85 flex items-center justify-center z-50 transition-opacity duration-300 modal-hidden">
+        <div id="call-event-modal" class="card p-8 max-w-xl w-full text-center transform scale-95 transition-transform duration-300 modal-content-hidden">
+            <h2 class="text-4xl font-extrabold mb-4 text-red-400 flex items-center justify-center">
+                <span class="mr-3 text-5xl">📞</span>
+                <span id="call-event-title">Appel Urgent !</span>
+            </h2>
+            <p class="text-lg text-slate-300 mb-2">De: <span id="call-caller" class="font-semibold text-red-300"></span></p>
+            <p id="call-message" class="text-xl text-slate-300 mb-6"></p>
+            <div id="call-choices-container" class="grid grid-cols-1 gap-4 mb-6">
+                <!-- Call choices will be rendered here -->
+            </div>
+            <div id="call-event-timer-display" class="text-3xl font-bold text-red-500">⏱️ 0:10</div>
+        </div>
+    </div>
+
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 bg-opacity-90 z-10 transition-all duration-500 ease-in-out screen-hidden">
+        <div class="card p-8 text-center max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <h1 class="text-5xl font-extrabold text-white mb-6">Simulation Terminée !</h1>
+            <p class="text-lg text-slate-300 mb-4">Votre score final : <span id="final-score" class="text-amber-400 text-4xl font-bold">0</span></p>
+            <p class="text-lg text-slate-300 mb-4">Meilleur Score : <span id="final-high-score" class="text-yellow-300 text-3xl font-bold">0</span></p>
+            <h2 id="result-category" class="text-3xl font-bold text-green-400 mb-4"></h2>
+            <p id="result-description" class="text-md text-slate-300 mb-8"></p>
+            
+            <div class="text-left mb-8">
+                <h3 class="text-2xl font-bold text-cyan-400 mb-4">Analyse des Indicateurs Clés :</h3>
+                <div id="metric-analysis-results" class="space-y-2">
+                    <!-- Metric analysis will be rendered here -->
+                </div>
+            </div>
+
+            <div id="contact-message" class="text-md text-slate-300 mb-8"></div>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button id="restart-game-btn" class="btn text-xl px-8 py-4">Rejouer</button>
+                <button id="share-results-btn" class="btn btn-share text-xl px-8 py-4">Copier les Résultats</button>
+                <button id="back-to-main-menu-result-btn" class="btn btn-back-to-menu text-xl px-8 py-4">Retour au Menu Principal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Wrap the entire script in an IIFE to create a new scope
+        (function() {
+            // Global state and configuration
+            let state = {};
+            let mainTimerInterval = null;
+            let quickEventTimerInterval = null;
+            let catastropheTimerInterval = null; // New timer for catastrophes
+            let marketEventTimerInterval = null; // New timer for market events
+            let emailEventInterval = null; // For email events (no timer, but needs to be cleared)
+            let callEventTimerInterval = null; // New timer for call events
+            let currentScenarioIndex = 0;
+            let timerCountdown = 0;
+            let isQuickEventActive = false;
+            let isCatastropheActive = false; // New flag for catastrophes
+            let isMarketEventActive = false; // New flag for market events
+            let isEmailEventActive = false; // New flag for email events
+            let isCallEventActive = false; // New flag for call events
+            let activePowerUp = null; // To track which power-up is active
+
+            // Tone.js Synths for sound effects
+            const clickSound = new Tone.Synth().toDestination();
+            const positiveSound = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "triangle" },
+                envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.5 },
+                volume: -10
+            }).toDestination();
+            const negativeSound = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sawtooth" },
+                envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.4 },
+                volume: -10
+            }).toDestination();
+            const scenarioStartSound = new Tone.MembraneSynth({
+                pitchDecay: 0.05,
+                octaves: 8,
+                envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 0.8 },
+                volume: -15
+            }).toDestination();
+            const gameOverWinSound = new Tone.Synth({
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.1, decay: 0.5, sustain: 0.3, release: 1 },
+                volume: -5
+            }).toDestination();
+            const gameOverLoseSound = new Tone.Synth({
+                oscillator: { type: "square" },
+                envelope: { attack: 0.1, decay: 0.5, sustain: 0.1, release: 1 },
+                volume: -5
+            }).toDestination();
+            const timerWarningSound = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "square" },
+                envelope: { attack: 0.01, decay: 0.1, sustain: 0.05, release: 0.1 },
+                volume: -15
+            }).toDestination();
+            const powerUpSound = new Tone.PluckSynth().toDestination();
+            const catastropheSound = new Tone.NoiseSynth({
+                noise: { type: "pink" },
+                envelope: { attack: 0.005, decay: 0.2, sustain: 0.0, release: 0.5 },
+                volume: -10
+            }).toDestination(); // New sound for catastrophes
+            const marketSound = new Tone.Synth({
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.02, decay: 0.1, sustain: 0.1, release: 0.2 },
+                volume: -10
+            }).toDestination(); // New sound for market events
+            const emailSound = new Tone.Synth().toDestination(); // New sound for emails
+            const callSound = new Tone.Synth().toDestination(); // New sound for calls
+
+            // Play sound functions
+            const playClick = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); } // Resume audio on user interaction
+                clickSound.triggerAttackRelease("C4", "8n");
+            }
+            const playPositive = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                positiveSound.triggerAttackRelease(["E4", "G4", "C5"], "8n");
+            }
+            const playNegative = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                negativeSound.triggerAttackRelease(["C4", "A3", "F3"], "8n");
+            }
+            const playScenarioStart = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                scenarioStartSound.triggerAttackRelease("C2", "4n");
+            }
+            const playGameOverWin = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                gameOverWinSound.triggerAttackRelease("C5", "1n");
+            }
+            const playGameOverLose = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                gameOverLoseSound.triggerAttackRelease("C2", "1n");
+            }
+            const playPowerUp = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                powerUpSound.triggerAttackRelease("C5", "8n");
+            }
+            const playCatastropheSound = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                catastropheSound.triggerAttackRelease("8n");
+            }
+            const playMarketSound = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                marketSound.triggerAttackRelease("D5", "8n");
+            }
+            const playEmailSound = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                emailSound.triggerAttackRelease("E5", "16n");
+            }
+            const playCallSound = () => {
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                callSound.triggerAttackRelease("A4", "8n");
+            }
+
+            let timerWarningLoop = null;
+            const startTimerWarning = () => {
+                if (timerWarningLoop) return;
+                if (Tone.context.state !== 'running') { Tone.start(); }
+                timerWarningLoop = new Tone.Loop(time => {
+                    timerWarningSound.triggerAttackRelease("G3", "16n", time);
+                }, "0.5s").start(0);
+                Tone.Transport.start();
+            };
+            const stopTimerWarning = () => {
+                if (timerWarningLoop) {
+                    timerWarningLoop.stop();
+                    timerWarningLoop.dispose();
+                    timerWarningLoop = null;
+                }
+                // Tone.Transport.stop(); // Don't stop transport entirely, other sounds might be playing
+            };
+
+
+            const CONFIG = {
+                initialMetrics: {
+                    chiffreAffaires: { name: "Chiffre d'Affaires", value: 150000000, icon: "💰", isCurrency: true }, // 150M Euros
+                    couts: { name: "Coûts Totaux", value: 135000000, icon: "💸", isCurrency: true }, // 135M Euros for 10% margin
+                    marge: { name: "Marge Nette", value: 10, icon: "📈", isPercentage: true }, // Adjusted to 10%
+                    client: { name: "Satisfaction Maître d'Ouvrage", value: 75, icon: "😊" }, // Changed to Project Owner
+                    equipe: { name: "Moral de l'Équipe Chantier", value: 80, icon: "👷" }, // Changed to Site Team
+                    qualite: { name: "Qualité de l'Ouvrage", value: 70, icon: "✨" }, // Changed to Work Quality
+                    delais: { name: "Respect des Délais", value: 60, icon: "⏳" },
+                    securite: { name: "Sécurité du Chantier", value: 90, icon: "🛡️" }, // Changed to Site Safety
+                },
+                initialPowerUps: {
+                    audit: { name: "Audit Financier", icon: "📈", count: 1, description: "Révèle les impacts financiers exacts d'un choix." },
+                    negociation: { name: "Négociation Client", icon: "🗣️", count: 1, description: "Augmente la satisfaction client." },
+                    xray: { name: "Analyse Risques", icon: "💡", count: 1, description: "Met en évidence le meilleur choix." },
+                    training: { name: "Formation Équipe", icon: "📚", count: 1, description: "Améliore le moral et la qualité de l'équipe." }, // New power-up
+                    strategicInsight: { name: "Vision Stratégique", icon: "👁️", count: 1, description: "Révèle le type du prochain événement." } // New power-up
+                },
+                difficultySettings: { // New difficulty settings
+                    facile: { name: "Facile", timeMultiplier: 1.2 },
+                    normal: { name: "Normal", timeMultiplier: 1.0 },
+                    difficile: { name: "Difficile", timeMultiplier: 0.8 },
+                    expert: { name: "Expert", timeMultiplier: 0.5 }
+                },
+                timeBonusThreshold: 10, // Seconds remaining for bonus
+                timeBonusPoints: 500, // Points for time bonus
+                quickEventChance: 0.25, // 25% chance of a quick event after a main scenario
+                catastropheChance: 0.08, // 8% chance of a major catastrophe
+                marketFluctuationChance: 0.15, // 15% chance of a market fluctuation event
+                emailChance: 0.12, // 12% chance of an email event
+                callChance: 0.10, // 10% chance of a call event
+                timerWarningThreshold: 10, // Seconds left to start warning sound/animation
+                marketEventDisplayDuration: 5, // Duration for market event modal display in seconds
+                callEventTimeLimit: 10, // Time limit for call events in seconds
+                maxNewsItems: 7 // Maximum number of news items to display
+            };
+
+            // DOM Elements mapping
+            const DOMElements = {
+                startScreen: document.getElementById('start-screen'), // New
+                difficultySelection: document.getElementById('difficulty-selection'), // New
+                highScoreDisplay: document.getElementById('high-score-display'), // New
+                gameScreen: document.getElementById('game-screen'),
+                resultScreen: document.getElementById('result-screen'),
+                restartGameBtn: document.getElementById('restart-game-btn'),
+                backToMainMenuGameBtn: document.getElementById('back-to-main-menu-game-btn'),
+                backToMainMenuResultBtn: document.getElementById('back-to-main-menu-result-btn'),
+                shareResultsBtn: document.getElementById('share-results-btn'),
+                metricsDisplay: document.getElementById('metrics-display'),
+                powerUpsDisplay: document.getElementById('power-ups-display'),
+                floatingPowerUps: document.getElementById('floating-power-ups'),
+                currentScenarioDisplay: document.getElementById('current-scenario-display'),
+                totalScenariosDisplay: document.getElementById('total-scenarios-display'),
+                progressBar: document.getElementById('progress-bar'),
+                timerDisplay: document.getElementById('timer-display'),
+                scenarioIcon: document.getElementById('scenario-icon'),
+                scenarioTitle: document.getElementById('scenario-title'),
+                scenarioText: document.getElementById('scenario-text'),
+                choicesContainer: document.getElementById('choices-container'),
+                modalOverlay: document.getElementById('modal-overlay'),
+                feedbackModal: document.getElementById('feedback-modal'),
+                feedbackTitle: document.getElementById('feedback-title'),
+                feedbackText: document.getElementById('feedback-text'),
+                impactList: document.getElementById('impact-list'),
+                modalContinueBtn: document.getElementById('modal-continue-btn'),
+                quickEventModalOverlay: document.getElementById('quick-event-modal-overlay'),
+                quickEventModal: document.getElementById('quick-event-modal'),
+                quickEventIcon: document.getElementById('quick-event-icon'),
+                quickEventTitle: document.getElementById('quick-event-title'),
+                quickEventText: document.getElementById('quick-event-text'),
+                quickEventChoicesContainer: document.getElementById('quick-event-choices-container'),
+                quickEventTimerDisplay: document.getElementById('quick-event-timer-display'),
+                catastropheModalOverlay: document.getElementById('catastrophe-modal-overlay'), // New
+                catastropheModal: document.getElementById('catastrophe-modal'), // New
+                catastropheIcon: document.getElementById('catastrophe-icon'), // New
+                catastropheTitle: document.getElementById('catastrophe-title'), // New
+                catastropheText: document.getElementById('catastrophe-text'), // New
+                catastropheChoicesContainer: document.getElementById('catastrophe-choices-container'), // New
+                catastropheTimerDisplay: document.getElementById('catastrophe-timer-display'), // New
+                marketEventModalOverlay: document.getElementById('market-event-modal-overlay'), // New
+                marketEventModal: document.getElementById('market-event-modal'), // New
+                marketEventIcon: document.getElementById('market-event-icon'), // New
+                marketEventTitle: document.getElementById('market-event-title'), // New
+                marketEventText: document.getElementById('market-event-text'), // New
+                marketImpactList: document.getElementById('market-impact-list'), // New
+                marketEventTimerDisplay: document.getElementById('market-event-timer-display'), // New
+                emailEventModalOverlay: document.getElementById('email-event-modal-overlay'), // New
+                emailEventModal: document.getElementById('email-event-modal'), // New
+                emailEventTitle: document.getElementById('email-event-title'), // New
+                emailSender: document.getElementById('email-sender'), // New
+                emailSubject: document.getElementById('email-subject'), // New
+                emailBody: document.getElementById('email-body'), // New
+                emailChoicesContainer: document.getElementById('email-choices-container'), // New
+                callEventModalOverlay: document.getElementById('call-event-modal-overlay'), // New
+                callEventModal: document.getElementById('call-event-modal'), // New
+                callEventTitle: document.getElementById('call-event-title'), // New
+                callCaller: document.getElementById('call-caller'), // New
+                callMessage: document.getElementById('call-message'), // New
+                callChoicesContainer: document.getElementById('call-choices-container'), // New
+                callEventTimerDisplay: document.getElementById('call-event-timer-display'), // New
+                finalScore: document.getElementById('final-score'),
+                finalHighScore: document.getElementById('final-high-score'), // New
+                resultCategory: document.getElementById('result-category'),
+                resultDescription: document.getElementById('result-description'),
+                metricAnalysisResults: document.getElementById('metric-analysis-results'), // New
+                contactMessage: document.getElementById('contact-message'),
+                characterContainer: document.getElementById('character-container'),
+                characterAvatar: document.getElementById('character-avatar'),
+                speechBubble: document.getElementById('speech-bubble'),
+                newsFeedDisplay: document.getElementById('news-feed-display') // New
+            };
+
+            // Scenarios data
+            const scenarios = [
+                {
+                    title: "Retard de Livraison des Matériaux Clés", icon: "🚚", timeLimit: 60,
+                    text: "Un fournisseur clé a un retard important dans la livraison de matériaux essentiels (ex: poutres préfabriquées pour un pont du canal), menaçant de paralyser le chantier.",
+                    choices: [
+                        { text: "Chercher un nouveau fournisseur en urgence (plus cher)", impacts: { couts: 7500000, delais: -10, qualite: 0, marge: -0.75 }, feedback: "Vous assurez la continuité du projet, mais à un coût très élevé. La marge est fortement impactée." },
+                        { text: "Attendre la livraison du fournisseur initial", impacts: { delais: 30, client: -15, equipe: -10, marge: -0.5 }, feedback: "Moins coûteux, mais le retard est significatif et impacte lourdement la satisfaction du maître d'ouvrage et le moral de l'équipe." },
+                        { text: "Réaffecter l'équipe à d'autres tâches en attendant", impacts: { delais: 15, couts: -1500000, equipe: 7, marge: 0.15 }, feedback: "Une bonne gestion des ressources, minimisant le retard et optimisant les coûts. L'équipe reste productive." },
+                        { text: "Travailler en heures supplémentaires pour rattraper le retard", impacts: { couts: 4500000, equipe: -20, qualite: -7, delais: 0, marge: -0.45 }, feedback: "Le retard est rattrapé, but au prix d'une augmentation massive des coûts, d'une baisse notable de la qualité et d'un épuisement sévère de l'équipe." }
+                    ]
+                },
+                {
+                    title: "Grève des Ouvriers du Chantier", icon: "✊", timeLimit: 45,
+                    text: "Une partie des ouvriers du chantier se met en grève pour des revendications salariales, stoppant net une phase critique de construction (ex: bétonnage d'une écluse).",
+                    choices: [
+                        { text: "Négocier une augmentation salariale (coût très élevé)", impacts: { couts: 15000000, equipe: 25, client: 7, marge: -1.5 }, feedback: "La grève est levée, l'équipe est très motivée, mais le coût est exorbitant, impactant drastiquement la marge." },
+                        { text: "Remplacer les grévistes par des intérimaires", impacts: { couts: 10500000, equipe: -40, qualite: -20, delais: 15, securite: -15, marge: -1.2 }, feedback: "Solution rapide mais qui crée des tensions extrêmes. La qualité et la sécurité peuvent en pâtir gravement, et le moral de l'équipe est au plus bas." },
+                        { text: "Ignorer la grève et attendre qu'elle se termine", impacts: { delais: 60, client: -35, equipe: -60, marge: -0.75 }, feedback: "Une stratégie désastreuse. Le projet est à l'arrêt total, la réputation est ternie, et l'équipe est complètement démotivée et hostile." },
+                        { text: "Ouvrir le dialogue et proposer des compromis (avantages non-salariaux)", impacts: { couts: 3000000, equipe: 15, delais: 7, client: 0, marge: -0.3 }, feedback: "Une approche équilibrée. Le coût est modéré, la grève est levée, et l'équipe se sent écoutée. Un léger retard est inévitable." }
+                    ]
+                },
+                {
+                    title: "Défaut Majeur dans l'Ouvrage", icon: "⚠️", timeLimit: 75,
+                    text: "Un défaut critique est découvert dans un composant clé de l'ouvrage (ex: fondations d'une structure, étanchéité du canal), nécessitant une refonte coûteuse ou un risque de défaillance future.",
+                    choices: [
+                        { text: "Refaire le composant à neuf (coût très élevé, délai)", impacts: { couts: 12000000, qualite: 25, delais: 20, marge: -1.2 }, feedback: "Vous assurez une qualité impeccable, but le coût et le délai sont significatifs et douloureux." },
+                        { text: "Tenter une réparation rapide (risque résiduel élevé)", impacts: { couts: 3000000, qualite: -15, client: -10, securite: -15, marge: -0.4 }, feedback: "Moins cher et plus rapide, but la qualité et la sécurité sont gravement compromises, avec un risque majeur pour la satisfaction du maître d'ouvrage." },
+                        { text: "Lancer une enquête approfondie pour identifier la cause", impacts: { delais: 15, equipe: 7, qualite: 7, couts: 1500000, marge: -0.15 }, feedback: "Prend du temps, mais améliore les processus futurs et la qualité globale, tout en maintenant le moral." },
+                        { text: "Demander au sous-traitant de prendre en charge les coûts", impacts: { couts: -7500000, client: -7, delais: 7, marge: 0.75 }, feedback: "Potentiellement très bénéfique financièrement, but peut créer des tensions extrêmes avec le sous-traitant et entraîner un léger retard." }
+                    ]
+                },
+                {
+                    title: "Nouvelles Normes Environnementales", icon: "📜", timeLimit: 50,
+                    text: "De nouvelles réglementations environnementales sont annoncées concernant les chantiers de grande envergure, nécessitant des modifications importantes dans la méthode de construction du canal.",
+                    choices: [
+                        { text: "Adapter le projet immédiatement (coût, délai)", impacts: { couts: 6000000, delais: 15, securite: 20, marge: -0.6 }, feedback: "Conformité assurée, but avec des impacts lourds sur le budget et le calendrier." },
+                        { text: "Demander une dérogation (risque de refus élevé)", impacts: { client: -15, securite: -10, delais: 7, marge: 0 }, feedback: "Peut éviter des coûts, but risqué et peut nuire gravement à la réputation et à la sécurité environnementale." },
+                        { text: "Ignorer les nouvelles réglementations (risque légal extrême)", impacts: { qualite: -30, securite: -40, chiffreAffaires: -15000000, marge: -1.5 }, feedback: "Extrêmement risqué, peut entraîner des amendes massives, l'arrêt définitif du projet et des poursuites judiciaires." },
+                        { text: "Consulter des experts environnementaux pour minimiser l'impact", impacts: { couts: 2250000, delais: 7, securite: 7, marge: -0.225 }, feedback: "Une approche prudente qui aide à naviguer dans la complexité, avec un coût et un délai modérés." }
+                    ]
+                },
+                {
+                    title: "Départ d'un Ingénieur Clé", icon: "🚶", timeLimit: 55,
+                    text: "Un ingénieur structurel indispensable à la réussite du projet démissionne subitement, laissant un vide critique dans la conception des ouvrages d'art.",
+                    choices: [
+                        { text: "Recruter un remplaçant externe (long et très cher)", impacts: { couts: 9000000, delais: 30, equipe: -15, marge: -0.9 }, feedback: "Assure l'expertise, mais coûteux et entraîne un retard très significatif." },
+                        { text: "Promouvoir un membre de l'équipe (formation nécessaire)", impacts: { couts: 1500000, equipe: 15, qualite: -7, delais: 15, marge: -0.15 }, feedback: "Moins coûteux, but la qualité peut temporairement baisser et un délai est à prévoir." },
+                        { text: "Répartir ses tâches entre les membres restants", impacts: { equipe: -30, qualite: -15, delais: 20, marge: 0 }, feedback: "Économise de l'argent, but surcharge l'équipe, réduit drastiquement le moral et la qualité." },
+                        { text: "Faire appel à un consultant externe temporaire", impacts: { couts: 4500000, delais: 7, qualite: 7, marge: -0.45 }, feedback: "Solution rapide pour combler le vide, maintient la qualité et limite le retard, but à un coût certain." }
+                    ]
+                },
+                {
+                    title: "Incident de Sécurité Majeur sur le Chantier", icon: "🚨", timeLimit: 70,
+                    text: "Un incident de sécurité majeur se produit sur le chantier (ex: effondrement partiel d'une structure, accident grave avec blessés), entraînant une suspension immédiate des travaux et une enquête approfondie.",
+                    choices: [
+                        { text: "Renforcer massivement les protocoles de sécurité et auditer le site", impacts: { couts: 13500000, securite: 25, delais: 15, client: -7, marge: -1.35 }, feedback: "Mesure drastique but nécessaire pour la sécurité, avec des coûts et un impact sur le délai." },
+                        { text: "Minimiser l'incident pour éviter des retards (risque légal et humain)", impacts: { securite: -30, client: -20, qualite: -15, marge: -0.75 }, feedback: "Économise de l'argent à court terme, but risque de compromettre davantage la sécurité, la réputation et d'entraîner des poursuites." },
+                        { text: "Informer immédiatement les autorités et le maître d'ouvrage avec transparence", impacts: { client: -15, securite: 7, equipe: -7, marge: -0.15 }, feedback: "Transparence qui peut nuire à la satisfaction du maître d'ouvrage, but renforce la confiance à long terme et la sécurité." },
+                        { text: "Mettre en place des formations de sécurité intensives et obligatoires pour toute l'équipe", impacts: { couts: 3000000, securite: 15, delais: 0, marge: -0.3 }, feedback: "Un investissement pour l'avenir, améliorant la sécurité sans impact immédiat majeur sur le projet en cours." }
+                    ]
+                },
+                {
+                    title: "Dépassement Budgétaire Critique", icon: "💸", timeLimit: 60,
+                    text: "Les dépenses du projet ont dépassé les prévisions de manière critique, menaçant la viabilité globale du Canal Seine-Nord Europe.",
+                    choices: [
+                        { text: "Réduire drastiquement les finitions non essentielles ou les aménagements paysagers", impacts: { qualite: -15, client: -15, couts: -7500000, marge: 0.75 }, feedback: "Réduit les coûts de manière significative, but peut décevoir le maître d'ouvrage et impacter sévèrement la qualité perçue de l'ouvrage." },
+                        { text: "Demander un budget supplémentaire d'urgence au maître d'ouvrage (très difficile à obtenir)", impacts: { chiffreAffaires: 0, couts: 7500000, client: -7, marge: -0.75 }, feedback: "Peut résoudre le problème de budget, but risque de nuire gravement à la relation avec le maître d'ouvrage et à la marge." },
+                        { text: "Optimiser les processus de construction et renégocier les contrats fournisseurs", impacts: { couts: -4500000, equipe: 7, qualite: 7, marge: 0.45 }, feedback: "Une approche saine qui réduit les coûts tout en améliorant l'efficacité et le moral de l'équipe." },
+                        { text: "Utiliser des matériaux de substitution moins chers (qualité et sécurité compromises)", impacts: { qualite: -20, securite: -10, client: -20, marge: 0.3 }, feedback: "Solution rapide pour les coûts, but compromet gravement la qualité, la sécurité et la satisfaction du maître d'ouvrage." }
+                    ]
+                },
+                {
+                    title: "Conflit Majeur au sein de l'Équipe Chantier", icon: "🗣️", timeLimit: 40,
+                    text: "Des tensions extrêmes éclatent au sein de l'équipe de construction, entraînant des blocages et une chute drastique de la productivité et du moral sur le terrain.",
+                    choices: [
+                        { text: "Organiser une médiation professionnelle immédiate sur site", impacts: { equipe: 20, delais: 7, couts: 750000, marge: -0.075 }, feedback: "Investissement qui résout les conflits majeurs, améliore le moral but coûte un peu de temps et d'argent." },
+                        { text: "Laisser l'équipe gérer le problème elle-même (risque d'escalade)", impacts: { equipe: -30, qualite: -15, delais: 15, marge: 0 }, feedback: "Peut empirer la situation de manière incontrôlable, réduisant le moral et la productivité à néant." },
+                        { text: "Réaffecter les membres en conflit à d'autres tâches ou les écarter", impacts: { equipe: 7, qualite: -7, delais: 7, marge: 0 }, feedback: "Solution temporaire qui peut créer de nouvelles frictions et impacter la qualité." },
+                        { text: "Organiser un événement de cohésion d'équipe majeur (coût, but renforce les liens)", impacts: { couts: 1500000, equipe: 15, marge: -0.15 }, feedback: "Un investissement significatif dans l'équipe qui peut améliorer la cohésion et le moral à long terme." }
+                    ]
+                },
+                {
+                    title: "Modifications de Conception Drastiques Demandées par le Maître d'Ouvrage", icon: "❓", timeLimit: 50,
+                    text: "Le maître d'ouvrage exprime des demandes de modifications de conception de dernière minute et d'envergure (ex: changement complet du tracé sur une section), rendant la poursuite des travaux extrêmement difficile.",
+                    choices: [
+                        { text: "Organiser un atelier de clarification intensif avec le maître d'ouvrage et renégocier", impacts: { client: 15, delais: 10, qualite: 15, couts: 750000, marge: -0.075 }, feedback: "Prend du temps et coûte un peu, but assure une meilleure compréhension et un ouvrage final de meilleure qualité." },
+                        { text: "Faire des hypothèses et continuer la construction (risque de non-conformité)", impacts: { client: -30, qualite: -20, couts: 3000000, marge: -0.3 }, feedback: "Risque extrêmement élevé de livrer un ouvrage qui ne correspond pas aux attentes, entraînant des retouches massives et des pénalités." },
+                        { text: "Proposer des plans de modification rapides et coûteux pour validation", impacts: { client: 20, qualite: 7, delais: 0, couts: 1500000, marge: -0.15 }, feedback: "Bonne méthode pour valider les exigences, satisfait le maître d'ouvrage et maintient la qualité." },
+                        { text: "Ignorer les demandes et suivre le plan initial (rupture de contrat)", impacts: { client: -40, qualite: -30, chiffreAffaires: -7500000, marge: -0.75 }, feedback: "Une approche désastreuse qui mènera à l'insatisfaction du maître d'ouvrage, à la rupture de contrat et à des pertes financières massives." }
+                    ]
+                },
+                {
+                    title: "Nouvelle Technologie de Construction Révolutionnaire", icon: "💡", timeLimit: 45,
+                    text: "Une nouvelle technologie de construction (ex: robotisation avancée pour le bétonnage) prometteuse émerge, offrant une opportunité d'améliorer significativement l'efficacité ou la durabilité de l'ouvrage, but avec des risques d'intégration.",
+                    choices: [
+                        { text: "Intégrer la nouvelle technologie (coût élevé, délai, formation)", impacts: { couts: 4500000, delais: 15, qualite: 25, client: 20, marge: -0.45 }, feedback: "Un investissement qui peut révolutionner la construction, but avec des coûts et des retards." },
+                        { text: "Continuer avec la technologie actuelle", impacts: { qualite: -7, client: -7, marge: 0 }, feedback: "Moins risqué à court terme, but l'ouvrage pourrait être moins performant à long terme." },
+                        { text: "Mettre en place une petite équipe de R&D dédiée à l'étude approfondie", impacts: { couts: 2250000, equipe: 7, delais: 7, marge: -0.225 }, feedback: "Permet d'explorer l'innovation sans perturber le projet principal, avec un coût modéré." },
+                        { text: "Ignorer l'opportunité", impacts: { client: -15, qualite: -15, chiffreAffaires: -3000000, marge: -0.3 }, feedback: "Manque une opportunité majeure, le projet risque de perdre en compétitivité ou en durabilité sur le long terme." }
+                    ]
+                },
+                {
+                    title: "Fuite de Données Stratégiques du Chantier", icon: " leaked", timeLimit: 65,
+                    text: "Des informations hautement sensibles concernant les plans de sécurité ou les méthodes de construction innovantes du Canal ont été divulguées publiquement, menaçant la réputation et la sécurité du projet.",
+                    choices: [
+                        { text: "Lancer une enquête interne massive et renforcer drastiquement la cybersécurité", impacts: { securite: 25, equipe: -7, client: -15, couts: 6000000, marge: -0.6 }, feedback: "Mesure essentielle pour la sécurité et la réputation, but coûteuse et peut impacter le moral." },
+                        { text: "Minimiser l'incident publiquement (risque de scandale)", impacts: { client: -30, securite: -15, chiffreAffaires: -7500000, marge: -0.75 }, feedback: "Peut aggraver la situation, entraînant une perte de confiance et des pénalités massives." },
+                        { text: "Informer les parties prenantes concernées avec transparence et proposer des mesures correctives", impacts: { client: -7, securite: 7, marge: 0 }, feedback: "La transparence peut atténuer l'impact négatif et renforcer la confiance à long terme." },
+                        { text: "Mettre en place une campagne de communication de crise pour restaurer l'image du projet", impacts: { couts: 4500000, client: 7, marge: -0.45 }, feedback: "Un investissement pour restaurer la confiance, but ne résout pas le problème de sécurité sous-jacent." }
+                    ]
+                },
+                {
+                    title: "Problème Géotechnique Critique et Inattendu", icon: "⚙️", timeLimit: 50,
+                    text: "Un problème géotechnique complexe et imprévu (ex: découverte d'une nappe phréatique non cartographiée, sol instable) bloque une étape cruciale de l'excavation du canal, menaçant la stabilité de l'ouvrage.",
+                    choices: [
+                        { text: "Engager des experts géotechniciens externes de renommée mondiale (très coûteux, rapide)", impacts: { couts: 7500000, delais: -7, qualite: 15, marge: -0.75 }, feedback: "Résout le problème rapidement et efficacement, but à un coût très élevé." },
+                        { text: "Laisser l'équipe interne résoudre le problème (délai incertain, risque élevé)", impacts: { delais: 20, equipe: 7, qualite: 0, marge: 0 }, feedback: "Moins coûteux, but le délai est incertain et peut frustrer l'équipe, avec un risque d'aggravation." },
+                        { text: "Simplifier drastiquement la conception de l'ouvrage pour contourner le problème", impacts: { qualite: -15, client: -7, delais: -7, marge: 0.15 }, feedback: "Solution rapide, but compromet gravement la qualité et la satisfaction du maître d'ouvrage." },
+                        { text: "Rechercher des solutions innovantes de stabilisation des sols (temps, but économique)", impacts: { delais: 15, couts: -750000, qualite: 0, marge: 0.075 }, feedback: "Économique, but prend du temps et la solution peut ne pas être parfaitement adaptée." }
+                    ]
+                },
+                {
+                    title: "Pression Politique Extrême pour Accélérer les Travaux", icon: "⏱️", timeLimit: 55,
+                    text: "Le maître d'ouvrage et les autorités locales exercent une pression politique extrême pour accélérer le calendrier des travaux du Canal, en raison d'élections ou d'engagements publics, menaçant des pénalités massives en cas de retard.",
+                    choices: [
+                        { text: "Augmenter massivement les équipes et les heures de travail (coût, risque de qualité)", impacts: { qualite: -15, equipe: -15, delais: -15, marge: 0 }, feedback: "Accélère les travaux, but peut compromettre la qualité et le moral de l'équipe." },
+                        { text: "Optimiser la planification et les ressources existantes avec des outils avancés", impacts: { couts: 0, delais: -7, equipe: 7, marge: 0.75 }, feedback: "Améliore l'efficacité sans coûts supplémentaires, maintient le moral." },
+                        { text: "Refuser la demande d'accélération en justifiant les risques techniques et légaux", impacts: { client: -15, delais: 0, marge: 0 }, feedback: "Maintient la qualité et la sécurité, but peut créer des tensions majeures avec le maître d'ouvrage et les autorités." },
+                        { text: "Introduire des technologies de construction ultra-rapide (coût exorbitant)", impacts: { couts: 6000000, delais: -20, qualite: 7, marge: -0.6 }, feedback: "Permet une accélération significative, but à un coût important." }
+                    ]
+                },
+                {
+                    title: "Crise de Relations Publiques Majeure", icon: "📰", timeLimit: 60,
+                    text: "Une mauvaise publicité ou un scandale éclate (ex: accusations de corruption, impact environnemental non déclaré), affectant l'image de l'entreprise et la perception du projet à l'échelle nationale.",
+                    choices: [
+                        { text: "Publier une déclaration officielle transparente et s'excuser publiquement", impacts: { client: 7, equipe: 7, couts: 1000000, marge: -0.1 }, feedback: "Une communication transparente peut aider à restaurer la confiance, but à un coût." },
+                        { text: "Ignorer la crise et espérer qu'elle passe (risque de catastrophe médiatique)", impacts: { client: -35, chiffreAffaires: -15000000, marge: -1.5 }, feedback: "Peut aggraver la situation de manière incontrôlable, entraînant une perte massive de clients et de revenus, et des poursuites." },
+                        { text: "Lancer une campagne de communication positive massive et coûteuse", impacts: { couts: 7500000, client: 15, marge: -0.75 }, feedback: "Un investissement pour améliorer l'image, but coûteux." },
+                        { text: "Identifier la source du problème et y remédier activement avec une communication proactive", impacts: { client: 20, qualite: 15, securite: 15, couts: 4500000, marge: -0.45 }, feedback: "S'attaquer à la racine du problème est la meilleure solution à long terme, même si cela prend du temps et de l'argent." }
+                    ]
+                },
+                {
+                    title: "Nouvelle Opportunité Commerciale Stratégique", icon: "🤝", timeLimit: 40,
+                    text: "Un client important propose un partenariat lucratif pour un nouveau projet d'infrastructure majeur, but cela demanderait des ressources importantes et pourrait impacter le projet actuel.",
+                    choices: [
+                        { text: "Accepter le nouveau projet (surcharge extrême des équipes)", impacts: { chiffreAffaires: 22500000, couts: 10500000, equipe: -20, delais: 15, marge: 0.75 }, feedback: "Augmente massivement les revenus, but peut surcharger l'équipe et impacter lourdement les délais du projet actuel." },
+                        { text: "Refuser le nouveau projet pour se concentrer sur l'actuel", impacts: { chiffreAffaires: 0, equipe: 7, delais: -7, marge: 0 }, feedback: "Maintient la concentration sur le projet actuel, but manque une opportunité de croissance majeure." },
+                        { text: "Recruter temporairement pour le nouveau projet (coût élevé)", impacts: { couts: 6000000, chiffreAffaires: 15000000, equipe: 0, delais: 0, marge: 0.5 }, feedback: "Permet de saisir l'opportunité sans impacter l'équipe actuelle, but à un coût." },
+                        { text: "Négocier un démarrage différé pour le nouveau projet", impacts: { client: 7, delais: 7, marge: 0 }, feedback: "Une approche équilibrée qui permet de saisir l'opportunité sans perturber immédiatement le projet en cours." }
+                    ]
+                }
+            ];
+
+            // Quick Events data (impacts also made more punitive)
+            const quickEvents = [
+                {
+                    title: "Panne d'Équipement Majeur sur Site !", icon: "⚡", timeLimit: 15,
+                    text: "Une pelleteuse critique vient de tomber en panne au milieu du chantier. Vous avez peu de temps pour réagir !",
+                    choices: [
+                        { text: "Réparer en urgence avec des équipes dédiées (solution rapide, coût élevé)", impacts: { delais: 7, qualite: -7, securite: -7, marge: -0.15 }, feedback: "L'équipement est relancé, but il y a un risque notable de qualité et de sécurité due à la précipitation." },
+                        { text: "Louer un équipement de remplacement (plus lent, plus sûr, plus cher)", impacts: { delais: 15, qualite: 0, securite: 7, marge: -0.075 }, feedback: "Plus sûr à long terme, but le temps d'arrêt est plus long et coûte plus cher." }
+                    ]
+                },
+                {
+                    title: "Urgence Sécurité sur le Chantier !", icon: "📞", timeLimit: 10,
+                    text: "Un petit incident de sécurité nécessite une attention immédiate pour éviter un accident majeur.",
+                    choices: [
+                        { text: "Intervenir personnellement et stopper la zone (impacte le délai et moral)", impacts: { securite: 15, delais: 7, equipe: -7, marge: 0 }, feedback: "La sécurité est assurée, but le projet prend un léger retard et l'équipe est sous pression." },
+                        { text: "Déléguer à un chef d'équipe (risque d'escalade et de réputation)", impacts: { securite: -15, delais: -7, equipe: 7, marge: 0 }, feedback: "Le projet avance, but le risque d'accident est plus élevé et la réputation peut en pâtir." }
+                    ]
+                },
+                {
+                    title: "Erreur de Mesure Critique !", icon: "🐞", timeLimit: 20,
+                    text: "Une erreur de mesure cruciale a été découverte dans les plans de terrassement. Elle doit être corrigée rapidement.",
+                    choices: [
+                        { text: "Assigner les topographes les plus expérimentés (coût élevé, rapidité)", impacts: { couts: 1500000, qualite: 15, delais: 0, marge: -0.15 }, feedback: "L'erreur est corrigée rapidement et la qualité est assurée, but cela coûte cher." },
+                        { text: "Demander à l'équipe actuelle de la corriger (délai, moral, risque de qualité)", impacts: { qualite: 7, delais: 7, equipe: -7, marge: 0 }, feedback: "L'erreur est corrigée, but cela prend plus de temps et peut affecter le moral de l'équipe, avec un risque de qualité résiduel." }
+                    ]
+                }
+            ];
+
+            // Catastrophe Events data (new and very punitive)
+            const catastrophes = [
+                {
+                    title: "Effondrement Majeur d'une Section du Canal !", icon: "💥", timeLimit: 8,
+                    text: "Une section du canal en construction vient de s'effondrer suite à un mouvement de terrain imprévu. Des blessés sont à déplorer et les travaux sont à l'arrêt total. Vous devez agir IMMÉDIATEMENT !",
+                    choices: [
+                        { text: "Déployer les équipes de secours et d'ingénierie d'urgence (coût colossal, délai énorme)", impacts: { couts: 30000000, delais: 50, securite: 30, qualite: -20, client: -30, marge: -3 }, feedback: "Vous sauvez des vies et assurez la sécurité, but le coût et le retard sont astronomiques. La qualité perçue et la satisfaction du maître d'ouvrage sont gravement touchées." },
+                        { text: "Prioriser la stabilisation du site pour limiter les dégâts (coût très élevé, risque)", impacts: { couts: 20000000, securite: 15, delais: 30, qualite: -10, client: -20, marge: -2 }, feedback: "Vous tentez de contenir la catastrophe, but les impacts financiers, sur les délais et la réputation sont immenses." }
+                    ]
+                },
+                {
+                    title: "Scandale de Corruption Révélé !", icon: "📰", timeLimit: 7,
+                    text: "Une enquête journalistique majeure révèle des allégations de corruption au sein de la gestion du projet. La réputation de l'entreprise est en jeu, les investisseurs paniquent et le financement est menacé. Réagissez VITE !",
+                    choices: [
+                        { text: "Lancer une enquête interne indépendante et coopérer pleinement avec la justice (coût, impact réputationnel initial)", impacts: { couts: 15000000, client: -25, chiffreAffaires: -20000000, equipe: -15, marge: -2.5 }, feedback: "Une action forte pour la transparence, but qui expose initialement le projet à des pertes financières et de réputation massives." },
+                        { text: "Nier les allégations et lancer une contre-campagne médiatique (risque d'aggravation)", impacts: { client: -40, chiffreAffaires: -30000000, equipe: -25, marge: -3.5 }, feedback: "Une stratégie risquée qui peut entraîner une perte totale de confiance, des poursuites judiciaires et l'arrêt du projet." }
+                    ]
+                },
+                {
+                    title: "Crise Écologique Majeure Imprévue !", icon: "☣️", timeLimit: 10,
+                    text: "La construction a déclenché une pollution environnementale imprévue (ex: fuite de produit toxique, destruction d'un habitat protégé) avec des conséquences désastreuses. Les autorités menacent d'arrêter le chantier. AGISSEZ !",
+                    choices: [
+                        { text: "Mettre en œuvre des mesures de dépollution d'urgence et des compensations écologiques (coût exorbitant, délai)", impacts: { couts: 25000000, delais: 40, client: -20, securite: 20, marge: -3 }, feedback: "Vous tentez de réparer les dégâts écologiques, but le coût est colossal et le projet subit un retard majeur. La réputation est gravement entachée." },
+                        { text: "Contester les accusations et continuer les travaux (risque légal et d'image)", impacts: { client: -35, securite: -25, chiffreAffaires: -25000000, marge: -3.5 }, feedback: "Une approche agressive qui peut entraîner des amendes massives, des poursuites et l'arrêt définitif du projet par décision de justice." }
+                    ]
+                }
+            ];
+
+            // Market Events data (new)
+            const marketEvents = [
+                {
+                    title: "Augmentation des Coûts des Matières Premières", icon: "📈",
+                    text: "Le prix mondial de l'acier et du ciment a soudainement grimé en flèche, augmentant vos coûts de construction.",
+                    impacts: { couts: 5000000, marge: -0.5 },
+                    feedback: "Les coûts des matériaux ont augmenté, impactant votre budget."
+                },
+                {
+                    title: "Baisse des Taux d'Intérêt", icon: "📉",
+                    text: "La banque centrale a baissé les taux d'intérêt, réduisant le coût de votre financement de projet.",
+                    impacts: { couts: -2000000, marge: 0.2 },
+                    feedback: "Une bonne nouvelle pour vos finances ! Les coûts de financement diminuent."
+                },
+                {
+                    title: "Nouvelles Subventions Gouvernementales", icon: "💰",
+                    text: "Le gouvernement annonce des subventions inattendues pour les projets d'infrastructure verte, bénéficiant à votre canal.",
+                    impacts: { chiffreAffaires: 7500000, marge: 0.75 },
+                    feedback: "Des subventions inattendues améliorent la rentabilité de votre projet !"
+                },
+                {
+                    title: "Ralentissement Économique Général", icon: "🐌",
+                    text: "Un ralentissement économique global réduit la demande pour de futurs projets, but n'impacte pas directement le projet en cours.",
+                    impacts: { chiffreAffaire: -5000000, marge: -0.5 }, // Can impact future revenue, but for simplicity, let's impact current CA
+                    feedback: "Le contexte économique se durcit, soyez vigilant pour l'avenir."
+                },
+                {
+                    title: "Innovation en Logistique", icon: "📦",
+                    text: "Une nouvelle méthode logistique permet de réduire significativement les coûts de transport des matériaux.",
+                    impacts: { couts: -1000000, marge: 0.1 },
+                    feedback: "Vos coûts logistiques sont réduits grâce à une nouvelle innovation."
+                }
+            ];
+
+            // Email Events data (new)
+            const emailEvents = [
+                {
+                    title: "Demande d'informations du Ministère",
+                    sender: "ministry@gouv.fr",
+                    subject: "Mise à jour sur l'avancement du projet Canal Seine-Nord Europe",
+                    body: "Cher Directeur des Travaux, nous avons besoin d'une mise à jour détaillée sur l'avancement du projet et les éventuels défis rencontrés. Merci de nous fournir un rapport d'ici la fin de la semaine.",
+                    choices: [
+                        { text: "Envoyer un rapport détaillé et transparent", impacts: { client: 10, delais: 5, equipe: -5, marge: -0.05 }, feedback: "Le ministère est satisfait de votre transparence, mais la préparation du rapport a pris du temps à l'équipe." },
+                        { text: "Envoyer un rapport sommaire pour gagner du temps", impacts: { client: -10, equipe: 5, marge: 0.05 }, feedback: "Vous avez gagné du temps, but le ministère est déçu par le manque de détails, impactant la satisfaction client." }
+                    ]
+                },
+                {
+                    title: "Offre de partenariat technologique",
+                    sender: "techsolutions@innov.com",
+                    subject: "Nouvelle solution d'optimisation de chantier par IA",
+                    body: "Bonjour, nous avons développé une IA révolutionnaire capable d'optimiser la logistique et la planification de chantier. Nous aimerions vous présenter notre solution. Êtes-vous intéressé ?",
+                    choices: [
+                        { text: "Accepter la présentation (potentiel d'amélioration, coût)", impacts: { couts: 500000, qualite: 10, delais: -5, marge: -0.05 }, feedback: "Vous explorez l'innovation, ce qui pourrait améliorer la qualité et les délais à long terme, but avec un coût initial." },
+                        { text: "Refuser la présentation (pas de coût, pas d'amélioration)", impacts: { qualite: -5, delais: 5 }, feedback: "Vous évitez un coût immédiat, but manquez une opportunité d'optimisation." }
+                    ]
+                },
+                {
+                    title: "Question d'un citoyen sur l'impact local",
+                    sender: "citoyen.engage@mail.com",
+                    subject: "Impact du chantier sur la faune locale",
+                    body: "Bonjour, je suis un citoyen inquiet par l'impact du chantier sur la faune et la flore locales. Pourriez-vous me rassurer sur les mesures prises pour protéger l'environnement ?",
+                    choices: [
+                        { text: "Répondre avec des informations détaillées sur les mesures environnementales", impacts: { client: 5, securite: 5, equipe: -2 }, feedback: "Votre réponse rassure le citoyen et améliore l'image, but demande un effort à l'équipe." },
+                        { text: "Transférer la question au service communication", impacts: { client: -5, equipe: 2 }, feedback: "Vous déléguez, but le citoyen pourrait se sentir ignoré, impactant la satisfaction." }
+                    ]
+                }
+            ];
+
+            // Call Events data (new)
+            const callEvents = [
+                {
+                    title: "Appel Urgent du Chef de Chantier",
+                    caller: "Chef de Chantier (Urgent)",
+                    message: "Directeur, nous avons un problème majeur sur le secteur 3 ! Un glissement de terrain imprévu bloque l'accès et menace une partie de l'ouvrage. Que faisons-nous ?",
+                    choices: [
+                        { text: "Envoyer immédiatement une équipe d'intervention d'urgence (coût, sécurité)", impacts: { couts: 2000000, securite: 15, delais: 10, marge: -0.2 }, feedback: "Vous agissez vite pour sécuriser le site, mais cela entraîne des coûts et un léger retard." },
+                        { text: "Évaluer la situation à distance avant d'agir (risque d'aggravation)", impacts: { securite: -10, delais: 20, marge: -0.1 }, feedback: "Prendre du recul peut être sage, but le risque d'aggravation est réel et le retard s'accumule." }
+                    ]
+                },
+                {
+                    title: "Appel du Maître d'Ouvrage",
+                    caller: "Maître d'Ouvrage (Pressant)",
+                    message: "Bonjour, j'ai besoin d'une réponse immédiate concernant la modification des spécifications du pont. Pouvez-vous confirmer la faisabilité et le coût tout de suite ?",
+                    choices: [
+                        { text: "Donner une estimation rapide (risque d'erreur)", impacts: { client: 10, qualite: -5, marge: -0.05 }, feedback: "Vous répondez rapidement, satisfaisant le client, mais l'estimation rapide pourrait avoir des imprécisions." },
+                        { text: "Demander un court délai pour vérifier (risque d'insatisfaction client)", impacts: { client: -5, qualite: 5, marge: 0.05 }, feedback: "Vous assurez la précision, but le client est légèrement frustré par le délai." }
+                    ]
+                },
+                {
+                    title: "Appel d'un Fournisseur en Crise",
+                    caller: "Fournisseur Matériaux (Panique)",
+                    message: "Nous avons un problème de production majeur ! La livraison de vos conduites pour l'écluse est compromise. Que voulez-vous faire ?",
+                    choices: [
+                        { text: "Activer le plan B (fournisseur de secours, plus cher)", impacts: { couts: 1000000, delais: 5, marge: -0.1 }, feedback: "Le plan de secours est activé, assurant la continuité, but à un coût plus élevé." },
+                        { text: "Tenter de sauver la production du fournisseur actuel (délai incertain)", impacts: { delais: 15, qualite: -5, marge: 0.05 }, feedback: "Vous économisez de l'argent, but le délai est incertain et la qualité pourrait en pâtir." }
+                    ]
+                }
+            ];
+
+
+            // --- Helper Functions ---
+
+            /**
+             * Formats a number as currency (Euro).
+             * @param {number} value
+             * @returns {string}
+             */
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+            };
+
+            /**
+             * Formats a number as percentage.
+             * @param {number} value
+             * @returns {string}
+             */
+            const formatPercentage = (value) => {
+                return `${value.toFixed(0)}%`;
+            };
+
+            /**
+             * Shows a specific screen and hides others with transitions.
+             * This function now only manages the main game and result screens.
+             * The floating power-ups are managed separately as they are part of the game view.
+             * @param {HTMLElement} screenToShow
+             */
+            const showScreen = (screenToShow) => {
+                const screens = [DOMElements.startScreen, DOMElements.gameScreen, DOMElements.resultScreen]; 
+                screens.forEach(screen => {
+                    if (screen) { // Check if element exists
+                        screen.classList.remove('screen-visible');
+                        screen.classList.add('screen-hidden');
+                    }
+                });
+
+                if (screenToShow) { // Check if element exists
+                    screenToShow.classList.remove('screen-hidden');
+                    screenToShow.classList.add('screen-visible');
+                }
+
+                // Manage visibility of floating elements
+                if (screenToShow === DOMElements.gameScreen) {
+                    DOMElements.floatingPowerUps.classList.remove('screen-hidden');
+                    DOMElements.floatingPowerUps.classList.add('screen-visible');
+                    DOMElements.characterContainer.classList.remove('screen-hidden');
+                    DOMElements.characterContainer.classList.add('screen-visible');
+                } else {
+                    DOMElements.floatingPowerUps.classList.remove('screen-visible');
+                    DOMElements.floatingPowerUps.classList.add('screen-hidden');
+                    DOMElements.characterContainer.classList.remove('screen-visible');
+                    DOMElements.characterContainer.classList.add('screen-hidden');
+                }
+            };
+
+            /**
+             * Shows a modal overlay with content.
+             * @param {HTMLElement} modalOverlayElement
+             * @param {HTMLElement} modalContentElement
+             */
+            const showModal = (modalOverlayElement, modalContentElement) => {
+                modalOverlayElement.classList.remove('modal-hidden');
+                modalOverlayElement.classList.add('modal-visible');
+                modalContentElement.classList.remove('modal-content-hidden');
+                modalContentElement.classList.add('modal-content-visible');
+            };
+
+            /**
+             * Hides a modal overlay with content.
+             * @param {HTMLElement} modalOverlayElement
+             * @param {HTMLElement} modalContentElement
+             */
+            const hideModal = (modalOverlayElement, modalContentElement) => {
+                modalOverlayElement.classList.remove('modal-visible');
+                modalOverlayElement.classList.add('modal-hidden');
+                modalContentElement.classList.remove('modal-content-visible');
+                modalContentElement.classList.add('modal-content-hidden');
+            };
+
+            /**
+             * Updates the character emoji and speech bubble.
+             * @param {string} emoji
+             * @param {string} text
+             * @param {number} durationMs
+             */
+            const updateCharacterSpeech = (emoji, text, durationMs = 3000) => {
+                if (DOMElements.characterAvatar) DOMElements.characterAvatar.textContent = emoji;
+                if (DOMElements.speechBubble) DOMElements.speechBubble.textContent = text;
+                if (DOMElements.speechBubble) DOMElements.speechBubble.classList.add('show');
+
+                // Hide after duration
+                setTimeout(() => {
+                    if (DOMElements.speechBubble) DOMElements.speechBubble.classList.remove('show');
+                }, durationMs);
+            };
+
+            /**
+             * Adds a new news item to the news feed.
+             * @param {string} text - The news text.
+             * @param {string} type - 'positive', 'negative', 'neutral', 'info'.
+             */
+            const addNewsItem = (text, type = 'neutral') => {
+                if (!DOMElements.newsFeedDisplay) {
+                    console.error("News feed display element not found.");
+                    return;
+                }
+                const newsItemDiv = document.createElement('div');
+                newsItemDiv.className = `news-item ${type}`;
+                newsItemDiv.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+                
+                // Add to top
+                if (DOMElements.newsFeedDisplay.firstChild) {
+                    DOMElements.newsFeedDisplay.insertBefore(newsItemDiv, DOMElements.newsFeedDisplay.firstChild);
+                } else {
+                    DOMElements.newsFeedDisplay.appendChild(newsItemDiv);
+                }
+
+                // Limit number of news items
+                while (DOMElements.newsFeedDisplay.children.length > CONFIG.maxNewsItems) {
+                    DOMElements.newsFeedDisplay.removeChild(DOMElements.newsFeedDisplay.lastChild);
+                }
+            };
+
+            /**
+             * Calculates a score for a choice based on its impacts.
+             * Used by the X-Ray power-up.
+             * @param {object} impacts
+             * @returns {number}
+             */
+            const calculateChoiceScore = (impacts) => {
+                let score = 0;
+                // Positive impacts are good, negative are bad
+                score += (impacts.chiffreAffaires || 0) / 1000000; // Scale down large numbers for 150M project
+                score -= (impacts.couts || 0) / 1000000;
+                score += (impacts.marge || 0) * 100; // Margin is important, scale up
+                score += (impacts.client || 0) * 5;
+                score += (impacts.equipe || 0) * 5;
+                score += (impacts.qualite || 0) * 5;
+                score -= (impacts.delais || 0) * 5; // Delay is bad, so negative impact is good
+                score += (impacts.securite || 0) * 5;
+                return score;
+            };
+
+            // --- Game Logic Functions ---
+
+            /**
+             * Resets game state and displays the start screen.
+             */
+            const resetGameAndShowStartScreen = () => {
+                state = {
+                    score: 0,
+                    metrics: JSON.parse(JSON.stringify(CONFIG.initialMetrics)), // Deep copy
+                    initialMetricsSnapshot: JSON.parse(JSON.stringify(CONFIG.initialMetrics)), // Snapshot for end-game analysis
+                    powerUps: JSON.parse(JSON.stringify(CONFIG.initialPowerUps)), // Deep copy
+                    currentDifficulty: null, // Reset difficulty
+                    highScore: parseInt(localStorage.getItem('highScore') || '0', 10) // Load high score
+                };
+                currentScenarioIndex = 0;
+                isQuickEventActive = false;
+                isCatastropheActive = false;
+                isMarketEventActive = false;
+                isEmailEventActive = false;
+                isCallEventActive = false;
+                activePowerUp = null;
+                stopTimers();
+                
+                if (DOMElements.highScoreDisplay) DOMElements.highScoreDisplay.textContent = state.highScore; // Update high score on start screen
+                if (DOMElements.newsFeedDisplay) DOMElements.newsFeedDisplay.innerHTML = ''; // Clear news feed
+                renderDifficultySelection(); // Render difficulty buttons
+                showScreen(DOMElements.startScreen);
+            };
+
+            /**
+             * Renders difficulty selection buttons.
+             */
+            const renderDifficultySelection = () => {
+                if (!DOMElements.difficultySelection) {
+                    console.error("Difficulty selection element not found.");
+                    return;
+                }
+                DOMElements.difficultySelection.innerHTML = '';
+                for (const key in CONFIG.difficultySettings) {
+                    const difficulty = CONFIG.difficultySettings[key];
+                    const button = document.createElement('button');
+                    button.className = 'btn w-full text-xl py-3 px-4 rounded-xl shadow-md transition-all duration-200 ease-in-out hover:scale-[1.01]';
+                    button.textContent = difficulty.name;
+                    button.onclick = () => startGame(key);
+                    DOMElements.difficultySelection.appendChild(button);
+                }
+            };
+
+            /**
+             * Starts the game with the selected difficulty.
+             * @param {string} difficultyKey
+             */
+            const startGame = (difficultyKey) => {
+                state.currentDifficulty = CONFIG.difficultySettings[difficultyKey];
+                // Re-initialize metrics and power-ups for a fresh start after difficulty selection
+                state.metrics = JSON.parse(JSON.stringify(CONFIG.initialMetrics));
+                state.initialMetricsSnapshot = JSON.parse(JSON.stringify(CONFIG.initialMetrics));
+                state.powerUps = JSON.parse(JSON.stringify(CONFIG.initialPowerUps));
+                state.score = 0; // Reset score for new game
+
+                renderMetrics();
+                renderPowerUps();
+                updateProgressBar();
+                addNewsItem("Simulation lancée ! Le projet Canal Seine-Nord Europe commence.", "info");
+                triggerNextEventOrScenario(); // Start the game loop by checking for random events or loading first scenario
+                showScreen(DOMElements.gameScreen);
+                updateCharacterSpeech('🚀', `Début de la simulation en mode ${state.currentDifficulty.name} !`, 4000);
+            };
+
+
+            /**
+             * Renders the current metrics in the UI.
+             * Also handles the floating change indicators.
+             * @param {object} [changes={}] - Optional object with metric changes for animation.
+             */
+            const renderMetrics = (changes = {}) => {
+                if (!DOMElements.metricsDisplay) {
+                    console.error("Metrics display element not found.");
+                    return;
+                }
+                DOMElements.metricsDisplay.innerHTML = '';
+                for (const key in state.metrics) {
+                    const metric = state.metrics[key];
+                    const metricDiv = document.createElement('div');
+                    metricDiv.className = 'flex items-center justify-between relative'; // Added relative for indicator positioning
+                    
+                    const valueSpan = document.createElement('span');
+                    valueSpan.id = `metric-${key}-value`;
+                    valueSpan.className = 'text-2xl font-bold metric-value';
+                    valueSpan.textContent = metric.isCurrency ? formatCurrency(metric.value) : (metric.isPercentage ? formatPercentage(metric.value) : metric.value);
+
+                    metricDiv.innerHTML = `
+                        <div class="flex items-center">
+                            <span class="text-3xl mr-3">${metric.icon}</span>
+                            <span class="text-lg text-slate-300">${metric.name}</span>
+                        </div>
+                    `;
+                    metricDiv.appendChild(valueSpan);
+                    DOMElements.metricsDisplay.appendChild(metricDiv);
+
+                    // Handle change indicator
+                    if (changes[key] !== undefined && changes[key] !== 0) {
+                        const changeIndicator = document.createElement('span');
+                        changeIndicator.className = `metric-change-indicator ${changes[key] > 0 ? 'positive-change' : 'negative-change'}`;
+                        changeIndicator.textContent = `${changes[key] > 0 ? '+' : ''}${changes[key]}${metric.isCurrency ? '€' : (metric.isPercentage ? '%' : '')}`;
+                        metricDiv.appendChild(changeIndicator);
+
+                        // Trigger animation
+                        requestAnimationFrame(() => {
+                            changeIndicator.classList.add('show');
+                            setTimeout(() => {
+                                changeIndicator.remove();
+                            }, 1000); // Remove after animation
+                        });
+                    }
+                }
+            };
+
+            /**
+             * Renders the power-up buttons in the floating container.
+             */
+            const renderPowerUps = () => {
+                if (!DOMElements.powerUpsDisplay) {
+                    console.error("Power-ups display element not found.");
+                    return;
+                }
+                DOMElements.powerUpsDisplay.innerHTML = '';
+                for (const key in state.powerUps) {
+                    const powerUp = state.powerUps[key];
+                    const button = document.createElement('button');
+                    button.id = `power-up-${key}-btn`;
+                    button.className = `btn-power-up flex flex-col items-center justify-center p-2 rounded-full text-white text-center transition-all duration-200 ease-in-out ${activePowerUp === key ? 'highlight-choice' : ''}`;
+                    button.innerHTML = `
+                        <span class="text-4xl">${powerUp.icon}</span>
+                        <span class="font-semibold">${powerUp.name}</span>
+                        <span class="text-sm">(${powerUp.count})</span>
+                        <span class="text-xs text-slate-400 mt-1">${powerUp.description}</span>
+                    `;
+                    button.disabled = powerUp.count <= 0;
+                    button.onclick = () => activatePowerUp(key);
+                    DOMElements.powerUpsDisplay.appendChild(button);
+                }
+            };
+
+            /**
+             * Activates a selected power-up.
+             * @param {string} powerUpKey
+             */
+            const activatePowerUp = (powerUpKey) => {
+                if (state.powerUps[powerUpKey].count > 0) {
+                    playPowerUp();
+                    activePowerUp = powerUpKey;
+                    state.powerUps[powerUpKey].count--; // Decrement count immediately
+                    renderPowerUps(); // Re-render to show new count and highlight
+
+                    updateCharacterSpeech('✨', `Bonus "${state.powerUps[powerUpKey].name}" activé !`, 3000);
+                    addNewsItem(`Bonus "${state.powerUps[powerUpKey].name}" activé.`, "info");
+
+                    // Apply immediate effects or modify next choice display
+                    if (powerUpKey === 'xray') {
+                        highlightBestChoice();
+                    } else if (powerUpKey === 'training') {
+                        // Apply direct impacts for training
+                        const trainingImpacts = {
+                            equipe: 10,
+                            qualite: 10
+                        };
+                        applyDirectImpacts(trainingImpacts, "L'équipe a suivi une formation intensive ! Moral et qualité améliorés.", "Formation Complétée !");
+                    } else if (powerUpKey === 'strategicInsight') {
+                        // Reveal next event type
+                        const nextEventType = determineNextEventType();
+                        let message = "";
+                        switch (nextEventType) {
+                            case 'main': message = "Le prochain événement sera un scénario principal."; break;
+                            case 'quick': message = "Attention ! Le prochain événement sera un événement rapide."; break;
+                            case 'catastrophe': message = "Alerte ! Une catastrophe majeure est imminente !"; break;
+                            case 'market': message = "Préparez-vous à une fluctuation du marché."; break;
+                            case 'email': message = "Un nouvel e-mail important est attendu."; break; // New
+                            case 'call': message = "Un appel urgent est attendu."; break; // New
+                            case 'gameOver': message = "Le projet est sur le point de se terminer."; break;
+                        }
+                        updateCharacterSpeech('🔮', message, 5000);
+                        addNewsItem(`Vision Stratégique : ${message}`, "info");
+                    }
+                } else {
+                    updateCharacterSpeech('🤔', "Vous n'avez plus de ce bonus !", 2000);
+                }
+            };
+
+            /**
+             * Determines the type of the next event without triggering it.
+             * Used for 'Strategic Insight' power-up.
+             * @returns {string} 'main', 'quick', 'catastrophe', 'market', 'email', 'call', or 'gameOver'
+             */
+            const determineNextEventType = () => {
+                if (currentScenarioIndex >= scenarios.length) {
+                    return 'gameOver';
+                }
+                const randomVal = Math.random();
+                let cumulativeChance = 0;
+
+                cumulativeChance += CONFIG.catastropheChance;
+                if (randomVal < cumulativeChance) return 'catastrophe';
+
+                cumulativeChance += CONFIG.quickEventChance;
+                if (randomVal < cumulativeChance) return 'quick';
+
+                cumulativeChance += CONFIG.marketFluctuationChance;
+                if (randomVal < cumulativeChance) return 'market';
+
+                cumulativeChance += CONFIG.emailChance;
+                if (randomVal < cumulativeChance) return 'email';
+
+                cumulativeChance += CONFIG.callChance;
+                if (randomVal < cumulativeChance) return 'call';
+                
+                return 'main'; // If no random event, it's a main scenario
+            };
+
+            /**
+             * Applies impacts directly without a choice context, used for power-ups or timed events.
+             * @param {object} impacts - The impacts object.
+             * @param {string} feedbackMessage - Message for the feedback modal.
+             * @param {string} feedbackTitleText - Title for the feedback modal.
+             * @param {HTMLElement} [impactListElement=DOMElements.impactList] - The element to render impacts into.
+             */
+            const applyDirectImpacts = (impacts, feedbackMessage, feedbackTitleText, impactListElement = DOMElements.impactList) => {
+                const changesMade = {};
+                if (impactListElement) impactListElement.innerHTML = ''; // Clear previous impacts
+
+                for (const key in impacts) {
+                    let changeAmount = impacts[key];
+                    const metric = state.metrics[key];
+
+                    if (metric) {
+                        let impactText = '';
+                        let icon = '';
+
+                        if (key === 'chiffreAffaires' || key === 'couts') {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${formatCurrency(changeAmount)}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else if (key === 'marge') {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount.toFixed(1)}%`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        }
+
+                        if (key !== 'chiffreAffaires' && key !== 'couts') {
+                            metric.value = Math.max(0, Math.min(100, metric.value)); 
+                        }
+                        if (key === 'marge') {
+                            metric.value = Math.max(0, Math.min(100, metric.value));
+                        }
+
+                        changesMade[key] = changeAmount;
+
+                        const impactItem = document.createElement('li');
+                        impactItem.className = `flex items-center text-lg ${changeAmount > 0 ? 'text-green-400' : (changeAmount < 0 ? 'text-red-400' : 'text-slate-300')}`;
+                        impactItem.innerHTML = `<span class="mr-2">${icon}</span> ${impactText}`;
+                        if (impactListElement) impactListElement.appendChild(impactItem);
+                    }
+                }
+                renderMetrics(changesMade); // Re-render metrics with changes
+                updateProgressBar();
+
+                // Determine character mood and speech for direct impacts
+                let characterEmoji = '👨‍💼';
+                let characterSpeech = 'Impact appliqué !';
+                let newsType = 'neutral';
+                if (Object.values(impacts).some(val => val > 0)) {
+                    characterEmoji = '👍';
+                    characterSpeech = 'Un impact positif !';
+                    newsType = 'positive';
+                    playPositive();
+                } else if (Object.values(impacts).some(val => val < 0)) {
+                    characterEmoji = '👎';
+                    characterSpeech = 'Un impact négatif...';
+                    newsType = 'negative';
+                    playNegative();
+                }
+                updateCharacterSpeech(characterEmoji, characterSpeech, 4000);
+                addNewsItem(`${feedbackTitleText}: ${feedbackMessage}`, newsType);
+
+                if (DOMElements.feedbackTitle) DOMElements.feedbackTitle.textContent = feedbackTitleText;
+                if (DOMElements.feedbackText) DOMElements.feedbackText.textContent = feedbackMessage;
+                if (DOMElements.modalOverlay && DOMElements.feedbackModal) {
+                    showModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
+                }
+            };
+
+
+            /**
+             * Highlights the best choice based on calculated score.
+             */
+            const highlightBestChoice = () => {
+                let currentEvent;
+                let choicesContainer;
+
+                if (isCatastropheActive) {
+                    currentEvent = catastrophes[state.catastropheIndex];
+                    choicesContainer = DOMElements.catastropheChoicesContainer;
+                } else if (isQuickEventActive) {
+                    currentEvent = quickEvents[state.quickEventIndex];
+                    choicesContainer = DOMElements.quickEventChoicesContainer;
+                } else if (isEmailEventActive) { // New
+                    currentEvent = emailEvents[state.emailIndex];
+                    choicesContainer = DOMElements.emailChoicesContainer;
+                } else if (isCallEventActive) { // New
+                    currentEvent = callEvents[state.callIndex];
+                    choicesContainer = DOMElements.callChoicesContainer;
+                } else {
+                    currentEvent = scenarios[currentScenarioIndex];
+                    choicesContainer = DOMElements.choicesContainer;
+                }
+                
+                if (!currentEvent || !currentEvent.choices || !choicesContainer) return;
+
+                let bestChoiceIndex = -1;
+                let highestScore = -Infinity;
+
+                currentEvent.choices.forEach((choice, index) => {
+                    const score = calculateChoiceScore(choice.impacts);
+                    if (score > highestScore) {
+                        highestScore = score;
+                        bestChoiceIndex = index;
+                    }
+                });
+
+                // Remove existing highlights
+                document.querySelectorAll('.highlight-choice').forEach(btn => {
+                    btn.classList.remove('highlight-choice');
+                });
+
+                // Add highlight to the best choice
+                if (bestChoiceIndex !== -1) {
+                    const bestChoiceButton = choicesContainer.children[bestChoiceIndex];
+                    if (bestChoiceButton) {
+                        bestChoiceButton.classList.add('highlight-choice');
+                        updateCharacterSpeech('💡', 'Voici le meilleur choix !', 2000);
+                        addNewsItem(`Bonus "Analyse Risques" utilisé. Meilleur choix mis en évidence.`, "info");
+                    }
+                }
+            };
+
+            /**
+             * Loads and displays the current scenario.
+             */
+            const loadScenario = () => {
+                console.log("Loading main scenario...");
+                stopTimers(); // Stop any previous timer
+                stopTimerWarning(); // Stop warning sound
+
+                const currentScenario = scenarios[currentScenarioIndex];
+                if (!currentScenario) {
+                    console.log("No more main scenarios, ending game.");
+                    gameOver();
+                    return;
+                }
+
+                playScenarioStart();
+                activePowerUp = null; // Reset active power-up
+                renderPowerUps(); // Re-render power-ups to clear highlight
+
+                if (DOMElements.currentScenarioDisplay) DOMElements.currentScenarioDisplay.textContent = currentScenarioIndex + 1;
+                if (DOMElements.totalScenariosDisplay) DOMElements.totalScenariosDisplay.textContent = scenarios.length;
+                if (DOMElements.scenarioIcon) {
+                    DOMElements.scenarioIcon.textContent = currentScenario.icon;
+                    DOMElements.scenarioIcon.classList.add('scenario-icon-animate');
+                    setTimeout(() => DOMElements.scenarioIcon.classList.remove('scenario-icon-animate'), 800); // Remove class after animation
+                }
+                
+                if (DOMElements.scenarioTitle) DOMElements.scenarioTitle.textContent = currentScenario.title;
+                if (DOMElements.scenarioText) DOMElements.scenarioText.textContent = currentScenario.text; 
+                
+                if (DOMElements.choicesContainer) {
+                    DOMElements.choicesContainer.innerHTML = '';
+                    currentScenario.choices.forEach((choice, index) => {
+                        const choiceButton = document.createElement('button');
+                        choiceButton.className = 'btn w-full text-left py-3 px-4 rounded-xl shadow-md transition-all duration-200 ease-in-out hover:scale-[1.01]';
+                        choiceButton.textContent = choice.text;
+                        choiceButton.onclick = () => handleChoice(choice, currentScenario.timeLimit - timerCountdown);
+                        DOMElements.choicesContainer.appendChild(choiceButton);
+                    });
+                } else {
+                    console.error("Choices container element not found.");
+                }
+
+                startMainTimer(currentScenario.timeLimit);
+                updateProgressBar();
+                updateCharacterSpeech('🤔', 'Une nouvelle décision vous attend !', 3000);
+                addNewsItem(`Scénario ${currentScenarioIndex + 1}: "${currentScenario.title}"`, "neutral");
+            };
+
+            /**
+             * Starts the main scenario timer.
+             * @param {number} duration - Duration in seconds.
+             */
+            const startMainTimer = (duration) => {
+                timerCountdown = Math.round(duration * state.currentDifficulty.timeMultiplier); // Apply difficulty multiplier
+                if (DOMElements.timerDisplay) {
+                    DOMElements.timerDisplay.classList.remove('critical-time');
+                    DOMElements.timerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+                } else {
+                    console.error("Timer display element not found for main timer.");
+                    return;
+                }
+
+                mainTimerInterval = setInterval(() => {
+                    timerCountdown--;
+                    if (DOMElements.timerDisplay) {
+                        DOMElements.timerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+                    }
+                    
+                    if (timerCountdown <= CONFIG.timerWarningThreshold && timerCountdown > 0) {
+                        if (DOMElements.timerDisplay) DOMElements.timerDisplay.classList.add('critical-time');
+                        startTimerWarning();
+                    } else if (timerCountdown <= 0) {
+                        stopTimers();
+                        stopTimerWarning();
+                        if (DOMElements.timerDisplay) DOMElements.timerDisplay.classList.remove('critical-time');
+                        handleChoice(null, 0); // Handle timeout as a choice
+                    }
+                }, 1000);
+            };
+
+            /**
+             * Stops all active timers.
+             */
+            const stopTimers = () => {
+                clearInterval(mainTimerInterval);
+                clearInterval(quickEventTimerInterval);
+                clearInterval(catastropheTimerInterval); // Clear catastrophe timer
+                clearInterval(marketEventTimerInterval); // Clear market event timer
+                clearInterval(emailEventInterval); // Clear email event interval (if any)
+                clearInterval(callEventTimerInterval); // Clear call event timer
+                mainTimerInterval = null;
+                quickEventTimerInterval = null;
+                catastropheTimerInterval = null;
+                marketEventTimerInterval = null;
+                emailEventInterval = null;
+                callEventTimerInterval = null;
+                stopTimerWarning();
+            };
+
+            /**
+             * Handles a player's choice for a scenario.
+             * @param {object} chosenChoice - The selected choice object.
+             * @param {number} timeTaken - Time taken to make the decision.
+             */
+            const handleChoice = (chosenChoice, timeTaken) => {
+                playClick();
+                stopTimers(); // Stop timer immediately after choice
+
+                let feedbackText = chosenChoice ? chosenChoice.feedback : "Le temps est écoulé ! Vous n'avez pas pris de décision à temps. Cela a des conséquences...";
+                // More punitive timeout impacts
+                let impacts = chosenChoice ? chosenChoice.impacts : { delais: 20, equipe: -10, client: -10, marge: -2 }; 
+                let feedbackTitleText = chosenChoice ? "Conséquences de la décision" : "Temps écoulé !"; // Determine title here
+
+                // Apply power-up specific logic if active
+                if (activePowerUp === 'negociation' && chosenChoice) { 
+                    // Boost client satisfaction for the chosen choice
+                    if (impacts.client !== undefined) {
+                        impacts.client += 15; // Add a bigger bonus to client satisfaction
+                        feedbackText += " Grâce à vos talents de négociation, la satisfaction client est grandement améliorée !";
+                    } else {
+                        impacts.client = 15; // If no client impact, add a base one
+                        feedbackText += " Grâce à vos talents de négociation, la satisfaction client est grandement améliorée !";
+                    }
+                    addNewsItem(`Bonus "Négociation Client" appliqué.`, "info");
+                }
+                activePowerUp = null; // Reset active power-up after use
+                renderPowerUps(); // Update power-up display
+
+                applyImpacts(impacts, feedbackText, timeTaken, feedbackTitleText);
+            };
+
+            /**
+             * Applies the impacts of a choice to the game metrics.
+             * @param {object} impacts - The impacts object.
+             * @param {string} feedbackMessage - Message for the feedback modal.
+             * @param {number} timeTaken - Time taken for the decision.
+             * @param {string} feedbackTitleText - Title for the feedback modal.
+             */
+            const applyImpacts = (impacts, feedbackMessage, timeTaken, feedbackTitleText) => {
+                const changesMade = {};
+                if (DOMElements.impactList) DOMElements.impactList.innerHTML = ''; // Clear previous impacts
+
+                for (const key in impacts) {
+                    let changeAmount = impacts[key];
+                    const metric = state.metrics[key];
+
+                    if (metric) {
+                        let impactText = '';
+                        let icon = '';
+
+                        if (key === 'chiffreAffaires' || key === 'couts') {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${formatCurrency(changeAmount)}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else if (key === 'marge') {
+                            // Marge is a percentage, so changeAmount is a percentage point change
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount.toFixed(1)}%`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else {
+                            // Other metrics are direct value changes
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        }
+
+                        // Ensure metrics stay within reasonable bounds (e.g., 0-100 for percentages/satisfaction)
+                        if (key !== 'chiffreAffaires' && key !== 'couts') {
+                            metric.value = Math.max(0, Math.min(100, metric.value)); 
+                        }
+                         if (key === 'marge') {
+                            metric.value = Math.max(0, Math.min(100, metric.value)); // Marge should also be between 0 and 100
+                        }
+
+
+                        changesMade[key] = changeAmount; // Store actual change for animation
+
+                        const impactItem = document.createElement('li');
+                        impactItem.className = `flex items-center text-lg ${changeAmount > 0 ? 'text-green-400' : (changeAmount < 0 ? 'text-red-400' : 'text-slate-300')}`;
+                        impactItem.innerHTML = `<span class="mr-2">${icon}</span> ${impactText}`;
+                        if (DOMElements.impactList) DOMElements.impactList.appendChild(impactItem);
+                    }
+                }
+
+                // Update score based on overall metric health and time bonus
+                let scenarioScore = 0;
+                for (const key in state.metrics) {
+                    const metric = state.metrics[key];
+                    // Simple scoring: higher is better, except for costs and delays
+                    if (key === 'chiffreAffaires') scenarioScore += metric.value / 1000000; // Scale for 150M project
+                    else if (key === 'couts') scenarioScore -= metric.value / 1000000; // Scale for 150M project
+                    else if (key === 'marge') scenarioScore += metric.value * 10; // Marge is important
+                    else if (key === 'delais') scenarioScore -= metric.value * 5; // Lower delay is better
+                    else scenarioScore += metric.value * 5;
+                }
+                
+                // Add time bonus if applicable
+                let currentEventForTimeBonus;
+                if (isCatastropheActive) currentEventForTimeBonus = catastrophes[state.catastropheIndex];
+                else if (isQuickEventActive) currentEventForTimeBonus = quickEvents[state.quickEventIndex];
+                else if (isCallEventActive) currentEventForTimeBonus = { timeLimit: CONFIG.callEventTimeLimit }; // Use a fixed time limit for calls
+                else currentEventForTimeBonus = scenarios[currentScenarioIndex]; // Default to main scenario
+
+                if (currentEventForTimeBonus && (currentEventForTimeBonus.timeLimit * state.currentDifficulty.timeMultiplier - timeTaken) >= CONFIG.timeBonusThreshold) { // Use adjusted time limit
+                    state.score += CONFIG.timeBonusPoints;
+                    const timeBonusItem = document.createElement('li');
+                    timeBonusItem.className = `flex items-center text-lg text-amber-400`;
+                    timeBonusItem.innerHTML = `<span class="mr-2">⏱️</span> Bonus de temps ! (+${CONFIG.timeBonusPoints} points)`;
+                    if (DOMElements.impactList) DOMElements.impactList.appendChild(timeBonusItem);
+                }
+
+                state.score += Math.round(scenarioScore / 100); // Scale down score contribution for balance
+
+                renderMetrics(changesMade); // Re-render metrics with changes
+                updateProgressBar();
+
+                // Determine character mood and speech
+                let characterEmoji = '👨‍💼'; // Default
+                let characterSpeech = 'Bonne décision !'; // Default positive
+                let newsType = 'neutral';
+
+                // Check overall health to adjust character feedback
+                const overallHealth = (state.metrics.client.value + state.metrics.equipe.value + state.metrics.qualite.value + state.metrics.securite.value) / 4;
+                if (overallHealth < 50 || state.metrics.marge.value < 10) { // Adjusted margin threshold for warning
+                    characterEmoji = '😟';
+                    characterSpeech = 'Attention, le projet est en difficulté !';
+                    newsType = 'negative';
+                    playNegative();
+                } else if (overallHealth > 80 && state.metrics.marge.value > 15) { // Adjusted margin threshold for positive
+                    characterEmoji = '🤩';
+                    characterSpeech = 'Excellent travail ! Le projet est sur la bonne voie !';
+                    newsType = 'positive';
+                    playPositive();
+                } else {
+                    playPositive(); // Play positive sound for neutral/good outcomes
+                }
+                updateCharacterSpeech(characterEmoji, characterSpeech, 4000);
+                addNewsItem(feedbackMessage, newsType);
+
+
+                if (DOMElements.feedbackTitle) DOMElements.feedbackTitle.textContent = feedbackTitleText;
+                if (DOMElements.feedbackText) DOMElements.feedbackText.textContent = feedbackMessage;
+                if (DOMElements.modalOverlay && DOMElements.feedbackModal) {
+                    showModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
+                }
+            };
+
+            /**
+             * Updates the scenario progress bar.
+             */
+            const updateProgressBar = () => {
+                if (!DOMElements.progressBar) {
+                    console.error("Progress bar element not found.");
+                    return;
+                }
+                const progress = ((currentScenarioIndex + 1) / scenarios.length) * 100;
+                DOMElements.progressBar.style.width = `${progress}%`;
+            };
+
+            /**
+             * Handles the continuation after a scenario or event.
+             * This function is called after the main feedback modal is closed.
+             */
+            const continueGame = () => {
+                if (DOMElements.modalOverlay && DOMElements.feedbackModal) {
+                    hideModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
+                }
+
+                // Only increment main scenario index if a main scenario was just completed
+                // and no random event was active.
+                if (!isQuickEventActive && !isCatastropheActive && !isMarketEventActive && !isEmailEventActive && !isCallEventActive) {
+                    currentScenarioIndex++;
+                }
+
+                // Reset random event flags for the next iteration
+                isQuickEventActive = false;
+                isCatastropheActive = false;
+                isMarketEventActive = false;
+                isEmailEventActive = false;
+                isCallEventActive = false;
+
+                triggerNextEventOrScenario();
+            };
+
+            /**
+             * Determines whether to trigger a random event or load the next main scenario.
+             */
+            const triggerNextEventOrScenario = () => {
+                console.log(`Triggering next event or scenario. Current index: ${currentScenarioIndex}, Total scenarios: ${scenarios.length}`);
+                if (currentScenarioIndex < scenarios.length) {
+                    // Random event chances are checked BEFORE loading the next main scenario
+                    const randomVal = Math.random();
+                    let cumulativeChance = 0;
+
+                    cumulativeChance += CONFIG.catastropheChance;
+                    if (randomVal < cumulativeChance) {
+                        console.log("Triggering catastrophe event.");
+                        triggerCatastrophe();
+                        return;
+                    }
+
+                    cumulativeChance += CONFIG.quickEventChance;
+                    if (randomVal < cumulativeChance) {
+                        console.log("Triggering quick event.");
+                        triggerQuickEvent();
+                        return;
+                    }
+
+                    cumulativeChance += CONFIG.marketFluctuationChance;
+                    if (randomVal < cumulativeChance) {
+                        console.log("Triggering market event.");
+                        triggerMarketEvent();
+                        return;
+                    }
+
+                    cumulativeChance += CONFIG.emailChance; // New
+                    if (randomVal < cumulativeChance) {
+                        console.log("Triggering email event.");
+                        triggerEmailEvent();
+                        return;
+                    }
+
+                    cumulativeChance += CONFIG.callChance; // New
+                    if (randomVal < cumulativeChance) {
+                        console.log("Triggering call event.");
+                        triggerCallEvent();
+                        return;
+                    }
+
+                    console.log("Loading next main scenario.");
+                    loadScenario(); // No random event, proceed to the next main scenario
+                } else {
+                    console.log("All main scenarios completed, ending game.");
+                    gameOver();
+                }
+            };
+
+            /**
+             * Triggers a random quick event.
+             */
+            const triggerQuickEvent = () => {
+                isQuickEventActive = true;
+                state.quickEventIndex = Math.floor(Math.random() * quickEvents.length);
+                const quickEvent = quickEvents[state.quickEventIndex];
+
+                if (DOMElements.quickEventIcon) DOMElements.quickEventIcon.textContent = quickEvent.icon;
+                if (DOMElements.quickEventTitle) DOMElements.quickEventTitle.textContent = quickEvent.title;
+                if (DOMElements.quickEventText) DOMElements.quickEventText.textContent = quickEvent.text;
+
+                if (DOMElements.quickEventChoicesContainer) {
+                    DOMElements.quickEventChoicesContainer.innerHTML = '';
+                    quickEvent.choices.forEach((choice, index) => {
+                        const choiceButton = document.createElement('button');
+                        choiceButton.className = 'btn w-full text-left py-3 px-4 rounded-xl shadow-md transition-all duration-200 ease-in-out hover:scale-[1.01]';
+                        choiceButton.textContent = choice.text;
+                        choiceButton.onclick = () => handleQuickEventChoice(choice, quickEvent.timeLimit - timerCountdown);
+                        DOMElements.quickEventChoicesContainer.appendChild(choiceButton);
+                    });
+                }
+
+                if (DOMElements.quickEventModalOverlay && DOMElements.quickEventModal) {
+                    showModal(DOMElements.quickEventModalOverlay, DOMElements.quickEventModal);
+                }
+                startQuickEventTimer(quickEvent.timeLimit);
+                updateCharacterSpeech('🚨', 'Événement rapide ! Agissez vite !', 3000);
+                addNewsItem(`Événement rapide : "${quickEvent.title}" !`, "negative");
+            };
+
+            /**
+             * Starts the quick event timer.
+             * @param {number} duration - Duration in seconds.
+             */
+            const startQuickEventTimer = (duration) => {
+                timerCountdown = Math.round(duration * state.currentDifficulty.timeMultiplier); // Apply difficulty multiplier
+                if (DOMElements.quickEventTimerDisplay) { // Add null check
+                    DOMElements.quickEventTimerDisplay.classList.remove('critical-time');
+                    DOMElements.quickEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+                } else {
+                    console.error("Error: DOMElements.quickEventTimerDisplay is not defined. Cannot update timer display.");
+                    return; // Exit function if element is missing
+                }
+
+                quickEventTimerInterval = setInterval(() => {
+                    timerCountdown--;
+                    if (DOMElements.quickEventTimerDisplay) { // Add null check inside interval
+                        DOMElements.quickEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+                    } else {
+                        clearInterval(quickEventTimerInterval); // Stop interval if element disappears
+                        console.error("Error: DOMElements.quickEventTimerDisplay disappeared during interval.");
+                        return;
+                    }
+                    
+                    if (timerCountdown <= CONFIG.timerWarningThreshold / 2 && timerCountdown > 0) { // More intense warning for quick events
+                        if (DOMElements.quickEventTimerDisplay) DOMElements.quickEventTimerDisplay.classList.add('critical-time');
+                        startTimerWarning();
+                    } else if (timerCountdown <= 0) {
+                        stopTimers();
+                        stopTimerWarning();
+                        if (DOMElements.quickEventTimerDisplay) DOMElements.quickEventTimerDisplay.classList.remove('critical-time');
+                        handleQuickEventChoice(null, 0); // Handle timeout
+                    }
+                }, 1000);
+            };
+
+            /**
+             * Handles a player's choice for a quick event.
+             * @param {object} chosenChoice - The selected choice object.
+             * @param {number} timeTaken - Time taken to make the decision.
+             */
+            const handleQuickEventChoice = (chosenChoice, timeTaken) => {
+                playClick();
+                stopTimers();
+                if (DOMElements.quickEventModalOverlay && DOMElements.quickEventModal) {
+                    hideModal(DOMElements.quickEventModalOverlay, DOMElements.quickEventModal);
+                }
+
+                let feedbackText = chosenChoice ? chosenChoice.feedback : "Temps écoulé pour l'événement rapide ! Cela a des conséquences...";
+                // More punitive quick event timeout impacts
+                let impacts = chosenChoice ? chosenChoice.impacts : { delais: 10, equipe: -10, securite: -5 }; 
+                let feedbackTitleText = chosenChoice ? "Conséquences de la décision" : "Temps écoulé !"; // Determine title here
+
+                applyImpacts(impacts, feedbackText, timeTaken, feedbackTitleText);
+                // isQuickEventActive remains true, so continueGame knows not to increment main scenario index
+            };
+
+            /**
+             * Triggers a random catastrophe event.
+             */
+            const triggerCatastrophe = () => {
+                isCatastropheActive = true;
+                state.catastropheIndex = Math.floor(Math.random() * catastrophes.length);
+                const catastrophe = catastrophes[state.catastropheIndex];
+
+                playCatastropheSound(); // Play catastrophe sound
+
+                if (DOMElements.catastropheIcon) DOMElements.catastropheIcon.textContent = catastrophe.icon;
+                if (DOMElements.catastropheTitle) DOMElements.catastropheTitle.textContent = catastrophe.title;
+                if (DOMElements.catastropheText) DOMElements.catastropheText.textContent = catastrophe.text;
+
+                if (DOMElements.catastropheChoicesContainer) {
+                    DOMElements.catastropheChoicesContainer.innerHTML = '';
+                    catastrophe.choices.forEach((choice, index) => {
+                        const choiceButton = document.createElement('button');
+                        choiceButton.className = 'btn w-full text-left py-3 px-4 rounded-xl shadow-md transition-all duration-200 ease-in-out hover:scale-[1.01]';
+                        choiceButton.textContent = choice.text;
+                        choiceButton.onclick = () => handleCatastropheChoice(choice, catastrophe.timeLimit - timerCountdown);
+                        DOMElements.catastropheChoicesContainer.appendChild(choiceButton);
+                    });
+                }
+
+                if (DOMElements.catastropheModalOverlay && DOMElements.catastropheModal) {
+                    showModal(DOMElements.catastropheModalOverlay, DOMElements.catastropheModal);
+                }
+                startCatastropheTimer(catastrophe.timeLimit);
+                updateCharacterSpeech('😱', 'CATASTROPHE ! Le projet est en péril !', 5000);
+                addNewsItem(`CATASTROPHE : "${catastrophe.title}" !`, "negative");
+            };
+
+            /**
+             * Starts the catastrophe event timer.
+             * @param {number} duration - Duration in seconds.
+             */
+            const startCatastropheTimer = (duration) => {
+                timerCountdown = Math.round(duration * state.currentDifficulty.timeMultiplier); // Apply difficulty multiplier
+                if (DOMElements.catastropheTimerDisplay) {
+                    DOMElements.catastropheTimerDisplay.classList.remove('critical-time');
+                    DOMElements.catastropheTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+                } else {
+                    console.error("Catastrophe timer display element not found.");
+                    return;
+                }
+
+                catastropheTimerInterval = setInterval(() => {
+                    timerCountdown--;
+                    if (DOMElements.catastropheTimerDisplay) {
+                        DOMElements.catastropheTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+                    }
+
+                    if (timerCountdown <= CONFIG.timerWarningThreshold / 4 && timerCountdown > 0) { // Even more intense warning for catastrophes
+                        if (DOMElements.catastropheTimerDisplay) DOMElements.catastropheTimerDisplay.classList.add('critical-time');
+                        startTimerWarning();
+                    } else if (timerCountdown <= 0) {
+                        stopTimers();
+                        stopTimerWarning();
+                        if (DOMElements.catastropheTimerDisplay) DOMEElements.catastropheTimerDisplay.classList.remove('critical-time');
+                        handleCatastropheChoice(null, 0); // Handle timeout
+                    }
+                }, 1000);
+            };
+
+            /**
+             * Handles a player's choice for a catastrophe event.
+             * @param {object} chosenChoice - The selected choice object.
+             * @param {number} timeTaken - Time taken to make the decision.
+             */
+            const handleCatastropheChoice = (chosenChoice, timeTaken) => {
+                playClick();
+                stopTimers();
+                if (DOMElements.catastropheModalOverlay && DOMElements.catastropheModal) {
+                    hideModal(DOMElements.catastropheModalOverlay, DOMElements.catastropheModal);
+                }
+
+                let feedbackText = chosenChoice ? chosenChoice.feedback : "Le temps est écoulé pour la catastrophe ! Les conséquences sont désastreuses...";
+                // Devastating timeout impacts for catastrophes
+                let impacts = chosenChoice ? chosenChoice.impacts : { chiffreAffaires: -50000000, couts: 20000000, delais: 60, client: -50, equipe: -50, qualite: -50, securite: -50, marge: -5 }; 
+                let feedbackTitleText = chosenChoice ? "Conséquences de la décision" : "Échec Catastrophique !";
+
+                applyImpacts(impacts, feedbackText, timeTaken, feedbackTitleText);
+                // isCatastropheActive remains true, so continueGame knows not to increment main scenario index
+            };
+
+            /**
+             * Triggers a random market fluctuation event. (New Function)
+             */
+            const triggerMarketEvent = () => {
+                isMarketEventActive = true;
+                const marketEvent = marketEvents[Math.floor(Math.random() * marketEvents.length)];
+
+                playMarketSound(); // Play market sound
+
+                if (DOMElements.marketEventIcon) DOMElements.marketEventIcon.textContent = marketEvent.icon;
+                if (DOMElements.marketEventTitle) DOMElements.marketEventTitle.textContent = marketEvent.title;
+                if (DOMElements.marketEventText) DOMElements.marketEventText.textContent = marketEvent.text;
+
+                // Render market specific impacts
+                const changesMade = {};
+                if (DOMElements.marketImpactList) DOMElements.marketImpactList.innerHTML = '';
+                for (const key in marketEvent.impacts) {
+                    let changeAmount = marketEvent.impacts[key];
+                    const metric = state.metrics[key];
+
+                    if (metric) {
+                        let impactText = '';
+                        let icon = '';
+
+                        if (key === 'chiffreAffaires' || key === 'couts') {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${formatCurrency(changeAmount)}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else if (key === 'marge') {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount.toFixed(1)}%`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        } else {
+                            metric.value += changeAmount;
+                            impactText = `${metric.name}: ${changeAmount > 0 ? '+' : ''}${changeAmount}`;
+                            icon = changeAmount > 0 ? '⬆️' : '⬇️';
+                        }
+
+                        if (key !== 'chiffreAffaires' && key !== 'couts') {
+                            metric.value = Math.max(0, Math.min(100, metric.value)); 
+                        }
+                        if (key === 'marge') {
+                            metric.value = Math.max(0, Math.min(100, metric.value));
+                        }
+                        changesMade[key] = changeAmount;
+
+                        const impactItem = document.createElement('li');
+                        impactItem.className = `flex items-center text-lg ${changeAmount > 0 ? 'text-green-400' : (changeAmount < 0 ? 'text-red-400' : 'text-slate-300')}`;
+                        impactItem.innerHTML = `<span class="mr-2">${icon}</span> ${impactText}`;
+                        if (DOMElements.marketImpactList) DOMElements.marketImpactList.appendChild(impactItem);
+                    }
+                }
+                renderMetrics(changesMade); // Update main metrics display
+
+                if (DOMElements.marketEventModalOverlay && DOMElements.marketEventModal) {
+                    showModal(DOMElements.marketEventModalOverlay, DOMElements.marketEventModal);
+                }
+                startMarketEventTimer(CONFIG.marketEventDisplayDuration);
+                updateCharacterSpeech('📊', 'Le marché a fluctué ! Voyez l\'impact.', 4000);
+                addNewsItem(`Fluctuation du marché : "${marketEvent.title}"`, "info");
+            };
+
+            /**
+             * Starts the market event timer. (New Function)
+             * @param {number} duration - Duration in seconds.
+             */
+            const startMarketEventTimer = (duration) => {
+                timerCountdown = duration; // Reuse timerCountdown for simplicity, but it's a display timer here
+                if (DOMElements.marketEventTimerDisplay) { // Add null check
+                    DOMElements.marketEventTimerDisplay.classList.remove('critical-time');
+                    DOMElements.marketEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+                } else {
+                    console.error("Error: DOMElements.marketEventTimerDisplay is not defined. Cannot update timer display.");
+                    return; // Exit function if element is missing
+                }
+
+                marketEventTimerInterval = setInterval(() => {
+                    timerCountdown--;
+                    if (DOMElements.marketEventTimerDisplay) { // Add null check inside interval
+                        DOMElements.marketEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+                    } else {
+                        clearInterval(marketEventTimerInterval); // Stop interval if element disappears
+                        console.error("Error: DOMElements.marketEventTimerDisplay disappeared during interval.");
+                        return;
+                    }
+
+                    if (timerCountdown <= 0) {
+                        handleMarketEventCompletion(); // Call the new completion handler
+                    }
+                }, 1000);
+            };
+
+            /**
+             * Handles the completion of a market event. (New Function)
+             */
+            const handleMarketEventCompletion = () => {
+                stopTimers(); // Timer already stopped by startMarketEventTimer
+                if (DOMElements.marketEventModalOverlay && DOMElements.marketEventModal) {
+                    hideModal(DOMElements.marketEventModalOverlay, DOMElements.marketEventModal);
+                }
+
+                // Impacts for market event are already applied in triggerMarketEvent
+                // We just need to show the main feedback modal to allow continuation.
+                const feedbackText = "L'impact des fluctuations du marché a été enregistré.";
+                const feedbackTitleText = "Événement de Marché Terminé";
+                
+                // Re-render metrics with current state (no new changes, just update display)
+                renderMetrics({}); // Pass empty changes to just refresh display
+
+                if (DOMElements.feedbackTitle) DOMElements.feedbackTitle.textContent = feedbackTitleText;
+                if (DOMElements.feedbackText) DOMElements.feedbackText.textContent = feedbackText;
+                if (DOMElements.impactList) DOMElements.impactList.innerHTML = ''; // No new impacts to list here, they were shown in market modal
+                if (DOMElements.modalOverlay && DOMElements.feedbackModal) {
+                    showModal(DOMElements.modalOverlay, DOMElements.feedbackModal);
+                }
+                isMarketEventActive = true; // Keep this true so continueGame knows it was a random event
+            };
+
+            /**
+             * Triggers a random email event. (New Function)
+             */
+            const triggerEmailEvent = () => {
+                isEmailEventActive = true;
+                state.emailIndex = Math.floor(Math.random() * emailEvents.length);
+                const emailEvent = emailEvents[state.emailIndex];
+
+                playEmailSound();
+
+                if (DOMElements.emailEventTitle) DOMElements.emailEventTitle.textContent = emailEvent.title;
+                if (DOMElements.emailSender) DOMElements.emailSender.textContent = emailEvent.sender;
+                if (DOMElements.emailSubject) DOMElements.emailSubject.textContent = emailEvent.subject;
+                if (DOMElements.emailBody) DOMElements.emailBody.textContent = emailEvent.body;
+
+                if (DOMElements.emailChoicesContainer) {
+                    DOMElements.emailChoicesContainer.innerHTML = '';
+                    emailEvent.choices.forEach((choice, index) => {
+                        const choiceButton = document.createElement('button');
+                        choiceButton.className = 'btn w-full text-left py-3 px-4 rounded-xl shadow-md transition-all duration-200 ease-in-out hover:scale-[1.01]';
+                        choiceButton.textContent = choice.text;
+                        choiceButton.onclick = () => handleEmailChoice(choice);
+                        DOMElements.emailChoicesContainer.appendChild(choiceButton);
+                    });
+                }
+
+                if (DOMElements.emailEventModalOverlay && DOMElements.emailEventModal) {
+                    showModal(DOMElements.emailEventModalOverlay, DOMElements.emailEventModal);
+                }
+                updateCharacterSpeech('✉️', 'Nouvel e-mail important !', 3000);
+                addNewsItem(`Nouvel e-mail : "${emailEvent.subject}"`, "info");
+            };
+
+            /**
+             * Handles a player's choice for an email event. (New Function)
+             * Email events do not have a timer, so timeTaken is not relevant.
+             * @param {object} chosenChoice - The selected choice object.
+             */
+            const handleEmailChoice = (chosenChoice) => {
+                playClick();
+                if (DOMElements.emailEventModalOverlay && DOMElements.emailEventModal) {
+                    hideModal(DOMElements.emailEventModalOverlay, DOMElements.emailEventModal);
+                }
+
+                let feedbackText = chosenChoice.feedback;
+                let impacts = chosenChoice.impacts;
+                let feedbackTitleText = "Conséquences de l'e-mail";
+
+                applyImpacts(impacts, feedbackText, 0, feedbackTitleText); // Pass 0 for timeTaken as it's not timed
+                // isEmailEventActive remains true, so continueGame knows not to increment main scenario index
+            };
+
+            /**
+             * Triggers a random call event. (New Function)
+             */
+            const triggerCallEvent = () => {
+                isCallEventActive = true;
+                state.callIndex = Math.floor(Math.random() * callEvents.length);
+                const callEvent = callEvents[state.callIndex];
+
+                playCallSound();
+
+                if (DOMElements.callEventTitle) DOMElements.callEventTitle.textContent = callEvent.title;
+                if (DOMElements.callCaller) DOMElements.callCaller.textContent = callEvent.caller;
+                if (DOMElements.callMessage) DOMElements.callMessage.textContent = callEvent.message;
+
+                if (DOMElements.callChoicesContainer) {
+                    DOMElements.callChoicesContainer.innerHTML = '';
+                    callEvent.choices.forEach((choice, index) => {
+                        const choiceButton = document.createElement('button');
+                        choiceButton.className = 'btn w-full text-left py-3 px-4 rounded-xl shadow-md transition-all duration-200 ease-in-out hover:scale-[1.01]';
+                        choiceButton.textContent = choice.text;
+                        choiceButton.onclick = () => handleCallChoice(choice, CONFIG.callEventTimeLimit - timerCountdown);
+                        DOMElements.callChoicesContainer.appendChild(choiceButton);
+                    });
+                }
+
+                if (DOMElements.callEventModalOverlay && DOMElements.callEventModal) {
+                    showModal(DOMElements.callEventModalOverlay, DOMElements.callEventModal);
+                }
+                startCallEventTimer(CONFIG.callEventTimeLimit);
+                updateCharacterSpeech('📞', 'Appel urgent ! Répondez vite !', 3000);
+                addNewsItem(`Appel urgent : "${callEvent.title}"`, "negative");
+            };
+
+            /**
+             * Starts the call event timer. (New Function)
+             * @param {number} duration - Duration in seconds.
+             */
+            const startCallEventTimer = (duration) => {
+                timerCountdown = Math.round(duration * state.currentDifficulty.timeMultiplier); // Apply difficulty multiplier
+                if (DOMElements.callEventTimerDisplay) {
+                    DOMElements.callEventTimerDisplay.classList.remove('critical-time');
+                    DOMElements.callEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+                } else {
+                    console.error("Call event timer display element not found.");
+                    return;
+                }
+
+                callEventTimerInterval = setInterval(() => {
+                    timerCountdown--;
+                    if (DOMElements.callEventTimerDisplay) {
+                        DOMElements.callEventTimerDisplay.textContent = `⏱️ 0:${String(timerCountdown).padStart(2, '0')}`;
+                    }
+
+                    if (timerCountdown <= CONFIG.timerWarningThreshold / 2 && timerCountdown > 0) { // More intense warning for calls
+                        if (DOMElements.callEventTimerDisplay) DOMElements.callEventTimerDisplay.classList.add('critical-time');
+                        startTimerWarning();
+                    } else if (timerCountdown <= 0) {
+                        stopTimers();
+                        stopTimerWarning();
+                        if (DOMElements.callEventTimerDisplay) DOMElements.callEventTimerDisplay.classList.remove('critical-time');
+                        handleCallChoice(null, 0); // Handle timeout
+                    }
+                }, 1000);
+            };
+
+            /**
+             * Handles a player's choice for a call event. (New Function)
+             * @param {object} chosenChoice - The selected choice object.
+             * @param {number} timeTaken - Time taken to make the decision.
+             */
+            const handleCallChoice = (chosenChoice, timeTaken) => {
+                playClick();
+                stopTimers();
+                if (DOMElements.callEventModalOverlay && DOMElements.callEventModal) {
+                    hideModal(DOMElements.callEventModalOverlay, DOMElements.callEventModal);
+                }
+
+                let feedbackText = chosenChoice ? chosenChoice.feedback : "Temps écoulé pour l'appel ! Cela a des conséquences...";
+                // Punitive timeout impacts for calls
+                let impacts = chosenChoice ? chosenChoice.impacts : { delais: 10, client: -10, equipe: -5 }; 
+                let feedbackTitleText = chosenChoice ? "Conséquences de l'appel" : "Appel manqué !";
+
+                applyImpacts(impacts, feedbackText, timeTaken, feedbackTitleText);
+                // isCallEventActive remains true, so continueGame knows not to increment main scenario index
+            };
+
+
+            /**
+             * Ends the game and displays results.
+             */
+            const gameOver = () => {
+                stopTimers();
+                showScreen(DOMElements.resultScreen);
+                
+                if (DOMElements.finalScore) DOMElements.finalScore.textContent = state.score;
+
+                // Update high score
+                if (state.score > state.highScore) {
+                    state.highScore = state.score;
+                    localStorage.setItem('highScore', state.highScore);
+                }
+                if (DOMElements.finalHighScore) DOMElements.finalHighScore.textContent = state.highScore;
+
+
+                let resultCategory = "";
+                let resultDescription = "";
+                    let contactMessage = "";
+
+                // Determine game outcome based on metrics and score
+                const overallHealth = (state.metrics.client.value + state.metrics.equipe.value + state.metrics.qualite.value + state.metrics.securite.value) / 4;
+                const financialHealth = (state.metrics.chiffreAffaires.value - state.metrics.couts.value) / 100000000; // In hundreds of millions for 150M project
+
+                if (state.score >= 20000 && overallHealth >= 85 && financialHealth >= 0.15) {
+                    resultCategory = "Légendaire ! 👑";
+                    resultDescription = "Vous avez non seulement mené le projet à un succès retentissant, mais vous avez également établi de nouvelles normes en matière d'excellence et de rentabilité. Votre héritage est assuré.";
+                    contactMessage = "Votre vision est révolutionnaire. Nous devons absolument collaborer sur le prochain grand projet.";
+                    if (DOMElements.resultCategory) DOMElements.resultCategory.className = "text-3xl font-bold text-yellow-400 mb-4"; // Gold color
+                    playGameOverWin();
+                    addNewsItem("Projet terminé : Succès légendaire ! Le Canal est une référence mondiale.", "positive");
+                } else if (state.score >= 15000 && overallHealth >= 70 && financialHealth >= 0.08) {
+                    resultCategory = "Maître d'Ouvrage Exceptionnel ! 🏆";
+                    resultDescription = "Félicitations ! Vous avez géré le projet de construction avec brio, maintenant des métriques excellentes et une rentabilité impressionnante. Votre leadership est exemplaire.";
+                    contactMessage = "Votre succès est une source d'inspiration. Nous aimerions discuter de vos stratégies.";
+                    if (DOMElements.resultCategory) DOMElements.resultCategory.className = "text-3xl font-bold text-green-400 mb-4";
+                    playGameOverWin();
+                    addNewsItem("Projet terminé : Succès exceptionnel. Le Canal est un modèle.", "positive");
+                } else if (state.score >= 8000 && overallHealth >= 55 && financialHealth >= 0.02) {
+                    resultCategory = "Directeur des Travaux Compétent ! ✅";
+                    resultDescription = "Bien joué ! Vous avez mené ce grand projet d'infrastructure à terme avec succès, malgré quelques défis. Une gestion solide et des résultats positifs.";
+                    contactMessage = "Votre performance est solide. Continuons à construire sur cette base.";
+                    if (DOMElements.resultCategory) DOMElements.resultCategory.className = "text-3xl font-bold text-blue-400 mb-4";
+                    playGameOverWin();
+                    addNewsItem("Projet terminé : Compétent. Le Canal est achevé avec succès.", "neutral");
+                } else if (state.score >= 4000 && overallHealth >= 40 && financialHealth >= -0.05) {
+                    resultCategory = "Projet Achevé, but Coûteux 📉";
+                    resultDescription = "Le projet a été livré, but au prix de sacrifices importants. La rentabilité a souffert et certains indicateurs clés sont sous pression. Des leçons importantes sont à tirer.";
+                    contactMessage = "Chaque projet est une leçon. Analysons ensemble les points à améliorer et identifions les opportunités de croissance.";
+                    if (DOMElements.resultCategory) DOMElements.resultCategory.className = "text-3xl font-bold text-orange-400 mb-4"; // Orange for warning
+                    playGameOverLose(); // Slightly negative sound
+                    addNewsItem("Projet terminé : Coûteux. Le Canal est fonctionnel, but à quel prix ?", "negative");
+                } else if (state.score >= 0 && overallHealth >= 25 && financialHealth >= -0.15) {
+                    resultCategory = "Projet Terminé, but avec des Défis 🚧";
+                    resultDescription = "Le projet de construction est terminé, but il a rencontré des difficultés majeures. Des améliorations sont nécessaires pour optimiser les métriques et la rentabilité.";
+                    contactMessage = "Nous devons revoir en profondeur les processus pour éviter de futures complications.";
+                    if (DOMElements.resultCategory) DOMElements.resultCategory.className = "text-3xl font-bold text-amber-400 mb-4";
+                    playGameOverLose();
+                    addNewsItem("Projet terminé : Des défis subsistent. Le Canal est ouvert, but la route fut semée d'embûches.", "negative");
+                } else {
+                    resultCategory = "Échec Critique du Projet ❌";
+                    resultDescription = "Malheureusement, le projet de construction a échoué. Des décisions clés ont eu des conséquences négatives importantes sur les métriques et la santé financière, menant à un désastre.";
+                    contactMessage = "Un échec est une opportunité d'apprendre. Revoyons ensemble ce qui n'a pas fonctionné pour éviter de telles situations à l'avenir.";
+                    if (DOMElements.resultCategory) DOMElements.resultCategory.className = "text-3xl font-bold text-red-400 mb-4";
+                    playGameOverLose();
+                    addNewsItem("Projet terminé : Échec critique. Le Canal n'a pas pu être achevé.", "negative");
+                }
+
+                if (DOMElements.resultCategory) DOMElements.resultCategory.textContent = resultCategory;
+                if (DOMElements.resultDescription) DOMElements.resultDescription.textContent = resultDescription;
+                if (DOMElements.contactMessage) DOMElements.contactMessage.textContent = contactMessage;
+
+                // --- Display Metric Analysis ---
+                if (DOMElements.metricAnalysisResults) DOMElements.metricAnalysisResults.innerHTML = '';
+                for (const key in state.metrics) {
+                    const initialMetric = state.initialMetricsSnapshot[key];
+                    const finalMetric = state.metrics[key];
+                    const change = finalMetric.value - initialMetric.value;
+
+                    const metricItem = document.createElement('div');
+                    metricItem.className = 'flex justify-between items-center text-lg';
+
+                    let changeText = '';
+                    let changeClass = 'text-slate-300';
+                    let changeIcon = '';
+
+                    if (change > 0) {
+                        changeText = `(+${initialMetric.isCurrency ? formatCurrency(change) : (initialMetric.isPercentage ? change.toFixed(1) + '%' : change)})`;
+                        changeClass = 'text-green-400';
+                        changeIcon = '⬆️';
+                    } else if (change < 0) {
+                        changeText = `(${initialMetric.isCurrency ? formatCurrency(change) : (initialMetric.isPercentage ? change.toFixed(1) + '%' : change)})`;
+                        changeClass = 'text-red-400';
+                        changeIcon = '⬇️';
+                    } else {
+                        changeText = '(Stable)';
+                        changeClass = 'text-slate-300';
+                        changeIcon = '➡️';
+                    }
+
+                    metricItem.innerHTML = `
+                        <span class="font-semibold">${initialMetric.icon} ${initialMetric.name}:</span>
+                        <span class="flex items-center">
+                            ${initialMetric.isCurrency ? formatCurrency(initialMetric.value) : (initialMetric.isPercentage ? formatPercentage(initialMetric.value) : initialMetric.value)} 
+                            ➡️ 
+                            ${finalMetric.isCurrency ? formatCurrency(finalMetric.value) : (finalMetric.isPercentage ? formatPercentage(finalMetric.value) : finalMetric.value)}
+                            <span class="ml-2 ${changeClass}">${changeIcon} ${changeText}</span>
+                        </span>
+                    `;
+                    if (DOMElements.metricAnalysisResults) DOMElements.metricAnalysisResults.appendChild(metricItem);
+                }
+            };
+
+            // --- Event Listeners ---
+            document.addEventListener('DOMContentLoaded', () => {
+                resetGameAndShowStartScreen(); // Initialize game to start screen on load
+
+                if (DOMElements.restartGameBtn) {
+                    DOMElements.restartGameBtn.addEventListener('click', () => {
+                        playClick();
+                        resetGameAndShowStartScreen(); // Restart the game from the difficulty selection
+                    });
+                }
+
+                if (DOMElements.backToMainMenuGameBtn) {
+                    DOMElements.backToMainMenuGameBtn.addEventListener('click', () => {
+                        playClick();
+                        resetGameAndShowStartScreen(); // Go back to the start screen
+                    });
+                }
+
+                if (DOMElements.backToMainMenuResultBtn) {
+                    DOMElements.backToMainMenuResultBtn.addEventListener('click', () => {
+                        playClick();
+                        resetGameAndShowStartScreen(); // Go back to the start screen
+                    });
+                }
+
+                if (DOMElements.modalContinueBtn) {
+                    DOMElements.modalContinueBtn.addEventListener('click', () => {
+                        playClick();
+                        continueGame();
+                    });
+                }
+
+                if (DOMElements.shareResultsBtn) {
+                    DOMElements.shareResultsBtn.addEventListener('click', () => {
+                        playClick();
+                        // Construct share text with detailed analysis
+                        let shareText = `J'ai terminé le Project Manager Simulator avec un score de ${state.score} (Meilleur : ${state.highScore}) ! Catégorie : ${DOMElements.resultCategory ? DOMElements.resultCategory.textContent : 'N/A'}.\n\n`;
+                        shareText += `Analyse des Indicateurs Clés :\n`;
+                        for (const key in state.metrics) {
+                            const initialMetric = state.initialMetricsSnapshot[key];
+                            const finalMetric = state.metrics[key];
+                            const change = finalMetric.value - initialMetric.value;
+                            let changeValue = initialMetric.isCurrency ? formatCurrency(change) : (initialMetric.isPercentage ? change.toFixed(1) + '%' : change);
+                            if (change > 0 && !initialMetric.isCurrency) changeValue = '+' + changeValue; // Add plus for positive non-currency changes
+
+                            shareText += `- ${initialMetric.name}: Initial ${initialMetric.isCurrency ? formatCurrency(initialMetric.value) : (initialMetric.isPercentage ? formatPercentage(initialMetric.value) : initialMetric.value)}, Final ${finalMetric.isCurrency ? formatCurrency(finalMetric.value) : (finalMetric.isPercentage ? formatPercentage(finalMetric.value) : finalMetric.value)} (Changement: ${changeValue})\n`;
+                        }
+                        shareText += `\n${DOMElements.resultDescription ? DOMElements.resultDescription.textContent : ''}`;
+                        
+                        // Use document.execCommand('copy') for clipboard operations in iframes
+                        const textArea = document.createElement("textarea");
+                        textArea.value = shareText;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            updateCharacterSpeech('📋', 'Résultats copiés dans le presse-papiers !', 2000);
+                        } catch (err) {
+                            updateCharacterSpeech('❌', 'Échec de la copie des résultats.', 2000);
+                        }
+                        document.body.removeChild(textArea);
+                    });
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
