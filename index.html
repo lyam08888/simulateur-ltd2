@@ -3,476 +3,1620 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Simulateur de gestion de chantier et jeux pédagogiques pour directeurs de travaux">
-    <meta name="robots" content="index,follow">
-    <link rel="canonical" href="https://ltd-simulator.example.com/index.html">
+    <meta name="description" content="Simulateur de gestion de chantier, actualités et appels d'offres pour le BTP.">
+    <title>LTD Simulator - Accueil</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <title>LTD Simulator - Menu Principal</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ctext y='96' font-size='96'%3E%F0%9F%9A%A7%3C/text%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        :root {
+            /* Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            
+            /* Surfaces */
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-elevated: #334155;
+            --surface-hover: #475569;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            
+            /* Text */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
+
+            /* Animation */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            
+            /* Borders */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 9999px;
+        }
+
+        /* Light mode */
+        body.light-mode {
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --surface-elevated: #e2e8f0;
+            --surface-hover: #cbd5e1;
+            --glass: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.2);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+        html {
+            scroll-behavior: smooth;
         }
 
-        /* Particules animées en arrière-plan */
-        .particles {
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: var(--transition-slow);
+        }
+
+        body::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+            animation: background-pan 30s linear infinite;
         }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            animation: float 15s infinite linear;
+        
+        @keyframes background-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        .container {
-            text-align: center;
-            z-index: 10;
-            position: relative;
-            max-width: 1200px;
-            width: 100%;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 3.5em;
-            color: #ffffff;
-            margin-bottom: 50px;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            font-weight: 800;
-        }
-
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .game-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px 30px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        
+        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell {
             cursor: pointer;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px var(--primary-light);
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .nav-desktop { display: none; }
+        @media (min-width: 1024px) {
+            .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            list-style: none;
+        }
+
+        .nav-item { position: relative; }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: var(--radius);
+            transition: var(--transition);
             position: relative;
             overflow: hidden;
         }
 
-        .game-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            background: rgba(255, 255, 255, 0.15);
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: var(--glass);
         }
 
-        .game-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transform: rotate(45deg);
-            transition: all 0.5s;
-            opacity: 0;
-        }
-
-        .game-card:hover::before {
-            animation: shimmer 0.5s ease-in-out;
-        }
-
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%) translateY(-100%) rotate(45deg);
-                opacity: 0;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(100%) translateY(100%) rotate(45deg);
-                opacity: 0;
-            }
-        }
-
-        .game-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-            display: block;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-        }
-
-        .game-title {
-            font-size: 1.8em;
-            color: #ffffff;
-            margin-bottom: 15px;
+        .nav-link.active {
+            color: var(--text-primary);
+            background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
             font-weight: 600;
         }
 
-        .game-description {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9em;
-            line-height: 1.4;
-            margin-bottom: 20px;
-        }
-
-        .play-button {
-            display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
-            border: none;
-            cursor: pointer;
-            font-size: 1em;
-        }
-
-        .play-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
-        }
-
-        .share-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, #4cd964, #5ac8fa);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 12px 25px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(76, 217, 100, 0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            z-index: 50;
-            font-size: 1em;
-        }
-
-        .share-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(90, 200, 250, 0.6);
-        }
-
-        .mascot {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
+        .nav-actions {
             display: flex;
-            align-items: flex-end;
-            z-index: 60;
+            align-items: center;
+            gap: var(--spacing-sm);
         }
 
-        .mascot-icon {
-            font-size: 2.5em;
-            margin-left: 8px;
-            animation: mascot-hop 2s infinite ease-in-out;
-        }
-
-        @keyframes mascot-hop {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-
-        .speech-bubble {
-            background: white;
-            color: #333;
-            padding: 10px 15px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            transition: var(--transition);
             position: relative;
-            font-size: 0.9em;
-            max-width: 200px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-            white-space: nowrap;
         }
 
-        .speech-bubble.show {
-            opacity: 1;
+        .theme-toggle:hover {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+            transform: rotate(15deg);
+        }
+
+        .mobile-toggle {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        @media (min-width: 1024px) {
+            .mobile-toggle { display: none; }
+        }
+
+        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
+        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .hamburger span:nth-child(3) { bottom: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
+        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+        
+        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
+        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
+        .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
+        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+        .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
+        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
+        .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
+
+        .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
+        .hero { text-align: center; padding: var(--spacing-xl) 0; transition: var(--transition-slow); }
+        .hero h1 { 
+            font-size: clamp(2.8rem, 5vw, 4rem); 
+            font-weight: 800; 
+            margin-bottom: var(--spacing-lg); 
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 50%, var(--accent) 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: text-gradient-pan 5s ease infinite;
+        }
+        @keyframes text-gradient-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+        
+        /* --- AMÉLIORATION: Image Slider --- */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            margin-bottom: var(--spacing-xl);
+            background-color: var(--surface);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--glass-border);
+        }
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .slide {
+            min-width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .slide img {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 6;
+            object-fit: cover;
+            transition: transform 8s ease-out;
+        }
+        .slide.active img {
+            transform: scale(1.1);
+        }
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--spacing-lg);
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent);
+            color: var(--text-primary);
+            transform: translateY(100%);
+            transition: transform 0.6s ease-out;
+        }
+        .slide.active .slide-content {
             transform: translateY(0);
         }
-
-        .speech-bubble::after {
-            content: '';
+        body.light-mode .slide-content {
+             background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent);
+        }
+        .slide-content h3 {
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+            font-weight: 700;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: var(--spacing-xs);
+        }
+        .slide-content p {
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: var(--text-secondary);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .slider-nav {
             position: absolute;
-            bottom: -8px;
-            right: 15px;
-            border-width: 8px 8px 0 8px;
-            border-style: solid;
-            border-color: white transparent transparent transparent;
-        }
-
-        /* Styles pour les jeux à venir */
-        .coming-soon {
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3rem;
+            height: 3rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-full);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-slow);
             opacity: 0.7;
-            cursor: not-allowed;
+        }
+        .slider-nav:hover {
+            background-color: var(--primary);
+            transform: translateY(-50%) scale(1.1);
+            opacity: 1;
+        }
+        .slider-nav.prev {
+            left: var(--spacing-md);
+        }
+        .slider-nav.next {
+            right: var(--spacing-md);
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: var(--spacing-md);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        .slider-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: var(--radius-full);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: var(--transition-slow);
+        }
+        .slider-dot.active {
+            background: var(--primary);
+            transform: scale(1.3);
+            box-shadow: 0 0 10px var(--primary-light);
+        }
+        /* --- FIN AMÉLIORATION --- */
+
+        .news-banner {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-xl) 0;
+        }
+        .news-banner-header {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        .news-banner-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+        .news-banner-header p {
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .news-banner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        .news-banner-item {
+            background: var(--background);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition-slow);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .news-banner-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--primary-light);
+        }
+        .news-banner-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .news-banner-item:hover img {
+            transform: scale(1.05);
+        }
+        .news-banner-item-content {
+            padding: var(--spacing-md);
         }
 
-        .coming-soon:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        .new-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(45deg, var(--accent), var(--accent-dark));
+            color: white;
+            padding: 0.3rem 0.7rem;
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            animation: pulse-glow 2.5s infinite ease-in-out;
+            z-index: 1;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .coming-soon .play-button.disabled {
-            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
-            cursor: not-allowed;
-            box-shadow: 0 4px 15px rgba(127, 140, 141, 0.4);
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6);
+            }
         }
 
-        .coming-soon .play-button.disabled:hover {
-            transform: none;
-            box-shadow: 0 4px 15px rgba(127, 140, 141, 0.4);
+        .news-banner-item-content h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+        .news-banner-item-content p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5em;
-            }
-            
-            .games-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
+        .quick-actions { transition: var(--transition-slow); }
+        .quick-action-card {
+            background: var(--surface); 
+            padding: 0; 
+            border-radius: var(--radius-lg); 
+            border: 1px solid var(--glass-border); 
+            text-align: center; 
+            transition: var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .quick-action-card:hover { 
+            transform: translateY(-10px); 
+            box-shadow: var(--shadow-glow); 
+            border-color: var(--primary);
+        }
+        .quick-action-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+        .quick-action-card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .quick-action-card .btn {
+            background: var(--primary); 
+            color: white; 
+            padding: 0.75rem 2rem; 
+            border-radius: var(--radius); 
+            display: inline-block; 
+            font-weight: 600;
+            transition: var(--transition-slow);
+            margin-top: 1.5rem;
+        }
+        .quick-action-card:hover .btn {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .quick-action-card .btn-secondary { background: var(--secondary); }
+        .quick-action-card .btn-accent { background: var(--accent); }
 
-            .game-card {
-                padding: 30px 20px;
-            }
 
-            .mascot {
-                bottom: 80px;
-                right: 10px;
-            }
+        .animate-in { animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
-            .share-button {
-                bottom: 10px;
-                right: 10px;
-                padding: 10px 20px;
-            }
+        .search-section { margin-bottom: var(--spacing-xl); }
+        .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
+        @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
+        .search-input-wrapper { position: relative; flex-grow: 1; }
+        .search-input-wrapper i { position: absolute; top: 50%; left: var(--spacing-md); transform: translateY(-50%); color: var(--text-muted); }
+        .search-input-wrapper input { width: 100%; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 2.5rem; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
+        .search-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
+        
+        .search-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .search-button:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
 
-            .speech-bubble {
-                max-width: 160px;
-                font-size: 0.8em;
+        .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
+        .feed-column { 
+            background: var(--surface); 
+            border-radius: var(--radius-lg); 
+            border: 1px solid var(--glass-border); 
+            overflow: hidden; 
+            transition: var(--transition-slow);
+            display: flex;
+            flex-direction: column;
+        }
+        .feed-column img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+        .feed-content {
+            padding: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .feed-header { display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
+        .feed-header-title { display: flex; align-items: center; gap: var(--spacing-sm); flex-grow: 1; }
+        .feed-header i { font-size: 1.5rem; color: var(--primary); }
+        .feed-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+        .feed-header-actions { display: flex; gap: var(--spacing-sm); }
+        .feed-action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-muted); width: 2.2rem; height: 2.2rem; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .feed-action-btn:hover { background: var(--surface-hover); color: var(--text-primary); transform: scale(1.1); }
+        .feed-action-btn.active { color: var(--primary); }
+        .feed-list { flex-grow: 1; min-height: 400px; overflow-y: auto; padding-right: var(--spacing-sm); }
+        .feed-list::-webkit-scrollbar { width: 6px; }
+        .feed-list::-webkit-scrollbar-track { background: transparent; }
+        .feed-list::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: var(--radius-full); }
+        .feed-list::-webkit-scrollbar-thumb:hover { background: var(--surface-hover); }
+        .feed-item { padding: var(--spacing-md) 0; border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
+        .feed-item:last-child { border-bottom: none; }
+        .feed-item a { text-decoration: none; color: var(--text-primary); display: block; padding: var(--spacing-xs); margin: calc(-1 * var(--spacing-xs)); border-radius: var(--radius); transition: background-color 0.3s; }
+        .feed-item a:hover { background-color: var(--glass); }
+        .feed-item-title { font-weight: 600; margin-bottom: var(--spacing-xs); }
+        .feed-item-meta { display: flex; align-items: center; gap: var(--spacing-sm); font-size: 0.875rem; color: var(--text-muted); flex-wrap: wrap; }
+        .feed-item-meta span { display: flex; align-items: center; gap: var(--spacing-xs); }
+        .feed-item-action { margin-top: var(--spacing-sm); display: inline-block; color: var(--primary); font-weight: 600; font-size: 0.875rem; }
+        .feed-item-action:hover { text-decoration: underline; }
+        .placeholder { text-align: center; padding: var(--spacing-xl) 0; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: var(--spacing-sm); }
+        .placeholder i { font-size: 1.5rem; }
+
+        .notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
+        .notification.show { transform: translateX(0); }
+        .notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
+        .notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
+        .notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
+        .notification-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 1rem; }
+        .notification.success .notification-icon { color: var(--secondary); }
+        .notification.warning .notification-icon { color: var(--accent); }
+        .notification.error .notification-icon { color: #ef4444; }
+
+        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: transparent; z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
+        .progress-bar.show { opacity: 1; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
+        
+        /* --- Chatbot Styles --- */
+        .chatbot-toggler {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            right: var(--spacing-lg);
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.5);
+            z-index: 1050;
+            transition: var(--transition-slow);
+            animation: pulse-glow-chat 2.5s infinite ease-in-out;
+        }
+
+        .chatbot-toggler:hover {
+            transform: scale(1.1) rotate(-10deg);
+            box-shadow: var(--shadow-xl), 0 0 30px var(--primary);
+        }
+
+        @keyframes pulse-glow-chat {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.4);
             }
+            50% {
+                transform: scale(1.05);
+                box-shadow: var(--shadow-lg), 0 0 30px rgba(99, 102, 241, 0.6);
+            }
+        }
+
+        .chatbot-container {
+            position: fixed;
+            bottom: calc(var(--spacing-lg) + 5rem);
+            right: var(--spacing-lg);
+            width: 90%;
+            max-width: 400px;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            z-index: 1200;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chatbot-container.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            visibility: visible;
         }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 15px;
+            .chatbot-container {
+                right: var(--spacing-md);
+                bottom: calc(var(--spacing-md) + 4.5rem);
+                width: calc(100% - (2 * var(--spacing-md)));
             }
-
-            h1 {
-                font-size: 2em;
-                margin-bottom: 30px;
-            }
-
-            .game-card {
-                padding: 25px 15px;
-            }
-
-            .game-icon {
-                font-size: 3em;
-            }
-
-            .game-title {
-                font-size: 1.5em;
+            .chatbot-toggler {
+                right: var(--spacing-md);
+                bottom: var(--spacing-md);
+                width: 3.5rem;
+                height: 3.5rem;
+                font-size: 1.5rem;
             }
         }
+
+        .chatbot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--surface-elevated);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .chatbot-header h3 {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .chatbot-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .chatbot-close-btn:hover {
+            color: var(--text-primary);
+            transform: rotate(90deg);
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: var(--spacing-md);
+            overflow-y: auto;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .chatbot-messages::-webkit-scrollbar { width: 5px; }
+        .chatbot-messages::-webkit-scrollbar-track { background: transparent; }
+        .chatbot-messages::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: var(--radius-full); }
+
+        .message {
+            max-width: 85%;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-lg);
+            line-height: 1.4;
+            word-wrap: break-word;
+            animation: message-fade-in 0.4s ease;
+        }
+        
+        @keyframes message-fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: var(--radius-sm);
+        }
+
+        .message.bot {
+            background: var(--surface-elevated);
+            color: var(--text-secondary);
+            align-self: flex-start;
+            border-bottom-left-radius: var(--radius-sm);
+        }
+        
+        .message.bot a {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+        
+        .message.bot strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .chatbot-input-form {
+            display: flex;
+            padding: var(--spacing-sm);
+            border-top: 1px solid var(--glass-border);
+            background: var(--surface);
+        }
+
+        #chatbotInput {
+            flex: 1;
+            background: var(--background);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: var(--spacing-sm);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-right: var(--spacing-sm);
+        }
+
+        #chatbotInput:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        #chatbotSendBtn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: var(--radius);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chatbotSendBtn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+            margin-top: var(--spacing-sm);
+            align-self: flex-start;
+        }
+        
+        .quick-reply-btn {
+            background: var(--surface-elevated);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .quick-reply-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background-color: var(--text-muted);
+            border-radius: 50%;
+            animation: typing-bounce 1s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing-bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
-    
-    <div class="container">
-        <h1>🏗️ LTD Simulator 🏗️</h1>
-        
-        <div class="games-grid">
-            <div class="game-card" onclick="navigateToGame('simulateur-directeur-travaux.html')">
-                <span class="game-icon" role="img" aria-label="Directeur travaux">👷</span>
-                <h2 class="game-title">Simulateur Directeur Travaux</h2>
-                <p class="game-description">Gérez vos chantiers, coordonnez vos équipes et menez vos projets à terme dans ce simulateur réaliste!</p>
-                <button class="play-button" onclick="event.stopPropagation(); navigateToGame('simulateur-directeur-travaux.html')">Jouer</button>
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">LTD Simulator</span>
+            </a>
+            <div class="nav-desktop">
+                 <ul class="nav-menu">
+                     <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
+                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
+                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
+                 </ul>
+                 <div class="nav-actions">
+                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
+                         <i class="fas fa-moon" id="themeIcon"></i>
+                     </button>
+                 </div>
             </div>
-            
-            <div class="game-card coming-soon">
-                <span class="game-icon" role="img" aria-label="Bientôt disponible">🚧</span>
-                <h2 class="game-title">Prochainement</h2>
-                <p class="game-description">Un nouveau simulateur arrive bientôt ! Restez connecté pour découvrir la prochaine expérience de gestion.</p>
-                <button class="play-button disabled" disabled>Bientôt disponible</button>
-            </div>
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+                <span class="hamburger"><span></span><span></span><span></span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">LTD Simulator</span>
+            </a>
+            <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
         </div>
-
-        <button class="share-button" onclick="shareSite()" aria-label="Partager le site">
-            📤 Partager
-        </button>
-
-        <div class="mascot" id="mascot">
-            <div class="speech-bubble" id="mascot-bubble">Bienvenue !</div>
-            <div class="mascot-icon" role="img" aria-label="Mascotte du site">👷‍♂️</div>
+        <div class="mobile-menu-content">
+            <div class="mobile-nav-section">
+                <h3>Navigation</h3>
+                <div class="mobile-nav-items">
+                    <a href="index.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('index.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-home"></i></div>
+                        <h4>Accueil</h4>
+                    </a>
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('simulateur.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-gamepad"></i></div>
+                        <h4>Simulateurs</h4>
+                    </a>
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('test.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-brain"></i></div>
+                        <h4>Tests</h4>
+                    </a>
+                     <a href="challenges.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('challenges.html')">
+                         <div class="mobile-nav-item-icon"><i class="fas fa-trophy"></i></div>
+                         <h4>Challenges</h4>
+                     </a>
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('emploi.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-briefcase"></i></div>
+                        <h4>Nos offres d'emploi</h4>
+                    </a>
+                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('histoire.html')">
+                        <div class="mobile-nav-item-icon"><i class="fas fa-scroll"></i></div>
+                        <h4>Histoire du BTP</h4>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Image Slider Section -->
+        <section class="slider-container animate-in" id="imageSlider">
+            <div class="slider-wrapper">
+                <div class="slide">
+                    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&amp;w=2070&amp;auto=format&amp;fit=crop" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/1e293b/f8fafc?text=Chantier+Moderne';" 
+                         alt="Chantier de construction moderne">
+                    <div class="slide-content">
+                        <h3>Le BTP de Demain</h3>
+                        <p>Explorez les technologies qui révolutionnent la construction.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&amp;w=2053&amp;auto=format&amp;fit=crop" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/6366f1/FFFFFF?text=Innovation+%26+Formation';" 
+                         alt="Innovation et formation dans le BTP">
+                    <div class="slide-content">
+                        <h3>Innovez avec nos Simulateurs</h3>
+                        <p>Développez vos compétences sur des cas pratiques et réalistes.</p>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&amp;w=2070&amp;auto=format&amp;fit=crop" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/10b981/FFFFFF?text=Carrières+d'Avenir';" 
+                         alt="Opportunités de carrière dans le BTP">
+                    <div class="slide-content">
+                        <h3>Votre Carrière Commence Ici</h3>
+                        <p>Découvrez des challenges et des offres d'emploi uniques.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-nav prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></div>
+            <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </section>
+        
+        <!-- Search Section -->
+        <section class="search-section animate-in">
+            <form action="recherche.html" method="GET" class="search-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="query" required placeholder="Rechercher sur tout le site...">
+                </div>
+                <button type="submit" class="search-button">Rechercher</button>
+            </form>
+        </section>
+
+        <section class="hero animate-in">
+            <h1>Maîtrisez les métiers du BTP</h1>
+            <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
+        </section>
+
+        <!-- News Banner Section -->
+        <section class="news-banner animate-in">
+            <div class="news-banner-header">
+                <h2>Les Nouveautés à ne pas manquer</h2>
+                <p>Restez à jour avec nos derniers tests, challenges et actualités du secteur.</p>
+            </div>
+            <div class="news-banner-grid">
+                <a href="#" onclick="event.preventDefault(); navigateTo('testperso.html')" class="news-banner-item">
+                    <img src="https://images.unsplash.com/photo-1573497491208-6b1acb260507?q=80&amp;w=870&amp;auto=format&amp;fit=crop" alt="Illustration d'un test comportemental" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Test+Comportemental';">
+                    <span class="new-badge">Nouveau</span>
+                    <div class="news-banner-item-content">
+                        <h5>Test Comportemental</h5>
+                        <p>Évaluez vos soft skills en situation professionnelle.</p>
+                    </div>
+                </a>
+                <a href="#" onclick="event.preventDefault(); navigateTo('prixtce.html')" class="news-banner-item">
+                     <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&amp;w=1032&amp;auto=format&amp;fit=crop" alt="Illustration d'une étude de prix" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Étude+de+Prix';">
+                    <span class="new-badge">Nouveau</span>
+                    <div class="news-banner-item-content">
+                        <h5>Challenge Étude de Prix TCE</h5>
+                        <p>Réalisez un chiffrage complet et un mémoire technique.</p>
+                    </div>
+                </a>
+                <a href="#" onclick="event.preventDefault(); navigateTo('histoire.html')" class="news-banner-item">
+                    <img src="https://images.unsplash.com/photo-1519010470956-6d877008eaa4?q=80&amp;w=870&amp;auto=format&amp;fit=crop" alt="Illustration de constructions marquantes" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Constructions';">
+                    <span class="new-badge">Nouveau</span>
+                    <div class="news-banner-item-content">
+                        <h5>Constructions Marquantes</h5>
+                        <p>Découvrez les édifices emblématiques du monde entier.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="quick-actions animate-in" style="margin: 4rem 0;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <a href="#" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
+                    <div class="quick-action-card">
+                        <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1618090584247-d5051393a064?q=80&amp;w=870&amp;auto=format&amp;fit=crop');"></div>
+                        <div class="quick-action-card-content">
+                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateurs</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Gérez des chantiers et testez vos compétences techniques.</p>
+                            <div class="btn">Lancer</div>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" onclick="event.preventDefault(); navigateTo('test.html')" style="text-decoration: none; color: inherit;">
+                    <div class="quick-action-card">
+                        <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&amp;w=765&amp;auto=format&amp;fit=crop');"></div>
+                        <div class="quick-action-card-content">
+                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Évaluez vos soft-skills et connaissances techniques.</p>
+                            <div class="btn btn-secondary">Commencer</div>
+                        </div>
+                    </div>
+                </a>
+                <a href="challenges.html" onclick="event.preventDefault(); navigateTo('challenges.html')" style="text-decoration: none; color: inherit;">
+                    <div class="quick-action-card">
+                        <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1560415755-bd80d06eda60?q=80&amp;w=870&amp;auto=format&amp;fit=crop');"></div>
+                        <div class="quick-action-card-content">
+                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Candidatez différemment et montrez vos compétences.</p>
+                            <div class="btn btn-accent">Participer</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+        
+        <!-- BTP Wall Street Section -->
+        <section class="btp-wall-street">
+            <!-- Tenders Column -->
+            <div class="feed-column" id="tenders-feed-container">
+                <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1600880292210-85938b638942?q=80&amp;w=870&amp;auto=format&amp;fit=crop');"></div>
+                <div class="feed-content">
+                    <div class="feed-header">
+                        <div class="feed-header-title">
+                            <i class="fas fa-gavel"></i>
+                            <h2>Appels d'offre</h2>
+                        </div>
+                        <div class="feed-header-actions">
+                            <button class="feed-action-btn" onclick="enableNotifications('tenders')" title="Activer les notifications pour les appels d'offre">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <button class="feed-action-btn" onclick="populateTenders(true)" title="Rafraîchir les appels d'offre">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="feed-list" id="tenders-feed">
+                        <div class="placeholder">
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                            <span>Chargement...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- News Column -->
+            <div class="feed-column" id="news-feed-container">
+                <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=869&amp;auto=format&amp;fit=crop');"></div>
+                <div class="feed-content">
+                    <div class="feed-header">
+                         <div class="feed-header-title">
+                             <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
+                             <h2>Actualités BTP</h2>
+                         </div>
+                         <div class="feed-header-actions">
+                             <button class="feed-action-btn" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
+                                 <i class="fas fa-bell"></i>
+                             </button>
+                             <button class="feed-action-btn" onclick="populateNews(true)" title="Rafraîchir les actualités">
+                                 <i class="fas fa-sync-alt"></i>
+                             </button>
+                         </div>
+                    </div>
+                    <div class="feed-list" id="news-feed">
+                        <div class="placeholder">
+                             <i class="fas fa-circle-notch fa-spin"></i>
+                             <span>Chargement...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <i class="fas fa-info-circle notification-icon" id="notificationIcon"></i>
+            <span class="notification-text" id="notificationText"></span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <h3>Assistant BTP</h3>
+            <button class="chatbot-close-btn" id="chatbotCloseBtn" title="Fermer le chat"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <!-- Messages will be appended here by JavaScript -->
+        </div>
+        <div class="chatbot-input-form">
+            <input type="text" id="chatbotInput" placeholder="Posez votre question...">
+            <button id="chatbotSendBtn" title="Envoyer le message"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="chatbot-toggler" id="chatbotToggler" title="Ouvrir l'assistant">
+        <i class="fas fa-comments"></i>
+    </div>
+
+
     <script>
-        // Créer des particules animées
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 40;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                particle.style.opacity = Math.random() * 0.4 + 0.2;
-                particlesContainer.appendChild(particle);
-            }
-        }
-        
-        // Navigation vers les jeux
-        function navigateToGame(gameUrl) {
-            // Vérifier si le fichier existe ou utiliser une page de redirection
-            if (gameUrl) {
-                window.location.href = gameUrl;
-            }
-        }
-        
-        // Gestion de la mascotte
-        function mascotSpeak(message, duration = 4000) {
-            const bubble = document.getElementById('mascot-bubble');
-            bubble.textContent = message;
-            bubble.classList.add('show');
-            
-            setTimeout(() => {
-                bubble.classList.remove('show');
-            }, duration);
-        }
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        let notificationPermission = Notification.permission;
 
-        // Fonction de partage améliorée
-        function shareSite() {
-            const shareData = {
-                title: 'LTD Simulator',
-                text: 'Découvrez ce simulateur de gestion de chantier professionnel !',
-                url: window.location.href
-            };
-
-            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-                navigator.share(shareData)
-                    .then(() => mascotSpeak('Merci pour le partage ! 🎉'))
-                    .catch((error) => {
-                        if (error.name !== 'AbortError') {
-                            fallbackShare();
-                        }
-                    });
-            } else {
-                fallbackShare();
-            }
-        }
-
-        function fallbackShare() {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(window.location.href)
-                    .then(() => mascotSpeak('Lien copié dans le presse-papiers ! 📋'))
-                    .catch(() => mascotSpeak('Impossible de copier le lien'));
-            } else {
-                // Fallback pour les navigateurs très anciens
-                const textArea = document.createElement('textarea');
-                textArea.value = window.location.href;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    mascotSpeak('Lien copié ! 📋');
-                } catch (err) {
-                    mascotSpeak('Partagez ce lien : ' + window.location.href, 6000);
+        function showProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            if (!progressBar || !progressFill) return;
+            progressBar.classList.add('show');
+            progressFill.style.width = '0%';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressBar.classList.remove('show');
+                        progressFill.style.width = '0%';
+                    }, 500);
                 }
-                document.body.removeChild(textArea);
-            }
+                progressFill.style.width = progress + '%';
+            }, 100);
         }
 
-        // Messages aléatoires de la mascotte
-        const mascotMessages = [
-            "Prêt à gérer un chantier ? 🏗️",
-            "Attention aux délais ! ⏰",
-            "N'oubliez pas la sécurité ! 🦺",
-            "Coordonnez bien vos équipes ! 👥",
-            "Gérez votre budget ! 💰"
+        function navigateTo(pageFile) {
+            showProgress();
+            showNotification(`Chargement de la page...`, 'info');
+            setTimeout(() => window.location.href = pageFile, 1000);
+        }
+        
+        function openLink(url) {
+            showNotification('Ouverture du lien dans un nouvel onglet...', 'info');
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
+        function showNotification(message, type = 'info', duration = 3000) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const notificationIcon = document.getElementById('notificationIcon');
+            if (!notification || !notificationText || !notificationIcon) return;
+            
+            notification.classList.remove('success', 'warning', 'error');
+            notificationIcon.className = 'notification-icon fas ';
+
+            switch(type) {
+                case 'success': notificationIcon.classList.add('fa-check-circle'); notification.classList.add('success'); break;
+                case 'warning': notificationIcon.classList.add('fa-exclamation-triangle'); notification.classList.add('warning'); break;
+                case 'error': notificationIcon.classList.add('fa-exclamation-circle'); notification.classList.add('error'); break;
+                default: notificationIcon.classList.add('fa-info-circle');
+            }
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), duration);
+        }
+        
+        function updateThemeUI() {
+            const themeIcon = document.getElementById('themeIcon');
+            if (!themeIcon) return;
+            document.body.classList.toggle('light-mode', currentTheme === 'light');
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateThemeUI();
+            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
+        }
+        
+        function toggleMobileMenu() {
+            const mobileToggle = document.getElementById('mobileToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        const allTenders = [
+            { type: 'tenders', title: "Travaux de rénovation et d'extension de l'école maternelle", location: "Toulouse (31)", date: "2025-08-22", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638319" },
+            { type: 'tenders', title: "Construction d'un centre aquatique intercommunal", location: "Agglomération de La Rochelle (17)", date: "2025-09-16", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638247" },
+            { type: 'tenders', title: "Aménagement de la ZAC du Parc des Calanques", location: "Marseille (13)", date: "2025-08-05", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638165" },
+            { type: 'tenders', title: "Marché de maîtrise d'oeuvre pour la restructuration d'un EHPAD", location: "Belfort (90)", date: "2025-09-02", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638053" },
+            { type: 'tenders', title: "Travaux d'entretien des voiries communales", location: "Strasbourg (67)", date: "2025-08-12", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2637992" }
         ];
 
-        function randomMascotMessage() {
-            const randomMessage = mascotMessages[Math.floor(Math.random() * mascotMessages.length)];
-            mascotSpeak(randomMessage);
+        const allNews = [
+            { type: 'news', title: "L'intelligence artificielle va-t-elle transformer le BTP ?", source: "Batiactu", date: "2025-07-15", link: "https://www.batiactu.com/edito/l-intelligence-artificielle-va-t-elle-transformer-btp-69887.php" },
+            { type: 'news', title: "BTP : la décarbonation est en marche, mais le chemin est encore long", source: "Le Moniteur", date: "2025-07-14", link: "https://www.lemoniteur.fr/article/btp-la-decarbonation-est-en-marche-mais-le-chemin-est-encore-long.2317628" },
+            { type: 'news', title: "Comment le réemploi des matériaux s'organise dans le BTP", source: "Batiweb", date: "2025-07-11", link: "https://www.batiweb.com/actualites/developpement-durable/comment-le-reemploi-des-materiaux-sorganise-dans-le-btp-20240711" },
+            { type: 'news', title: "Lafarge et Bouygues Construction s'allient pour un béton bas carbone", source: "Batiactu", date: "2025-07-09", link: "https://www.batiactu.com/edito/lafarge-et-bouygues-construction-s-allient-pour-un-beton-bas-carbone-69815.php" },
+            { type: 'news', title: "JO 2024 : le BTP a relevé le défi des délais", source: "Le Moniteur", date: "2025-07-05", link: "https://www.lemoniteur.fr/article/jo-2024-le-btp-a-releve-le-defi-des-delais.2316401" }
+        ];
+        
+        function populateTenders(isRefresh = false) {
+            const feed = document.getElementById('tenders-feed');
+            if (!feed) return;
+            
+            feed.innerHTML = ''; 
+            allTenders.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'feed-item';
+                itemEl.innerHTML = `
+                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
+                        <div class="feed-item-title">${item.title}</div>
+                        <div class="feed-item-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> ${item.location}</span>
+                            <span><i class="fas fa-calendar-alt"></i> Clôture le ${item.date}</span>
+                        </div>
+                        <div class="feed-item-action">Consulter l'offre <i class="fas fa-arrow-right"></i></div>
+                    </a>`;
+                feed.appendChild(itemEl);
+            });
+            if(isRefresh) showNotification("Appels d'offre actualisés.", 'success');
         }
 
-        // Initialisation
-        window.addEventListener('load', () => {
-            createParticles();
+        function populateNews(isRefresh = false) {
+            const feed = document.getElementById('news-feed');
+            if (!feed) return;
             
-            // Message de bienvenue
-            setTimeout(() => {
-                mascotSpeak('Bienvenue dans LTD Simulator ! 🎯', 5000);
-            }, 1000);
+            feed.innerHTML = '';
+            allNews.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'feed-item';
+                itemEl.innerHTML = `
+                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
+                        <div class="feed-item-title">${item.title}</div>
+                        <div class="feed-item-meta">
+                            <span><i class="fas fa-newspaper"></i> ${item.source}</span>
+                            <span><i class="fas fa-clock"></i> ${item.date}</span>
+                        </div>
+                        <div class="feed-item-action">Lire la suite <i class="fas fa-arrow-right"></i></div>
+                    </a>`;
+                feed.appendChild(itemEl);
+            });
+            if(isRefresh) showNotification("Actualités actualisées.", 'success');
+        }
+        
+        function updateNotifButtonUI() {
+            const buttons = document.querySelectorAll('.feed-action-btn[title^="Activer les notifications"]');
+            if (notificationPermission === 'granted') {
+                buttons.forEach(btn => {
+                    btn.classList.add('active');
+                    btn.title = 'Notifications activées';
+                });
+            } else {
+                 buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.title = 'Activer les notifications';
+                });
+            }
+        }
 
-            // Messages aléatoires périodiques
-            setInterval(randomMascotMessage, 30000);
-        });
+        function enableNotifications() {
+            if (!("Notification" in window)) {
+                showNotification("Ce navigateur ne supporte pas les notifications.", 'error');
+                return;
+            }
 
-        // Gestion des erreurs
-        window.addEventListener('error', (event) => {
-            console.error('Erreur détectée:', event.error);
-        });
+            if (notificationPermission === 'granted') {
+                showNotification("Les notifications sont déjà activées.", 'info');
+                return;
+            }
+            
+            if (notificationPermission === 'denied') {
+                showNotification("Les notifications ont été bloquées. Veuillez les autoriser dans les paramètres de votre navigateur.", 'warning', 5000);
+                return;
+            }
 
-        // Amélioration de l'accessibilité
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                const target = event.target;
-                if (target.classList.contains('game-card') && !target.classList.contains('coming-soon')) {
-                    navigateToGame('simulateur-directeur-travaux.html');
+            Notification.requestPermission().then(permission => {
+                notificationPermission = permission;
+                if (permission === "granted") {
+                    showNotification("Notifications activées avec succès !", 'success');
+                    sendSystemNotification("LTD Simulator", "Vous recevrez maintenant les dernières nouvelles ici.");
+                } else {
+                    showNotification("Notifications non autorisées.", 'warning');
+                }
+                updateNotifButtonUI();
+            });
+        }
+
+        function sendSystemNotification(title, body) {
+            if (notificationPermission !== 'granted') return;
+            const options = {
+                body: body,
+                icon: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD',
+                badge: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD'
+            };
+            new Notification(title, options);
+        }
+
+        function setupSlider() {
+            const slider = document.getElementById('imageSlider');
+            if (!slider) return;
+
+            const wrapper = slider.querySelector('.slider-wrapper');
+            const slides = slider.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('sliderPrev');
+            const nextBtn = document.getElementById('sliderNext');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            let currentIndex = 0;
+            let slideInterval;
+
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('slider-dot');
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                    resetInterval();
+                });
+                dotsContainer.appendChild(dot);
+            });
+            const dots = dotsContainer.querySelectorAll('.slider-dot');
+
+            function goToSlide(index) {
+                if (index === currentIndex) return;
+                
+                slides[currentIndex].classList.remove('active');
+                currentIndex = index;
+                slides[currentIndex].classList.add('active');
+                
+                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+                
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+
+            function nextSlide() {
+                const newIndex = (currentIndex + 1) % slides.length;
+                goToSlide(newIndex);
+            }
+
+            function prevSlide() {
+                const newIndex = (currentIndex - 1 + slides.length) % slides.length;
+                goToSlide(newIndex);
+            }
+            
+            function startInterval() {
+                slideInterval = setInterval(nextSlide, 7000); 
+            }
+
+            function resetInterval() {
+                clearInterval(slideInterval);
+                startInterval();
+            }
+
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetInterval();
+            });
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetInterval();
+            });
+            
+            // Initial state
+            slides[0].classList.add('active');
+            dots[0].classList.add('active');
+            startInterval();
+        }
+
+        function setupChatbot() {
+            const chatbotContainer = document.getElementById('chatbotContainer');
+            const chatbotToggler = document.getElementById('chatbotToggler');
+            const chatbotCloseBtn = document.getElementById('chatbotCloseBtn');
+            const chatbotInput = document.getElementById('chatbotInput');
+            const chatbotSendBtn = document.getElementById('chatbotSendBtn');
+            const chatbotMessages = document.getElementById('chatbotMessages');
+
+            if (!chatbotContainer || !chatbotToggler || !chatbotCloseBtn || !chatbotInput || !chatbotSendBtn || !chatbotMessages) {
+                console.warn("Éléments du chatbot non trouvés. Initialisation annulée.");
+                return;
+            }
+
+            chatbotToggler.addEventListener('click', () => {
+                chatbotContainer.classList.toggle('active');
+                if (chatbotContainer.classList.contains('active')) {
+                    chatbotInput.focus();
+                }
+            });
+
+            chatbotCloseBtn.addEventListener('click', () => {
+                chatbotContainer.classList.remove('active');
+            });
+
+            const handleSendMessage = (messageText) => {
+                const userMessage = (typeof messageText === 'string' ? messageText : chatbotInput.value).trim();
+                if (userMessage === '') return;
+
+                appendMessage(userMessage, 'user');
+                if (typeof messageText !== 'string') {
+                    chatbotInput.value = '';
+                }
+                chatbotInput.focus();
+                removeQuickReplies();
+                appendTypingIndicator();
+
+                setTimeout(() => {
+                    removeTypingIndicator();
+                    const botResponse = getBotResponse(userMessage);
+                    appendMessage(botResponse.text, 'bot', true);
+                    if(botResponse.replies) {
+                        showQuickReplies(botResponse.replies);
+                    }
+                }, 800 + Math.random() * 500);
+            };
+
+            chatbotSendBtn.addEventListener('click', () => handleSendMessage());
+            chatbotInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSendMessage();
+                }
+            });
+
+            function appendMessage(content, sender, isHTML = false) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', sender);
+                if (isHTML) {
+                    messageElement.innerHTML = content;
+                } else {
+                    messageElement.textContent = content;
+                }
+                chatbotMessages.appendChild(messageElement);
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            }
+            
+            function appendTypingIndicator() {
+                const indicator = document.createElement('div');
+                indicator.id = 'typingIndicator';
+                indicator.classList.add('message', 'bot');
+                indicator.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+                chatbotMessages.appendChild(indicator);
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            }
+            
+            function removeTypingIndicator() {
+                const indicator = document.getElementById('typingIndicator');
+                if (indicator) {
+                    indicator.remove();
                 }
             }
+            
+            function showQuickReplies(replies) {
+                const container = document.createElement('div');
+                container.className = 'quick-replies';
+                replies.forEach(replyText => {
+                    const button = document.createElement('button');
+                    button.className = 'quick-reply-btn';
+                    button.textContent = replyText;
+                    button.onclick = () => handleSendMessage(replyText);
+                    container.appendChild(button);
+                });
+                chatbotMessages.appendChild(container);
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            }
+            
+            function removeQuickReplies() {
+                const container = chatbotMessages.querySelector('.quick-replies');
+                if (container) {
+                    container.remove();
+                }
+            }
+            
+            function searchSite(query) {
+                const lowerQuery = query.toLowerCase();
+                const newsResults = allNews.filter(item => item.title.toLowerCase().includes(lowerQuery));
+                const tendersResults = allTenders.filter(item => item.title.toLowerCase().includes(lowerQuery) || item.location.toLowerCase().includes(lowerQuery));
+
+                if (newsResults.length === 0 && tendersResults.length === 0) {
+                    return "Je n'ai trouvé aucun résultat pour votre recherche. Essayez avec d'autres mots-clés.";
+                }
+
+                let response = "Voici ce que j'ai trouvé :<br>";
+                if (tendersResults.length > 0) {
+                    response += "<br><strong>Appels d'offre :</strong><ul>";
+                    tendersResults.forEach(item => {
+                        response += `<li><a href="#" onclick="openLink('${item.link}')">${item.title} (${item.location})</a></li>`;
+                    });
+                    response += "</ul>";
+                }
+                if (newsResults.length > 0) {
+                    response += "<br><strong>Actualités :</strong><ul>";
+                    newsResults.forEach(item => {
+                        response += `<li><a href="#" onclick="openLink('${item.link}')">${item.title}</a> (Source: ${item.source})</li>`;
+                    });
+                    response += "</ul>";
+                }
+                return response;
+            }
+
+            function getBotResponse(userInput) {
+                const lowerInput = userInput.toLowerCase();
+                
+                const intents = [
+                    { pattern: /recherche|trouve|cherche|article sur|appel d'offre pour/i, action: (input) => {
+                        const query = input.replace(/recherche|trouve|cherche|article sur|appel d'offre pour/i, "").trim();
+                        if (query.length < 3) return { text: "Veuillez préciser votre recherche avec au moins 3 caractères." };
+                        return { text: searchSite(query) };
+                    }},
+                    { pattern: /bonjour|salut|hello|yo/i, action: () => ({ text: "Bonjour ! Comment puis-je vous assister aujourd'hui ?", replies: ["Simulateurs", "Offres d'emploi", "Rechercher"] }) },
+                    { pattern: /simulateur|simulation/i, action: () => ({ text: "Nos simulateurs vous permettent de gérer des chantiers virtuels et de tester vos compétences. Vous pouvez y accéder via le menu 'Simulateurs' en haut de la page." }) },
+                    { pattern: /emploi|recrute|carrière|challenge/i, action: () => ({ text: "Nous avons des offres d'emploi et des challenges de recrutement. Consultez la section 'Nos offres d'emploi' ou 'Challenges' pour en savoir plus." }) },
+                    { pattern: /test|évaluation/i, action: () => ({ text: "Nous proposons des tests techniques et comportementaux pour évaluer vos compétences. Rendez-vous dans la section 'Tests'." }) },
+                    { pattern: /merci|remercie/i, action: () => ({ text: "De rien ! N'hésitez pas si vous avez d'autres questions." }) },
+                    { pattern: /au revoir|bye|ciao/i, action: () => ({ text: "Au revoir et à bientôt sur LTD Simulator !" }) }
+                ];
+
+                for (const intent of intents) {
+                    if (intent.pattern.test(lowerInput)) {
+                        return intent.action(lowerInput);
+                    }
+                }
+
+                return { text: "Je ne suis pas sûr de comprendre. Pourriez-vous reformuler ? Vous pouvez me demander de rechercher des articles ou des appels d'offres.", replies: ["Rechercher", "Simulateurs"] };
+            }
+            
+            function startChat() {
+                appendMessage("Bonjour ! Comment puis-je vous aider aujourd'hui concernant le BTP ?", 'bot');
+                showQuickReplies(["Infos sur les simulateurs", "Chercher un appel d'offre", "Actualités du BTP"]);
+            }
+            
+            startChat();
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateThemeUI();
+            
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            setTimeout(() => {
+                populateTenders();
+                populateNews();
+                updateNotifButtonUI();
+            }, 1000);
+            
+            setupSlider();
+            setupChatbot(); // Initialisation du chatbot
         });
     </script>
 </body>
