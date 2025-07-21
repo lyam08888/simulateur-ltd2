@@ -3,1621 +3,1921 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Simulateur de gestion de chantier, actualités et appels d'offres pour le BTP.">
-    <title>LTD Simulator - Accueil</title>
+    <title>Créateur de CV Expert</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- PDF & QR Code & Chart Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
-        :root {
-            /* Colors */
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #a5b4fc;
-            --secondary: #10b981;
-            --secondary-dark: #059669;
-            --accent: #f59e0b;
-            --accent-dark: #d97706;
-            
-            /* Surfaces */
-            --background: #0f172a;
-            --surface: #1e293b;
-            --surface-elevated: #334155;
-            --surface-hover: #475569;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            
-            /* Text */
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            
-            /* Shadows */
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.3);
-
-            /* Animation */
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            
-            /* Spacing */
-            --spacing-xs: 0.5rem;
-            --spacing-sm: 1rem;
-            --spacing-md: 1.5rem;
-            --spacing-lg: 2rem;
-            --spacing-xl: 3rem;
-            
-            /* Borders */
-            --radius-sm: 0.375rem;
-            --radius: 0.5rem;
-            --radius-md: 0.75rem;
-            --radius-lg: 1rem;
-            --radius-xl: 1.5rem;
-            --radius-full: 9999px;
-        }
-
-        /* Light mode */
-        body.light-mode {
-            --background: #f1f5f9;
-            --surface: #ffffff;
-            --surface-elevated: #e2e8f0;
-            --surface-hover: #cbd5e1;
-            --glass: rgba(0, 0, 0, 0.05);
-            --glass-border: rgba(0, 0, 0, 0.1);
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
-            --text-muted: #64748b;
-            --shadow-glow: 0 0 15px 0px rgba(99, 102, 241, 0.2);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        /* Custom styles */
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--background);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-            transition: var(--transition-slow);
+            font-family: 'Inter', sans-serif;
         }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
-            pointer-events: none;
-            z-index: -1;
-            animation: background-pan 30s linear infinite;
-        }
-        
-        @keyframes background-pan {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        [onclick], .nav-link, .mega-menu-item, .fab, .toggle-switch, .context-menu-item, .mobile-nav-item, .login-btn, .quick-settings-toggle, .theme-toggle, .mobile-toggle, .feed-action-btn, .notification-bell {
-            cursor: pointer;
-        }
-
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            backdrop-filter: blur(20px) saturate(180%);
-            background: rgba(15, 23, 42, 0.8);
-            border-bottom: 1px solid var(--glass-border);
-            transition: var(--transition);
-        }
-
-        body.light-mode .header {
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-md);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 4.5rem;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 800;
-            font-size: 1.5rem;
-            transition: var(--transition);
-        }
-        .logo:hover {
-            transform: scale(1.05);
-            text-shadow: 0 0 10px var(--primary-light);
-        }
-
-        .logo-icon {
-            font-size: 2rem;
-        }
-
-        .nav-desktop { display: none; }
-        @media (min-width: 1024px) {
-            .nav-desktop { display: flex; align-items: center; gap: var(--spacing-lg); }
-        }
-
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            list-style: none;
-        }
-
-        .nav-item { position: relative; }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            border-radius: var(--radius);
-            transition: var(--transition);
+        .cv-page {
+            width: 210mm;
+            min-height: 297mm;
+            page-break-after: always;
+            box-sizing: border-box;
             position: relative;
+        }
+        .cv-section, .cv-item, .cv-header {
+            page-break-inside: avoid;
+        }
+        .dragging {
+            opacity: 0.5;
+            background-color: #eef2ff;
+        }
+        .drop-zone.drag-over {
+            border-style: solid;
+            border-color: #4f46e5;
+            background-color: #f4f4f5;
+        }
+        .accordion-content {
+            max-height: 0;
             overflow: hidden;
+            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+            opacity: 0;
         }
-
-        .nav-link:hover {
-            color: var(--text-primary);
-            background: var(--glass);
-        }
-
-        .nav-link.active {
-            color: var(--text-primary);
-            background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
-            font-weight: 600;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            color: var(--text-secondary);
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .theme-toggle:hover {
-            background: var(--surface-elevated);
-            color: var(--text-primary);
-            transform: rotate(15deg);
-        }
-
-        .mobile-toggle {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 2.5rem;
-            height: 2.5rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            transition: var(--transition);
-        }
-        @media (min-width: 1024px) {
-            .mobile-toggle { display: none; }
-        }
-
-        .hamburger { position: relative; width: 1.25rem; height: 1rem; }
-        .hamburger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--text-primary); border-radius: 1px; transition: var(--transition); }
-        .hamburger span:nth-child(1) { top: 0; }
-        .hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
-        .hamburger span:nth-child(3) { bottom: 0; }
-        .mobile-toggle.active .hamburger span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); }
-        .mobile-toggle.active .hamburger span:nth-child(2) { opacity: 0; }
-        .mobile-toggle.active .hamburger span:nth-child(3) { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
-        
-        .mobile-menu { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--background); z-index: 999; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: var(--transition-slow); }
-        .mobile-menu.active { opacity: 1; visibility: visible; }
-        .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
-        .mobile-menu-close { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius); color: var(--text-primary); }
-        .mobile-menu-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
-        .mobile-nav-section h3 { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--spacing-md); }
-        .mobile-nav-items { display: flex; flex-direction: column; gap: var(--spacing-xs); }
-        .mobile-nav-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-md); }
-        .mobile-nav-item-icon { font-size: 1.25rem; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; background: var(--glass); border-radius: var(--radius); }
-        .mobile-nav-item:hover { background: var(--glass); color: var(--text-primary); }
-
-        .main-content { margin-top: 4.5rem; padding: var(--spacing-xl) var(--spacing-md); max-width: 1400px; margin-left: auto; margin-right: auto; }
-        .hero { text-align: center; padding: var(--spacing-xl) 0; transition: var(--transition-slow); }
-        .hero h1 { 
-            font-size: clamp(2.8rem, 5vw, 4rem); 
-            font-weight: 800; 
-            margin-bottom: var(--spacing-lg); 
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 50%, var(--accent) 100%); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            background-clip: text;
-            background-size: 200% 200%;
-            animation: text-gradient-pan 5s ease infinite;
-        }
-        @keyframes text-gradient-pan {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.7; }
-        
-        /* --- AMÉLIORATION: Image Slider --- */
-        .slider-container {
-            position: relative;
-            width: 100%;
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            margin-bottom: var(--spacing-xl);
-            background-color: var(--surface);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--glass-border);
-        }
-        .slider-wrapper {
-            display: flex;
-            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-        .slide {
-            min-width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        .slide img {
-            width: 100%;
-            display: block;
-            aspect-ratio: 16 / 6;
-            object-fit: cover;
-            transition: transform 8s ease-out;
-        }
-        .slide.active img {
-            transform: scale(1.1);
-        }
-        .slide-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: var(--spacing-lg);
-            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 10%, transparent);
-            color: var(--text-primary);
-            transform: translateY(100%);
-            transition: transform 0.6s ease-out;
-        }
-        .slide.active .slide-content {
-            transform: translateY(0);
-        }
-        body.light-mode .slide-content {
-             background: linear-gradient(to top, rgba(241, 245, 249, 0.9) 10%, transparent);
-        }
-        .slide-content h3 {
-            font-size: clamp(1.5rem, 3vw, 2.25rem);
-            font-weight: 700;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            margin-bottom: var(--spacing-xs);
-        }
-        .slide-content p {
-            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-            color: var(--text-secondary);
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-        .slider-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3rem;
-            height: 3rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-full);
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition-slow);
-            opacity: 0.7;
-        }
-        .slider-nav:hover {
-            background-color: var(--primary);
-            transform: translateY(-50%) scale(1.1);
+        .accordion-content.open {
+            max-height: 4000px; /* Increased max-height */
             opacity: 1;
         }
-        .slider-nav.prev {
-            left: var(--spacing-md);
+        .tooltip {
+            position: relative;
+            display: inline-block;
         }
-        .slider-nav.next {
-            right: var(--spacing-md);
-        }
-        .slider-dots {
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: max-content;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 8px;
             position: absolute;
-            bottom: var(--spacing-md);
+            z-index: 50;
+            bottom: 125%;
             left: 50%;
             transform: translateX(-50%);
-            display: flex;
-            gap: var(--spacing-sm);
-        }
-        .slider-dot {
-            width: 0.75rem;
-            height: 0.75rem;
-            border-radius: var(--radius-full);
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            cursor: pointer;
-            transition: var(--transition-slow);
-        }
-        .slider-dot.active {
-            background: var(--primary);
-            transform: scale(1.3);
-            box-shadow: 0 0 10px var(--primary-light);
-        }
-        /* --- FIN AMÉLIORATION --- */
-
-        .news-banner {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: var(--spacing-xl);
-            margin: var(--spacing-xl) 0;
-        }
-        .news-banner-header {
-            text-align: center;
-            margin-bottom: var(--spacing-lg);
-        }
-        .news-banner-header h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: var(--spacing-xs);
-        }
-        .news-banner-header p {
-            color: var(--text-secondary);
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        .news-banner-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--spacing-lg);
-        }
-        .news-banner-item {
-            background: var(--background);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-            text-decoration: none;
-            color: inherit;
-            transition: var(--transition-slow);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-        .news-banner-item:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: var(--shadow-glow);
-            border-color: var(--primary-light);
-        }
-        .news-banner-item img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-        .news-banner-item:hover img {
-            transform: scale(1.05);
-        }
-        .news-banner-item-content {
-            padding: var(--spacing-md);
-        }
-
-        .new-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: linear-gradient(45deg, var(--accent), var(--accent-dark));
-            color: white;
-            padding: 0.3rem 0.7rem;
-            border-radius: var(--radius-full);
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-            animation: pulse-glow 2.5s infinite ease-in-out;
-            z-index: 1;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6);
-            }
-        }
-
-        .news-banner-item-content h5 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-xs);
-        }
-        .news-banner-item-content p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .quick-actions { transition: var(--transition-slow); }
-        .quick-action-card {
-            background: var(--surface); 
-            padding: 0; 
-            border-radius: var(--radius-lg); 
-            border: 1px solid var(--glass-border); 
-            text-align: center; 
-            transition: var(--transition-slow);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        .quick-action-card:hover { 
-            transform: translateY(-10px); 
-            box-shadow: var(--shadow-glow); 
-            border-color: var(--primary);
-        }
-        .quick-action-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            display: block;
-        }
-        .quick-action-card-content {
-            padding: 1.5rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .quick-action-card .btn {
-            background: var(--primary); 
-            color: white; 
-            padding: 0.75rem 2rem; 
-            border-radius: var(--radius); 
-            display: inline-block; 
-            font-weight: 600;
-            transition: var(--transition-slow);
-            margin-top: 1.5rem;
-        }
-        .quick-action-card:hover .btn {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .quick-action-card .btn-secondary { background: var(--secondary); }
-        .quick-action-card .btn-accent { background: var(--accent); }
-
-
-        .animate-in { animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-
-        .search-section { margin-bottom: var(--spacing-xl); }
-        .search-container { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); display: flex; flex-direction: column; gap: var(--spacing-md); }
-        @media (min-width: 768px) { .search-container { flex-direction: row; align-items: center; } }
-        .search-input-wrapper { position: relative; flex-grow: 1; }
-        .search-input-wrapper i { position: absolute; top: 50%; left: var(--spacing-md); transform: translateY(-50%); color: var(--text-muted); }
-        .search-input-wrapper input { width: 100%; background: var(--background); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 2.5rem; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
-        .search-input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); outline: none; }
-        
-        .search-button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .search-button:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.05);
-        }
-
-        .btp-wall-street { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: var(--spacing-xl); margin-top: var(--spacing-xl); }
-        .feed-column { 
-            background: var(--surface); 
-            border-radius: var(--radius-lg); 
-            border: 1px solid var(--glass-border); 
-            overflow: hidden; 
-            transition: var(--transition-slow);
-            display: flex;
-            flex-direction: column;
-        }
-        .feed-column img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            display: block;
-        }
-        .feed-content {
-            padding: var(--spacing-lg);
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-        .feed-header { display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--glass-border); }
-        .feed-header-title { display: flex; align-items: center; gap: var(--spacing-sm); flex-grow: 1; }
-        .feed-header i { font-size: 1.5rem; color: var(--primary); }
-        .feed-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
-        .feed-header-actions { display: flex; gap: var(--spacing-sm); }
-        .feed-action-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-muted); width: 2.2rem; height: 2.2rem; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
-        .feed-action-btn:hover { background: var(--surface-hover); color: var(--text-primary); transform: scale(1.1); }
-        .feed-action-btn.active { color: var(--primary); }
-        .feed-list { flex-grow: 1; min-height: 400px; overflow-y: auto; padding-right: var(--spacing-sm); }
-        .feed-list::-webkit-scrollbar { width: 6px; }
-        .feed-list::-webkit-scrollbar-track { background: transparent; }
-        .feed-list::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: var(--radius-full); }
-        .feed-list::-webkit-scrollbar-thumb:hover { background: var(--surface-hover); }
-        .feed-item { padding: var(--spacing-md) 0; border-bottom: 1px solid var(--glass-border); transition: var(--transition); }
-        .feed-item:last-child { border-bottom: none; }
-        .feed-item a { text-decoration: none; color: var(--text-primary); display: block; padding: var(--spacing-xs); margin: calc(-1 * var(--spacing-xs)); border-radius: var(--radius); transition: background-color 0.3s; }
-        .feed-item a:hover { background-color: var(--glass); }
-        .feed-item-title { font-weight: 600; margin-bottom: var(--spacing-xs); }
-        .feed-item-meta { display: flex; align-items: center; gap: var(--spacing-sm); font-size: 0.875rem; color: var(--text-muted); flex-wrap: wrap; }
-        .feed-item-meta span { display: flex; align-items: center; gap: var(--spacing-xs); }
-        .feed-item-action { margin-top: var(--spacing-sm); display: inline-block; color: var(--primary); font-weight: 600; font-size: 0.875rem; }
-        .feed-item-action:hover { text-decoration: underline; }
-        .placeholder { text-align: center; padding: var(--spacing-xl) 0; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: var(--spacing-sm); }
-        .placeholder i { font-size: 1.5rem; }
-
-        .notification { position: fixed; bottom: var(--spacing-lg); right: var(--spacing-lg); background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-md); box-shadow: var(--shadow-xl); transform: translateX(calc(100% + var(--spacing-lg))); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; backdrop-filter: blur(20px); max-width: 350px; }
-        .notification.show { transform: translateX(0); }
-        .notification-content { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
-        .notification-icon { font-size: 1.25rem; color: var(--primary); margin-top: 2px; }
-        .notification-text { color: var(--text-primary); font-weight: 500; flex: 1; }
-        .notification-close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: 1rem; }
-        .notification.success .notification-icon { color: var(--secondary); }
-        .notification.warning .notification-icon { color: var(--accent); }
-        .notification.error .notification-icon { color: #ef4444; }
-
-        .progress-bar { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: transparent; z-index: 1001; opacity: 0; transition: opacity 0.3s ease; }
-        .progress-bar.show { opacity: 1; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 10px var(--primary), 0 0 5px var(--secondary); }
-        
-        /* --- Chatbot Styles --- */
-        .chatbot-toggler {
-            position: fixed;
-            bottom: var(--spacing-lg);
-            right: var(--spacing-lg);
-            width: 4rem;
-            height: 4rem;
-            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
-            color: white;
-            border-radius: var(--radius-full);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-            cursor: pointer;
-            box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.5);
-            z-index: 1050;
-            transition: var(--transition-slow);
-            animation: pulse-glow-chat 2.5s infinite ease-in-out;
-        }
-
-        .chatbot-toggler:hover {
-            transform: scale(1.1) rotate(-10deg);
-            box-shadow: var(--shadow-xl), 0 0 30px var(--primary);
-        }
-
-        @keyframes pulse-glow-chat {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.4);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: var(--shadow-lg), 0 0 30px rgba(99, 102, 241, 0.6);
-            }
-        }
-
-        .chatbot-container {
-            position: fixed;
-            bottom: calc(var(--spacing-lg) + 5rem);
-            right: var(--spacing-lg);
-            width: 90%;
-            max-width: 400px;
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-xl);
-            z-index: 1200;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
             opacity: 0;
-            transform: translateY(20px) scale(0.95);
-            visibility: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.3s;
+            font-size: 0.75rem;
+            pointer-events: none;
         }
-
-        .chatbot-container.active {
-            opacity: 1;
-            transform: translateY(0) scale(1);
+        .tooltip:hover .tooltip-text {
             visibility: visible;
+            opacity: 1;
         }
-
-        @media (max-width: 480px) {
-            .chatbot-container {
-                right: var(--spacing-md);
-                bottom: calc(var(--spacing-md) + 4.5rem);
-                width: calc(100% - (2 * var(--spacing-md)));
-            }
-            .chatbot-toggler {
-                right: var(--spacing-md);
-                bottom: var(--spacing-md);
-                width: 3.5rem;
-                height: 3.5rem;
-                font-size: 1.5rem;
-            }
-        }
-
-        .chatbot-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: var(--surface-elevated);
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .chatbot-header h3 {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text-primary);
-        }
-
-        .chatbot-close-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.25rem;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4f46e5;
             cursor: pointer;
-            transition: var(--transition);
+            border-radius: 50%;
         }
-
-        .chatbot-close-btn:hover {
-            color: var(--text-primary);
-            transform: rotate(90deg);
-        }
-
-        .chatbot-messages {
-            flex: 1;
-            padding: var(--spacing-md);
-            overflow-y: auto;
-            height: 300px;
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
-        }
-
-        .chatbot-messages::-webkit-scrollbar { width: 5px; }
-        .chatbot-messages::-webkit-scrollbar-track { background: transparent; }
-        .chatbot-messages::-webkit-scrollbar-thumb { background: var(--surface-elevated); border-radius: var(--radius-full); }
-
-        .message {
-            max-width: 85%;
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: var(--radius-lg);
-            line-height: 1.4;
-            word-wrap: break-word;
-            animation: message-fade-in 0.4s ease;
-        }
-        
-        @keyframes message-fade-in {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message.user {
-            background: var(--primary);
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: var(--radius-sm);
-        }
-
-        .message.bot {
-            background: var(--surface-elevated);
-            color: var(--text-secondary);
-            align-self: flex-start;
-            border-bottom-left-radius: var(--radius-sm);
-        }
-        
-        .message.bot a {
-            color: var(--primary-light);
-            text-decoration: underline;
-        }
-        
-        .message.bot strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .chatbot-input-form {
-            display: flex;
-            padding: var(--spacing-sm);
-            border-top: 1px solid var(--glass-border);
-            background: var(--surface);
-        }
-
-        #chatbotInput {
-            flex: 1;
-            background: var(--background);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: var(--spacing-sm);
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: var(--transition);
-            margin-right: var(--spacing-sm);
-        }
-
-        #chatbotInput:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
-        }
-
-        #chatbotSendBtn {
-            background: var(--primary);
-            border: none;
-            color: white;
-            width: 3rem;
-            height: 3rem;
-            border-radius: var(--radius);
-            font-size: 1.2rem;
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #4f46e5;
             cursor: pointer;
-            transition: var(--transition);
+            border-radius: 50%;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 25px;
+            border-left: 2px solid #e5e7eb;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: white;
+            border: 2px solid var(--primary-color, #4f46e5);
+        }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .highlight {
+            background-color: #fef08a; /* yellow-200 */
+        }
+        /* Modal styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 100;
         }
-
-        #chatbotSendBtn:hover {
-            background: var(--primary-dark);
-            transform: scale(1.1);
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        
-        .quick-replies {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-xs);
-            margin-top: var(--spacing-sm);
-            align-self: flex-start;
-        }
-        
-        .quick-reply-btn {
-            background: var(--surface-elevated);
-            border: 1px solid var(--glass-border);
-            color: var(--text-secondary);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .quick-reply-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary-dark);
-        }
-        
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background-color: var(--text-muted);
-            border-radius: 50%;
-            animation: typing-bounce 1s infinite;
-        }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes typing-bounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
-        }
-
     </style>
 </head>
-<body>
-    <div class="progress-bar" id="progressBar">
-        <div class="progress-fill" id="progressFill"></div>
-    </div>
+<body class="bg-gray-100">
 
-    <!-- Header -->
-    <header class="header" id="header">
-        <nav class="nav-container">
-            <a href="index.html" class="logo" onclick="event.preventDefault(); navigateTo('index.html');">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">LTD Simulator</span>
-            </a>
-            <div class="nav-desktop">
-                 <ul class="nav-menu">
-                     <li class="nav-item"><a href="index.html" class="nav-link active" onclick="event.preventDefault(); navigateTo('index.html')"><i class="fas fa-home"></i>&nbsp;Accueil</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('simulateur.html')"><i class="fas fa-gamepad"></i>&nbsp;Simulateurs</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('test.html')"><i class="fas fa-brain"></i>&nbsp;Tests</a></li>
-                     <li class="nav-item"><a href="challenges.html" class="nav-link" onclick="event.preventDefault(); navigateTo('challenges.html')"><i class="fas fa-trophy"></i>&nbsp;Challenges</a></li>
-                     <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('emploi.html')"><i class="fas fa-briefcase"></i>&nbsp;Nos offres d'emploi</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link" onclick="event.preventDefault(); navigateTo('histoire.html')"><i class="fas fa-scroll"></i>&nbsp;Histoire du BTP</a></li>
-                 </ul>
-                 <div class="nav-actions">
-                     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer de thème">
-                         <i class="fas fa-moon" id="themeIcon"></i>
-                     </button>
-                 </div>
-            </div>
-            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
-                <span class="hamburger"><span></span><span></span><span></span></span>
-            </button>
-        </nav>
-    </header>
+    <div id="app" class="min-h-screen p-2 md:p-6"></div>
+    <div id="modal-container"></div>
 
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <div class="mobile-menu-header">
-            <a href="index.html" class="logo" onclick="event.preventDefault(); toggleMobileMenu(); navigateTo('index.html');">
-                <span class="logo-icon">🏗️</span>
-                <span class="logo-text">LTD Simulator</span>
-            </a>
-            <button class="mobile-menu-close" onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="mobile-menu-content">
-            <div class="mobile-nav-section">
-                <h3>Navigation</h3>
-                <div class="mobile-nav-items">
-                    <a href="index.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('index.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-home"></i></div>
-                        <h4>Accueil</h4>
-                    </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('simulateur.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-gamepad"></i></div>
-                        <h4>Simulateurs</h4>
-                    </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('test.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-brain"></i></div>
-                        <h4>Tests</h4>
-                    </a>
-                     <a href="challenges.html" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('challenges.html')">
-                         <div class="mobile-nav-item-icon"><i class="fas fa-trophy"></i></div>
-                         <h4>Challenges</h4>
-                     </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('emploi.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-briefcase"></i></div>
-                        <h4>Nos offres d'emploi</h4>
-                    </a>
-                    <a href="#" class="mobile-nav-item" onclick="event.preventDefault(); navigateTo('histoire.html')">
-                        <div class="mobile-nav-item-icon"><i class="fas fa-scroll"></i></div>
-                        <h4>Histoire du BTP</h4>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script type="module">
+        // --- INITIAL DATA ---
+        const initialCvData = {
+            personal: {
+                firstName: 'Alexandre',
+                lastName: 'Dubois',
+                title: 'Chef de Projet Digital',
+                email: 'alex.dubois@email.com',
+                phone: '+33 6 98 76 54 32',
+                address: 'Lyon, France',
+                summary: 'Chef de projet digital créatif et rigoureux, avec 8 ans d\'expérience dans la gestion de projets web et mobiles, de la conception à la mise en production. Passionné par l\'innovation et l\'optimisation de l\'expérience utilisateur.',
+            },
+            experiences: [
+                { id: Date.now() + 1, company: 'Web Agency "La Crème"', position: 'Chef de Projet Senior', startDate: '2019', endDate: 'Présent', description: 'Pilotage de projets d\'envergure pour des clients grands comptes. Gestion des équipes de développement et de design. Responsable du respect des délais et des budgets.' }
+            ],
+            projects: [
+                { id: Date.now() + 2, name: 'Refonte E-commerce', url: 'exemple.com', description: 'Direction de la refonte complète d\'une plateforme e-commerce, résultant en une augmentation de 25% des conversions.' }
+            ],
+            education: [
+                { id: Date.now() + 3, institution: 'INSEEC Lyon', degree: 'Master en Management Digital', startDate: '2015', endDate: '2017', description: 'Spécialisation en stratégie digitale et gestion de projet.' }
+            ],
+            skills: [
+                { id: Date.now() + 4, category: 'Gestion de Projet', name: 'Méthodes Agiles', level: 5, icon: 'zap' },
+                { id: Date.now() + 5, category: 'Gestion de Projet', name: 'Scrum & Kanban', level: 5, icon: 'columns' },
+                { id: Date.now() + 6, category: 'Design', name: 'UX/UI Design', level: 4, icon: 'figma' },
+                { id: Date.now() + 7, category: 'Marketing', name: 'SEO/SEA', level: 4, icon: 'trending-up' },
+            ],
+            awards: [
+                { id: Date.now() + 8, name: 'Trophée de l\'Innovation Digitale', issuer: 'Web Summit', date: '2021', description: 'Récompense pour un projet innovant de réalité augmentée en e-commerce.'}
+            ],
+            languages: [
+                { id: Date.now() + 9, name: 'Français', level: 'Natif' },
+                { id: Date.now() + 10, name: 'Anglais', level: 'Courant (C1)' }
+            ],
+            hobbies: [
+                { id: Date.now() + 11, name: 'Photographie Urbaine', icon: 'camera' },
+                { id: Date.now() + 12, name: 'Veille Technologique', icon: 'code' },
+                { id: Date.now() + 13, name: 'Randonnée', icon: 'dumbbell' }
+            ],
+            socials: [
+                { id: Date.now() + 14, network: 'linkedin', url: 'https://linkedin.com/in/alexandredubois' },
+                { id: Date.now() + 15, network: 'github', url: 'https://github.com/alexandredubois' }
+            ],
+            customSections: [
+                { id: Date.now() + 16, title: 'Bénévolat', content: 'Organisation d\'événements caritatifs pour l\'association "Code for Good".' }
+            ]
+        };
 
-    <!-- Main Content -->
-    <main class="main-content">
-        
-        <!-- Image Slider Section -->
-        <section class="slider-container animate-in" id="imageSlider">
-            <div class="slider-wrapper">
-                <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&amp;w=2070&amp;auto=format&amp;fit=crop" 
-                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/1e293b/f8fafc?text=Chantier+Moderne';" 
-                         alt="Chantier de construction moderne">
-                    <div class="slide-content">
-                        <h3>Le BTP de Demain</h3>
-                        <p>Explorez les technologies qui révolutionnent la construction.</p>
-                    </div>
-                </div>
-                <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&amp;w=2053&amp;auto=format&amp;fit=crop" 
-                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/6366f1/FFFFFF?text=Innovation+%26+Formation';" 
-                         alt="Innovation et formation dans le BTP">
-                    <div class="slide-content">
-                        <h3>Innovez avec nos Simulateurs</h3>
-                        <p>Développez vos compétences sur des cas pratiques et réalistes.</p>
-                    </div>
-                </div>
-                <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&amp;w=2070&amp;auto=format&amp;fit=crop" 
-                         onerror="this.onerror=null;this.src='https://placehold.co/1400x450/10b981/FFFFFF?text=Carrières+d'Avenir';" 
-                         alt="Opportunités de carrière dans le BTP">
-                    <div class="slide-content">
-                        <h3>Votre Carrière Commence Ici</h3>
-                        <p>Découvrez des challenges et des offres d'emploi uniques.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="slider-nav prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></div>
-            <div class="slider-nav next" id="sliderNext"><i class="fas fa-chevron-right"></i></div>
-            <div class="slider-dots" id="sliderDots"></div>
-        </section>
-        
-        <!-- Search Section -->
-        <section class="search-section animate-in">
-            <form action="recherche.html" method="GET" class="search-container">
-                <div class="search-input-wrapper">
-                    <i class="fas fa-search"></i>
-                    <input type="text" name="query" required placeholder="Rechercher sur tout le site...">
-                </div>
-                <button type="submit" class="search-button">Rechercher</button>
-            </form>
-        </section>
+        // --- CONFIGURATIONS ---
+        const themes = {
+            professional: { name: 'Professionnel', settings: { activeTemplate: 'classic', activePalette: 'indigo', activeFont: 'serif', headerAlignment: 'left' } },
+            creative: { name: 'Créatif', settings: { activeTemplate: 'creative', activePalette: 'sunset', activeFont: 'sans', headerAlignment: 'center', experienceStyle: 'timeline' } },
+            academic: { name: 'Académique', settings: { activeTemplate: 'classic', activePalette: 'monochrome', activeFont: 'serif', activeLayout: 'single' } },
+            startup: { name: 'Startup', settings: { activeTemplate: 'tech', activePalette: 'ocean', activeFont: 'mono', skillDisplayStyle: 'radar' } }
+        };
+        const templates = { modern: { name: 'Moderne' }, classic: { name: 'Classique' }, creative: { name: 'Créatif' }, minimalist: { name: 'Minimaliste' }, tech: { name: 'Tech' } };
+        const layouts = { single: { name: 'Une colonne' }, two: { name: 'Deux colonnes' } };
+        const fonts = {
+            sans: { name: 'Inter (Sans)', family: "'Inter', sans-serif" },
+            serif: { name: 'Lora (Serif)', family: "'Lora', serif" },
+            mono: { name: 'JetBrains Mono', family: "'JetBrains Mono', monospace" },
+        };
+        const palettes = {
+            indigo: { name: 'Indigo', primary: '#4f46e5', secondary: '#eef2ff', accent: '#3730a3', textOnPrimary: '#ffffff' },
+            ocean: { name: 'Océan', primary: '#0891b2', secondary: '#ecfeff', accent: '#164e63', textOnPrimary: '#ffffff' },
+            forest: { name: 'Forêt', primary: '#166534', secondary: '#f0fdf4', accent: '#14532d', textOnPrimary: '#ffffff' },
+            sunset: { name: 'Crépuscule', primary: '#ea580c', secondary: '#fff7ed', accent: '#c2410c', textOnPrimary: '#ffffff' },
+            monochrome: { name: 'Monochrome', primary: '#1f2937', secondary: '#f9fafb', accent: '#111827', textOnPrimary: '#ffffff' }
+        };
+        const hobbyIcons = ['code', 'book-open', 'camera', 'music', 'plane', 'dumbbell', 'paintbrush', 'heart', 'star', 'lightbulb', 'compass'];
+        const socialIcons = { linkedin: 'linkedin', github: 'github', twitter: 'twitter', globe: 'globe', default: 'link' };
+        const sectionIcons = ['briefcase', 'projector', 'graduation-cap', 'award', 'zap', 'globe', 'heart', 'user-check', 'star', 'link'];
+        const iconPacks = {
+            professional: { name: 'Professionnel', icons: { socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', languages: 'globe', hobbies: 'coffee' } },
+            creative: { name: 'Créatif', icons: { socials: 'share-2', experiences: 'feather', projects: 'wand', education: 'book-open', awards: 'sparkles', skills: 'palette', languages: 'message-circle', hobbies: 'music' } },
+            minimalist: { name: 'Minimaliste', icons: { socials: 'arrow-up-right', experiences: 'square', projects: 'triangle', education: 'circle', awards: 'star', skills: 'bar-chart-2', languages: 'chevron-right', hobbies: 'more-horizontal' } }
+        };
 
-        <section class="hero animate-in">
-            <h1>Maîtrisez les métiers du BTP</h1>
-            <p>Formez-vous aux métiers d'avenir du BTP avec nos simulateurs professionnels. Le secteur recrute massivement : préparez votre carrière dès maintenant !</p>
-        </section>
+        // --- STATE MANAGEMENT ---
+        let state = {};
+        let chartInstance = null;
 
-        <!-- News Banner Section -->
-        <section class="news-banner animate-in">
-            <div class="news-banner-header">
-                <h2>Les Nouveautés à ne pas manquer</h2>
-                <p>Restez à jour avec nos derniers tests, challenges et actualités du secteur.</p>
-            </div>
-            <div class="news-banner-grid">
-                <a href="#" onclick="event.preventDefault(); navigateTo('testperso.html')" class="news-banner-item">
-                    <img src="https://images.unsplash.com/photo-1573497491208-6b1acb260507?q=80&amp;w=870&amp;auto=format&amp;fit=crop" alt="Illustration d'un test comportemental" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Test+Comportemental';">
-                    <span class="new-badge">Nouveau</span>
-                    <div class="news-banner-item-content">
-                        <h5>Test Comportemental</h5>
-                        <p>Évaluez vos soft skills en situation professionnelle.</p>
-                    </div>
-                </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('prixtce.html')" class="news-banner-item">
-                     <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&amp;w=1032&amp;auto=format&amp;fit=crop" alt="Illustration d'une étude de prix" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Étude+de+Prix';">
-                    <span class="new-badge">Nouveau</span>
-                    <div class="news-banner-item-content">
-                        <h5>Challenge Étude de Prix TCE</h5>
-                        <p>Réalisez un chiffrage complet et un mémoire technique.</p>
-                    </div>
-                </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('histoire.html')" class="news-banner-item">
-                    <img src="https://images.unsplash.com/photo-1519010470956-6d877008eaa4?q=80&amp;w=870&amp;auto=format&amp;fit=crop" alt="Illustration de constructions marquantes" onerror="this.onerror=null;this.src='https://placehold.co/400x150/1e293b/f8fafc?text=Constructions';">
-                    <span class="new-badge">Nouveau</span>
-                    <div class="news-banner-item-content">
-                        <h5>Constructions Marquantes</h5>
-                        <p>Découvrez les édifices emblématiques du monde entier.</p>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <section class="quick-actions animate-in" style="margin: 4rem 0;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                <a href="#" onclick="event.preventDefault(); navigateTo('simulateur.html')" style="text-decoration: none; color: inherit;">
-                    <div class="quick-action-card">
-                        <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1618090584247-d5051393a064?q=80&amp;w=870&amp;auto=format&amp;fit=crop');"></div>
-                        <div class="quick-action-card-content">
-                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Simulateurs</h3>
-                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Gérez des chantiers et testez vos compétences techniques.</p>
-                            <div class="btn">Lancer</div>
-                        </div>
-                    </div>
-                </a>
-                <a href="#" onclick="event.preventDefault(); navigateTo('test.html')" style="text-decoration: none; color: inherit;">
-                    <div class="quick-action-card">
-                        <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&amp;w=765&amp;auto=format&amp;fit=crop');"></div>
-                        <div class="quick-action-card-content">
-                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Tests & Évaluation</h3>
-                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Évaluez vos soft-skills et connaissances techniques.</p>
-                            <div class="btn btn-secondary">Commencer</div>
-                        </div>
-                    </div>
-                </a>
-                <a href="challenges.html" onclick="event.preventDefault(); navigateTo('challenges.html')" style="text-decoration: none; color: inherit;">
-                    <div class="quick-action-card">
-                        <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1560415755-bd80d06eda60?q=80&amp;w=870&amp;auto=format&amp;fit=crop');"></div>
-                        <div class="quick-action-card-content">
-                            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Challenges Recrutement</h3>
-                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Candidatez différemment et montrez vos compétences.</p>
-                            <div class="btn btn-accent">Participer</div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </section>
-        
-        <!-- BTP Wall Street Section -->
-        <section class="btp-wall-street">
-            <!-- Tenders Column -->
-            <div class="feed-column" id="tenders-feed-container">
-                <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1600880292210-85938b638942?q=80&amp;w=870&amp;auto=format&amp;fit=crop');"></div>
-                <div class="feed-content">
-                    <div class="feed-header">
-                        <div class="feed-header-title">
-                            <i class="fas fa-gavel"></i>
-                            <h2>Appels d'offre</h2>
-                        </div>
-                        <div class="feed-header-actions">
-                            <button class="feed-action-btn" onclick="enableNotifications('tenders')" title="Activer les notifications pour les appels d'offre">
-                                <i class="fas fa-bell"></i>
-                            </button>
-                            <button class="feed-action-btn" onclick="populateTenders(true)" title="Rafraîchir les appels d'offre">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="feed-list" id="tenders-feed">
-                        <div class="placeholder">
-                            <i class="fas fa-circle-notch fa-spin"></i>
-                            <span>Chargement...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- News Column -->
-            <div class="feed-column" id="news-feed-container">
-                <div class="card-image-header" style="background-image: url('https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&amp;w=869&amp;auto=format&amp;fit=crop');"></div>
-                <div class="feed-content">
-                    <div class="feed-header">
-                         <div class="feed-header-title">
-                             <i class="fas fa-newspaper" style="color: var(--secondary);"></i>
-                             <h2>Actualités BTP</h2>
-                         </div>
-                         <div class="feed-header-actions">
-                             <button class="feed-action-btn" onclick="enableNotifications('news')" title="Activer les notifications pour les actualités">
-                                 <i class="fas fa-bell"></i>
-                             </button>
-                             <button class="feed-action-btn" onclick="populateNews(true)" title="Rafraîchir les actualités">
-                                 <i class="fas fa-sync-alt"></i>
-                             </button>
-                         </div>
-                    </div>
-                    <div class="feed-list" id="news-feed">
-                        <div class="placeholder">
-                             <i class="fas fa-circle-notch fa-spin"></i>
-                             <span>Chargement...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-    
-    <div class="notification" id="notification">
-        <div class="notification-content">
-            <i class="fas fa-info-circle notification-icon" id="notificationIcon"></i>
-            <span class="notification-text" id="notificationText"></span>
-            <button class="notification-close" onclick="this.parentElement.parentElement.classList.remove('show')"><i class="fas fa-times"></i></button>
-        </div>
-    </div>
-
-    <!-- Chatbot -->
-    <div class="chatbot-container" id="chatbotContainer">
-        <div class="chatbot-header">
-            <h3>Assistant BTP</h3>
-            <button class="chatbot-close-btn" id="chatbotCloseBtn" title="Fermer le chat"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="chatbot-messages" id="chatbotMessages">
-            <!-- Messages will be appended here by JavaScript -->
-        </div>
-        <div class="chatbot-input-form">
-            <input type="text" id="chatbotInput" placeholder="Posez votre question...">
-            <button id="chatbotSendBtn" title="Envoyer le message"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-
-    <div class="chatbot-toggler" id="chatbotToggler" title="Ouvrir l'assistant">
-        <i class="fas fa-comments"></i>
-    </div>
-
-
-    <script>
-        let currentTheme = localStorage.getItem('theme') || 'dark';
-        let notificationPermission = Notification.permission;
-
-        function showProgress() {
-            const progressBar = document.getElementById('progressBar');
-            const progressFill = document.getElementById('progressFill');
-            if (!progressBar || !progressFill) return;
-            progressBar.classList.add('show');
-            progressFill.style.width = '0%';
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 20;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        progressBar.classList.remove('show');
-                        progressFill.style.width = '0%';
-                    }, 500);
-                }
-                progressFill.style.width = progress + '%';
-            }, 100);
-        }
-
-        function navigateTo(pageFile) {
-            showProgress();
-            showNotification(`Chargement de la page...`, 'info');
-            setTimeout(() => window.location.href = pageFile, 1000);
-        }
-        
-        function openLink(url) {
-            showNotification('Ouverture du lien dans un nouvel onglet...', 'info');
-            window.open(url, '_blank', 'noopener,noreferrer');
-        }
-
-        function showNotification(message, type = 'info', duration = 3000) {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notificationText');
-            const notificationIcon = document.getElementById('notificationIcon');
-            if (!notification || !notificationText || !notificationIcon) return;
+        function setState(newState, render = true) {
+            state = { ...state, ...newState };
             
-            notification.classList.remove('success', 'warning', 'error');
-            notificationIcon.className = 'notification-icon fas ';
-
-            switch(type) {
-                case 'success': notificationIcon.classList.add('fa-check-circle'); notification.classList.add('success'); break;
-                case 'warning': notificationIcon.classList.add('fa-exclamation-triangle'); notification.classList.add('warning'); break;
-                case 'error': notificationIcon.classList.add('fa-exclamation-circle'); notification.classList.add('error'); break;
-                default: notificationIcon.classList.add('fa-info-circle');
+            try {
+                const stateToSave = { ...state };
+                delete stateToSave.photo;
+                localStorage.setItem('cvState_v6', JSON.stringify(stateToSave));
+            } catch (error) {
+                console.error("Could not save data:", error);
             }
-            notificationText.textContent = message;
-            notification.classList.add('show');
-            setTimeout(() => notification.classList.remove('show'), duration);
-        }
-        
-        function updateThemeUI() {
-            const themeIcon = document.getElementById('themeIcon');
-            if (!themeIcon) return;
-            document.body.classList.toggle('light-mode', currentTheme === 'light');
-            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-        }
-
-        function toggleTheme() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', currentTheme);
-            updateThemeUI();
-            showNotification(`Mode ${currentTheme === 'light' ? 'clair' : 'sombre'} activé`, 'success');
-        }
-        
-        function toggleMobileMenu() {
-            const mobileToggle = document.getElementById('mobileToggle');
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileToggle.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-        }
-
-        const allTenders = [
-            { type: 'tenders', title: "Travaux de rénovation et d'extension de l'école maternelle", location: "Toulouse (31)", date: "2025-08-22", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638319" },
-            { type: 'tenders', title: "Construction d'un centre aquatique intercommunal", location: "Agglomération de La Rochelle (17)", date: "2025-09-16", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638247" },
-            { type: 'tenders', title: "Aménagement de la ZAC du Parc des Calanques", location: "Marseille (13)", date: "2025-08-05", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638165" },
-            { type: 'tenders', title: "Marché de maîtrise d'oeuvre pour la restructuration d'un EHPAD", location: "Belfort (90)", date: "2025-09-02", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2638053" },
-            { type: 'tenders', title: "Travaux d'entretien des voiries communales", location: "Strasbourg (67)", date: "2025-08-12", link: "https://www.marches-publics.info/avis/index.cfm?fuseaction=pub.affAvis&idAvis=2637992" }
-        ];
-
-        const allNews = [
-            { type: 'news', title: "L'intelligence artificielle va-t-elle transformer le BTP ?", source: "Batiactu", date: "2025-07-15", link: "https://www.batiactu.com/edito/l-intelligence-artificielle-va-t-elle-transformer-btp-69887.php" },
-            { type: 'news', title: "BTP : la décarbonation est en marche, mais le chemin est encore long", source: "Le Moniteur", date: "2025-07-14", link: "https://www.lemoniteur.fr/article/btp-la-decarbonation-est-en-marche-mais-le-chemin-est-encore-long.2317628" },
-            { type: 'news', title: "Comment le réemploi des matériaux s'organise dans le BTP", source: "Batiweb", date: "2025-07-11", link: "https://www.batiweb.com/actualites/developpement-durable/comment-le-reemploi-des-materiaux-sorganise-dans-le-btp-20240711" },
-            { type: 'news', title: "Lafarge et Bouygues Construction s'allient pour un béton bas carbone", source: "Batiactu", date: "2025-07-09", link: "https://www.batiactu.com/edito/lafarge-et-bouygues-construction-s-allient-pour-un-beton-bas-carbone-69815.php" },
-            { type: 'news', title: "JO 2024 : le BTP a relevé le défi des délais", source: "Le Moniteur", date: "2025-07-05", link: "https://www.lemoniteur.fr/article/jo-2024-le-btp-a-releve-le-defi-des-delais.2316401" }
-        ];
-        
-        function populateTenders(isRefresh = false) {
-            const feed = document.getElementById('tenders-feed');
-            if (!feed) return;
             
-            feed.innerHTML = ''; 
-            allTenders.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'feed-item';
-                itemEl.innerHTML = `
-                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
-                        <div class="feed-item-title">${item.title}</div>
-                        <div class="feed-item-meta">
-                            <span><i class="fas fa-map-marker-alt"></i> ${item.location}</span>
-                            <span><i class="fas fa-calendar-alt"></i> Clôture le ${item.date}</span>
-                        </div>
-                        <div class="feed-item-action">Consulter l'offre <i class="fas fa-arrow-right"></i></div>
-                    </a>`;
-                feed.appendChild(itemEl);
-            });
-            if(isRefresh) showNotification("Appels d'offre actualisés.", 'success');
+            if(render) {
+                renderApp();
+            }
         }
 
-        function populateNews(isRefresh = false) {
-            const feed = document.getElementById('news-feed');
-            if (!feed) return;
-            
-            feed.innerHTML = '';
-            allNews.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'feed-item';
-                itemEl.innerHTML = `
-                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="event.preventDefault(); openLink('${item.link}')">
-                        <div class="feed-item-title">${item.title}</div>
-                        <div class="feed-item-meta">
-                            <span><i class="fas fa-newspaper"></i> ${item.source}</span>
-                            <span><i class="fas fa-clock"></i> ${item.date}</span>
-                        </div>
-                        <div class="feed-item-action">Lire la suite <i class="fas fa-arrow-right"></i></div>
-                    </a>`;
-                feed.appendChild(itemEl);
-            });
-            if(isRefresh) showNotification("Actualités actualisées.", 'success');
-        }
+        // --- RENDER FUNCTIONS ---
         
-        function updateNotifButtonUI() {
-            const buttons = document.querySelectorAll('.feed-action-btn[title^="Activer les notifications"]');
-            if (notificationPermission === 'granted') {
-                buttons.forEach(btn => {
-                    btn.classList.add('active');
-                    btn.title = 'Notifications activées';
-                });
+        function renderApp() {
+            const appContainer = document.getElementById('app');
+            const mainContentClass = state.focusMode ? 'grid-cols-1 justify-center' : 'grid-cols-1 xl:grid-cols-[minmax(450px,1fr)_1.5fr]';
+            appContainer.innerHTML = `
+                <div class="max-w-screen-2xl mx-auto">
+                    ${renderHeaderControls()}
+                    <div id="main-content" class="grid ${mainContentClass} gap-8 items-start">
+                        <div id="editor-panel" class="space-y-6 bg-white p-4 rounded-lg shadow-sm">${renderEditor()}</div>
+                        ${!state.focusMode ? `
+                        <div id="preview-panel" class="flex flex-col items-center sticky top-24">
+                            ${renderPreviewControls()}
+                            <div id="cv-outer-container" class="origin-top shadow-2xl transition-transform duration-300" style="transform: scale(${state.previewScale})">
+                                ${renderCV()}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            attachEventListeners();
+            lucide.createIcons();
+            generateVCardQR();
+            renderSkillChart();
+        }
+
+        function renderHeaderControls() {
+            return `
+                <header class="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-wrap justify-between items-center gap-4 sticky top-4 z-30">
+                    <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2"><i data-lucide="file-text" class="text-indigo-600"></i>Créateur de CV Expert</h1>
+                    <div class="flex items-center flex-wrap gap-2">
+                         <div class="tooltip">
+                            <button id="toggle-focus-mode" class="p-2 rounded-lg transition-colors ${state.focusMode ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}">
+                                <i data-lucide="pen-square" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">Mode Focus</span>
+                        </div>
+                        <div class="tooltip">
+                            <button id="randomize-design" class="p-2 rounded-lg transition-colors bg-purple-100 text-purple-700 hover:bg-purple-200">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">Design Aléatoire</span>
+                        </div>
+                        <div class="tooltip">
+                            <button id="share-cv" class="p-2 rounded-lg transition-colors bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                <i data-lucide="share-2" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">Partager le CV</span>
+                        </div>
+                        <div class="tooltip">
+                            <button id="toggle-anonymize" class="p-2 rounded-lg transition-colors ${state.isAnonymized ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                            </button>
+                            <span class="tooltip-text">${state.isAnonymized ? "Désanonymiser" : "Anonymiser"}</span>
+                        </div>
+                        <div class="relative inline-block">
+                            <button id="export-dropdown-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors w-[180px]">
+                                <i data-lucide="download" class="w-4 h-4"></i> Télécharger <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                            </button>
+                            <div id="export-options" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
+                                <a href="#" id="generate-pdf" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">PDF</a>
+                                <a href="#" id="export-txt" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Fichier Texte (.txt)</a>
+                                <a href="#" id="export-md" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Markdown (.md)</a>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            `;
+        }
+
+        function renderPreviewControls() {
+            return `
+                <div class="w-full flex justify-center items-center gap-2 mb-4 bg-white p-2 rounded-lg shadow-sm">
+                    <div class="tooltip"><button id="zoom-out" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="zoom-out" class="w-4 h-4"></i></button><span class="tooltip-text">Zoom arrière</span></div>
+                    <input type="range" id="zoom-slider" min="0.3" max="1.5" step="0.01" value="${state.previewScale}" class="w-32">
+                    <div class="tooltip"><button id="zoom-in" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="zoom-in" class="w-4 h-4"></i></button><span class="tooltip-text">Zoom avant</span></div>
+                    <div class="tooltip"><button id="zoom-reset" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="rotate-cw" class="w-4 h-4"></i></button><span class="tooltip-text">Réinitialiser</span></div>
+                    <span class="text-sm font-mono text-gray-500">${Math.round(state.previewScale * 100)}%</span>
+                </div>
+            `;
+        }
+
+        // --- CV Rendering ---
+
+        function renderCV() {
+            const { cvData, activeTemplate, activeFont, backgroundColor, pagePadding, baseFontSize, lineHeight, activePalette, watermarkText, watermarkOpacity } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+
+            const personalDataForRender = state.isAnonymized
+                ? { ...cvData.personal, lastName: `${cvData.personal.lastName.charAt(0)}.`, email: '', phone: '', address: '' }
+                : cvData.personal;
+
+            const getBlockComponent = (blockId) => {
+                 switch(blockId) {
+                    case 'personal': return renderCvHeader(personalDataForRender);
+                    case 'socials': return cvData.socials?.length > 0 && visibilityCheck(blockId) ? renderSocials() : '';
+                    case 'experiences': return cvData.experiences?.length > 0 && visibilityCheck(blockId) ? renderExperiences() : '';
+                    case 'projects': return cvData.projects?.length > 0 && visibilityCheck(blockId) ? renderProjects() : '';
+                    case 'education': return cvData.education?.length > 0 && visibilityCheck(blockId) ? renderEducation() : '';
+                    case 'awards': return cvData.awards?.length > 0 && visibilityCheck(blockId) ? renderAwards() : '';
+                    case 'skills': return cvData.skills?.length > 0 && visibilityCheck(blockId) ? renderSkills() : '';
+                    case 'languages': return cvData.languages?.length > 0 && visibilityCheck(blockId) ? renderLanguages() : '';
+                    case 'hobbies': return cvData.hobbies?.length > 0 && visibilityCheck(blockId) ? renderHobbies() : '';
+                    default: 
+                        if (blockId.startsWith('custom-')) {
+                            const section = cvData.customSections.find(s => `custom-${s.id}` === blockId);
+                            return section && visibilityCheck(blockId) ? renderCustomSection(section) : '';
+                        }
+                        return '';
+                }
+            };
+
+            const { left: leftColClass, right: rightColClass } = {
+                'large-right': { left: 'w-1/3', right: 'w-2/3' },
+                'equal': { left: 'w-1/2', right: 'w-1/2' },
+                'large-left': { left: 'w-2/3', right: 'w-1/3' },
+            }[state.columnRatio];
+
+            let cvContent;
+            if (state.activeLayout === 'two') {
+                cvContent = `
+                    <div class="flex h-full" style="gap: ${pagePadding}rem">
+                        <div class="${leftColClass} flex flex-col">
+                            ${state.columnAssignment.left.map(blockId => getBlockComponent(blockId)).join('')}
+                        </div>
+                        <div class="${rightColClass} flex flex-col">
+                            ${state.columnAssignment.right.map(blockId => getBlockComponent(blockId)).join('')}
+                        </div>
+                    </div>
+                `;
             } else {
-                 buttons.forEach(btn => {
-                    btn.classList.remove('active');
-                    btn.title = 'Activer les notifications';
-                });
+                cvContent = `
+                    ${getBlockComponent('personal')}
+                    <div class="flex flex-col">
+                        ${state.blockOrder.map(blockId => getBlockComponent(blockId)).join('')}
+                    </div>
+                `;
             }
+
+            return `
+                <div id="cv-preview-container" class="bg-white">
+                    <div class="cv-page relative" style="--primary-color: ${currentPalette.primary};">
+                        <div id="cv-preview" class="text-gray-800 template-${activeTemplate}" style="font-family: ${fonts[activeFont].family}; background-color: ${backgroundColor}; box-sizing: border-box; width: 100%; height: 100%;">
+                            <div class="h-full w-full flex flex-col" style="font-size: ${baseFontSize}pt; line-height: ${lineHeight};">
+                                <header class="p-4 text-xs text-gray-500" style="padding: ${pagePadding}rem; padding-bottom: 0;">${state.headerText.replace('{page}', '1')}</header>
+                                <div class="flex-grow" style="padding: ${pagePadding}rem; paddingTop: 0; padding-bottom: 0;">${cvContent}</div>
+                                <footer class="p-4 text-xs text-gray-500 text-center" style="padding: ${pagePadding}rem; padding-top: 0;">${state.footerText.replace('{page}', '1')}</footer>
+                            </div>
+                        </div>
+                        ${watermarkText ? `<div class="watermark" style="opacity: ${watermarkOpacity};">${watermarkText}</div>` : ''}
+                        ${state.showMarginGuides ? `
+                            <div class="absolute top-0 left-0 bottom-0 bg-indigo-500/10" style="width: ${pagePadding}rem;"></div>
+                            <div class="absolute top-0 right-0 bottom-0 bg-indigo-500/10" style="width: ${pagePadding}rem;"></div>
+                            <div class="absolute top-0 left-0 right-0 bg-indigo-500/10" style="height: ${pagePadding}rem;"></div>
+                            <div class="absolute bottom-0 left-0 right-0 bg-indigo-500/10" style="height: ${pagePadding}rem;"></div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
         }
-
-        function enableNotifications() {
-            if (!("Notification" in window)) {
-                showNotification("Ce navigateur ne supporte pas les notifications.", 'error');
-                return;
-            }
-
-            if (notificationPermission === 'granted') {
-                showNotification("Les notifications sont déjà activées.", 'info');
-                return;
-            }
-            
-            if (notificationPermission === 'denied') {
-                showNotification("Les notifications ont été bloquées. Veuillez les autoriser dans les paramètres de votre navigateur.", 'warning', 5000);
-                return;
-            }
-
-            Notification.requestPermission().then(permission => {
-                notificationPermission = permission;
-                if (permission === "granted") {
-                    showNotification("Notifications activées avec succès !", 'success');
-                    sendSystemNotification("LTD Simulator", "Vous recevrez maintenant les dernières nouvelles ici.");
-                } else {
-                    showNotification("Notifications non autorisées.", 'warning');
-                }
-                updateNotifButtonUI();
-            });
-        }
-
-        function sendSystemNotification(title, body) {
-            if (notificationPermission !== 'granted') return;
-            const options = {
-                body: body,
-                icon: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD',
-                badge: 'https://placehold.co/64x64/6366f1/FFFFFF?text=LTD'
+        
+        function renderCvHeader(personalData) {
+            const { sectionSpacing, photo, photoShape, nameFontSize, activePalette, headerAlignment } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const alignClasses = {
+                left: 'items-start text-left',
+                center: 'items-center text-center'
             };
-            new Notification(title, options);
+            return `
+                <div class="cv-header flex flex-col ${alignClasses[headerAlignment]}" style="margin-bottom: ${sectionSpacing}rem;">
+                    ${photo && !state.isAnonymized ? `
+                        <img src="${photo}" alt="User" class="mb-4 w-32 h-32 object-cover shadow-lg" style="border-radius: ${photoShape === 'round' ? '50%' : '0.75rem'};">
+                    ` : ''}
+                    <h1 class="font-bold mb-1 text-gray-900" style="font-size: ${nameFontSize}pt;">
+                        ${personalData.firstName} ${personalData.lastName}
+                    </h1>
+                    <h2 class="text-xl mb-3 font-medium" style="color: ${currentPalette.primary};">
+                        ${personalData.title}
+                    </h2>
+                    ${!state.isAnonymized ? `
+                        <div class="flex flex-wrap ${headerAlignment === 'center' ? 'justify-center' : ''} gap-x-6 gap-y-2 text-gray-600 mb-4 text-sm">
+                            <div class="flex items-center gap-2"><i data-lucide="mail" class="w-3.5 h-3.5"></i>${personalData.email}</div>
+                            <div class="flex items-center gap-2"><i data-lucide="phone" class="w-3.5 h-3.5"></i>${personalData.phone}</div>
+                            <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i>${personalData.address}</div>
+                        </div>
+                    ` : ''}
+                    <p class="text-gray-700 leading-relaxed max-w-3xl">
+                        ${personalData.summary}
+                    </p>
+                </div>
+            `;
         }
 
-        function setupSlider() {
-            const slider = document.getElementById('imageSlider');
-            if (!slider) return;
-
-            const wrapper = slider.querySelector('.slider-wrapper');
-            const slides = slider.querySelectorAll('.slide');
-            const prevBtn = document.getElementById('sliderPrev');
-            const nextBtn = document.getElementById('sliderNext');
-            const dotsContainer = document.getElementById('sliderDots');
-            
-            let currentIndex = 0;
-            let slideInterval;
-
-            slides.forEach((_, index) => {
-                const dot = document.createElement('div');
-                dot.classList.add('slider-dot');
-                dot.addEventListener('click', () => {
-                    goToSlide(index);
-                    resetInterval();
-                });
-                dotsContainer.appendChild(dot);
-            });
-            const dots = dotsContainer.querySelectorAll('.slider-dot');
-
-            function goToSlide(index) {
-                if (index === currentIndex) return;
-                
-                slides[currentIndex].classList.remove('active');
-                currentIndex = index;
-                slides[currentIndex].classList.add('active');
-                
-                wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
-                
-                dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === currentIndex);
-                });
-            }
-
-            function nextSlide() {
-                const newIndex = (currentIndex + 1) % slides.length;
-                goToSlide(newIndex);
-            }
-
-            function prevSlide() {
-                const newIndex = (currentIndex - 1 + slides.length) % slides.length;
-                goToSlide(newIndex);
-            }
-            
-            function startInterval() {
-                slideInterval = setInterval(nextSlide, 7000); 
-            }
-
-            function resetInterval() {
-                clearInterval(slideInterval);
-                startInterval();
-            }
-
-            nextBtn.addEventListener('click', () => {
-                nextSlide();
-                resetInterval();
-            });
-            prevBtn.addEventListener('click', () => {
-                prevSlide();
-                resetInterval();
-            });
-            
-            // Initial state
-            slides[0].classList.add('active');
-            dots[0].classList.add('active');
-            startInterval();
-        }
-
-        function setupChatbot() {
-            const chatbotContainer = document.getElementById('chatbotContainer');
-            const chatbotToggler = document.getElementById('chatbotToggler');
-            const chatbotCloseBtn = document.getElementById('chatbotCloseBtn');
-            const chatbotInput = document.getElementById('chatbotInput');
-            const chatbotSendBtn = document.getElementById('chatbotSendBtn');
-            const chatbotMessages = document.getElementById('chatbotMessages');
-
-            if (!chatbotContainer || !chatbotToggler || !chatbotCloseBtn || !chatbotInput || !chatbotSendBtn || !chatbotMessages) {
-                console.warn("Éléments du chatbot non trouvés. Initialisation annulée.");
-                return;
-            }
-
-            chatbotToggler.addEventListener('click', () => {
-                chatbotContainer.classList.toggle('active');
-                if (chatbotContainer.classList.contains('active')) {
-                    chatbotInput.focus();
-                }
-            });
-
-            chatbotCloseBtn.addEventListener('click', () => {
-                chatbotContainer.classList.remove('active');
-            });
-
-            const handleSendMessage = (messageText) => {
-                const userMessage = (typeof messageText === 'string' ? messageText : chatbotInput.value).trim();
-                if (userMessage === '') return;
-
-                appendMessage(userMessage, 'user');
-                if (typeof messageText !== 'string') {
-                    chatbotInput.value = '';
-                }
-                chatbotInput.focus();
-                removeQuickReplies();
-                appendTypingIndicator();
-
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    const botResponse = getBotResponse(userMessage);
-                    appendMessage(botResponse.text, 'bot', true);
-                    if(botResponse.replies) {
-                        showQuickReplies(botResponse.replies);
-                    }
-                }, 800 + Math.random() * 500);
+        function renderSection(title, content, iconName = 'briefcase') {
+            const { sectionTitleStyle, activePalette, sectionTitleFontSize, sectionSpacing, textTransform, letterSpacing, dividerStyle } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const titleStyles = {
+                border: `border-b-2 pb-1`,
+                background: `p-2 rounded-md`,
+                simple: ``,
             };
+            const titleColor = sectionTitleStyle === 'background' ? currentPalette.textOnPrimary : currentPalette.primary;
+            const titleBg = sectionTitleStyle === 'background' ? currentPalette.primary : 'transparent';
+            const dividerHtml = {
+                solid: '<hr class="my-2 border-gray-200">',
+                dotted: '<hr class="my-2 border-dotted border-gray-300">',
+                none: ''
+            }[dividerStyle] || '';
 
-            chatbotSendBtn.addEventListener('click', () => handleSendMessage());
-            chatbotInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
+            return `
+                <div class="cv-section" style="margin-bottom: ${sectionSpacing}rem;">
+                    <h3 class="font-bold mb-3 tracking-wider flex items-center gap-2 ${titleStyles[sectionTitleStyle]}" style="color: ${titleColor}; background-color: ${titleBg}; border-color: ${currentPalette.primary}; font-size: ${sectionTitleFontSize}pt; text-transform: ${textTransform}; letter-spacing: ${letterSpacing}px;">
+                        <i data-lucide="${iconName}" class="w-4 h-4"></i>
+                        <span>${title}</span>
+                    </h3>
+                    ${content}
+                    ${dividerHtml}
+                </div>
+            `;
+        }
+
+        function renderExperiences() {
+            const { cvData, itemSpacing, activePalette, visibility, experienceStyle } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            
+            const items = cvData.experiences.filter(exp => visibility.experiences[exp.id]).map(exp => `
+                <div class="cv-item relative ${experienceStyle === 'timeline' ? 'timeline-item pb-4' : ''}">
+                    <div class="flex justify-between items-start mb-1">
+                        <div>
+                            <h4 class="font-semibold text-base">${exp.position}</h4>
+                            <p class="font-medium" style="color: ${currentPalette.accent};">${exp.company}</p>
+                        </div>
+                        <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${exp.startDate} - ${exp.endDate}</span>
+                    </div>
+                    <p class="text-gray-600">${exp.description}</p>
+                </div>
+            `).join('');
+
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;" class="${experienceStyle === 'timeline' ? 'timeline' : ''}">
+                    ${items}
+                </div>
+            `;
+            return renderSection('Expérience Professionnelle', content, state.sectionIcons.experiences);
+        }
+        
+        function renderEducation() {
+            const { cvData, itemSpacing, activePalette, visibility, experienceStyle } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+
+             const items = cvData.education.filter(edu => visibility.education[edu.id]).map(edu => `
+                <div class="cv-item relative ${experienceStyle === 'timeline' ? 'timeline-item pb-4' : ''}">
+                    <div class="flex justify-between items-start mb-1">
+                        <div>
+                            <h4 class="font-semibold text-base">${edu.degree}</h4>
+                            <p class="font-medium" style="color: ${currentPalette.accent};">${edu.institution}</p>
+                        </div>
+                        <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${edu.startDate} - ${edu.endDate}</span>
+                    </div>
+                    <p class="text-gray-600">${edu.description}</p>
+                </div>
+            `).join('');
+
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;" class="${experienceStyle === 'timeline' ? 'timeline' : ''}">
+                   ${items}
+                </div>
+            `;
+            return renderSection('Formation', content, state.sectionIcons.education);
+        }
+
+        function renderSocials() {
+            const { cvData, visibility } = state;
+            const content = `
+                <div class="flex flex-wrap gap-4">
+                    ${cvData.socials.filter(s => visibility.socials[s.id]).map(social => `
+                        <a href="${social.url}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-gray-700 hover:text-[var(--primary-color)] transition-colors">
+                            <i data-lucide="${socialIcons[social.network] || socialIcons.default}" class="w-4 h-4"></i>
+                            <span class="text-sm">${social.url.replace(/^(https?:\/\/)?(www\.)?/, '')}</span>
+                        </a>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Réseaux & Liens', content, state.sectionIcons.socials);
+        }
+
+        function renderCustomSection(section) {
+            return renderSection(section.title, `<p class="text-gray-600">${section.content}</p>`, state.sectionIcons[`custom-${section.id}`] || 'star');
+        }
+
+        function renderProjects() {
+            const { cvData, itemSpacing, activePalette, visibility } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
+                    ${(cvData.projects || []).filter(p => visibility.projects[p.id]).map(p => `
+                        <div class="cv-item">
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="font-semibold text-base">${p.name}</h4>
+                                ${p.url ? `<a href="${p.url}" target="_blank" rel="noopener noreferrer" class="font-mono text-sm" style="color: ${currentPalette.primary};">Voir le projet</a>` : ''}
+                            </div>
+                            <p class="text-gray-600">${p.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Projets', content, state.sectionIcons.projects);
+        }
+
+        function renderAwards() {
+            const { cvData, itemSpacing, activePalette, visibility } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing}rem;">
+                    ${(cvData.awards || []).filter(a => visibility.awards[a.id]).map(award => `
+                        <div class="cv-item">
+                            <div class="flex justify-between items-start mb-1">
+                                <div>
+                                    <h4 class="font-semibold text-base">${award.name}</h4>
+                                    <p class="font-medium" style="color: ${currentPalette.accent};">${award.issuer}</p>
+                                </div>
+                                <span class="font-mono whitespace-nowrap pl-4 text-sm text-gray-600">${award.date}</span>
+                            </div>
+                            <p class="text-gray-600">${award.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Récompenses', content, state.sectionIcons.awards);
+        }
+
+        function renderSkills() {
+            const { cvData, itemSpacing, skillDisplayStyle, activePalette } = state;
+            if (skillDisplayStyle === 'radar') {
+                return renderSection('Compétences', '<div class="w-full max-w-md mx-auto"><canvas id="skill-chart"></canvas></div>', state.sectionIcons.skills);
+            }
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const groupedSkills = cvData.skills.reduce((acc, skill) => {
+                const category = skill.category || 'Autres';
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                acc[category].push(skill);
+                return acc;
+            }, {});
+
+            const content = Object.keys(groupedSkills).map(category => `
+                <div class="mb-3">
+                    <h5 class="font-bold text-sm mb-2 text-gray-600">${category}</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6" style="gap-y: ${itemSpacing/2}rem;">
+                        ${groupedSkills[category].map(skill => `
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    ${skill.icon ? `<i data-lucide="${skill.icon}" class="w-3.5 h-3.5 text-gray-500"></i>` : ''}
+                                    <span class="font-medium">${skill.name}</span>
+                                </div>
+                                ${skillDisplayStyle === 'stars' ? `
+                                    <div class="flex items-center mt-1">
+                                        ${[...Array(5)].map((_, i) => `
+                                            <i data-lucide="star" class="w-4 h-4 ${i < skill.level ? 'fill-current' : ''}" style="color: ${i < skill.level ? currentPalette.primary : '#e0e0e0'};"></i>
+                                        `).join('')}
+                                    </div>
+                                ` : `
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                        <div class="h-2 rounded-full" style="width: ${skill.level * 20}%; background-color: ${currentPalette.primary};"></div>
+                                    </div>
+                                `}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            return renderSection('Compétences', content, state.sectionIcons.skills);
+        }
+
+        function renderLanguages() {
+            const { cvData, itemSpacing } = state;
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: ${itemSpacing / 4}rem;">
+                    ${cvData.languages.map(lang => `
+                        <div class="flex justify-between py-1">
+                            <span class="font-medium">${lang.name}</span>
+                            <span class="text-gray-600">${lang.level}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Langues', content, state.sectionIcons.languages);
+        }
+
+        function renderHobbies() {
+            const { cvData, itemSpacing, activePalette } = state;
+            const currentPalette = palettes[activePalette] || state.customPalette;
+            const content = `
+                <div class="flex flex-wrap" style="gap: ${itemSpacing/2}rem;">
+                    ${cvData.hobbies.map(hobby => `
+                        <div class="flex items-center p-2 bg-gray-100 rounded-lg">
+                            <i data-lucide="${hobby.icon}" class="w-3.5 h-3.5 mr-2" style="color: ${currentPalette.primary};"></i>
+                            <span>${hobby.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return renderSection('Centres d\'intérêt', content, state.sectionIcons.hobbies);
+        }
+        
+        // --- Editor Rendering ---
+
+        function renderAccordion(title, icon, content, defaultOpen = false, id) {
+            const isOpen = state.openAccordions[id];
+            return `
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <button data-accordion-id="${id}" class="accordion-toggle w-full flex justify-between items-center p-4 font-bold text-gray-800 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center">
+                            <i data-lucide="${icon}" class="mr-3 text-indigo-600 w-5 h-5"></i>
+                            <span class="text-md">${title}</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} w-5 h-5"></i>
+                    </button>
+                    <div class="accordion-content ${isOpen ? 'open' : ''} border-t border-gray-200">
+                        <div class="p-5">${content}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderInputField(label, value, dataPath, placeholder, icon, type = 'text') {
+            return `
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-600 mb-1 flex items-center">
+                        ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
+                        ${label}
+                    </label>
+                    <input
+                        type="${type}"
+                        value="${value || ''}"
+                        data-path="${dataPath}"
+                        placeholder="${placeholder || label}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                    />
+                </div>
+            `;
+        }
+
+        function renderTextareaField(label, value, dataPath, placeholder, icon, rows = 3, aiContext = '') {
+            return `
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium text-gray-600 flex items-center">
+                            ${icon ? `<i data-lucide="${icon}" class="w-3.5 h-3.5 mr-2"></i>` : ''}
+                            ${label}
+                        </label>
+                        <button class="generate-ai-text text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1" data-path="${dataPath}" data-context="${aiContext}">
+                            <i data-lucide="sparkles" class="w-3 h-3"></i> Améliorer avec l'IA
+                        </button>
+                    </div>
+                    <textarea
+                        data-path="${dataPath}"
+                        placeholder="${placeholder || label}"
+                        rows="${rows}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                    >${value || ''}</textarea>
+                </div>
+            `;
+        }
+        
+        function renderSlider(label, value, dataPath, min, max, step) {
+            return `
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">${label}: <span class="font-mono text-indigo-600">${value}</span></label>
+                    <input type="range" min="${min}" max="${max}" step="${step}" value="${value}" data-path="${dataPath}" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+            `;
+        }
+
+        function renderEditor() {
+            return `
+                ${renderCvScore()}
+                ${renderAccordion('Contenu du CV', 'edit-3', `
+                    ${renderAccordion('Informations Personnelles', 'user', `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${renderInputField('Prénom', state.cvData.personal.firstName, 'cvData.personal.firstName')}
+                            ${renderInputField('Nom', state.cvData.personal.lastName, 'cvData.personal.lastName')}
+                            <div class="md:col-span-2">${renderInputField('Titre du poste', state.cvData.personal.title, 'cvData.personal.title')}</div>
+                            ${renderInputField('Email', state.cvData.personal.email, 'cvData.personal.email')}
+                            ${renderInputField('Téléphone', state.cvData.personal.phone, 'cvData.personal.phone')}
+                            <div class="md:col-span-2">${renderInputField('Adresse', state.cvData.personal.address, 'cvData.personal.address')}</div>
+                            <div class="md:col-span-2">
+                                ${renderTextareaField('Résumé', state.cvData.personal.summary, 'cvData.personal.summary', '', 'align-left', 4, `Pour un poste de ${state.cvData.personal.title}`)}
+                            </div>
+                        </div>
+                    `, true, 'personalInfo')}
+                    ${renderAccordion('Réseaux & Liens', 'link', `
+                        ${(state.cvData.socials || []).map((social, index) => `
+                            <div class="grid grid-cols-[1fr,2fr,auto] gap-2 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                <select data-path="cvData.socials.${index}.network" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    ${Object.keys(socialIcons).map(net => `<option value="${net}" ${social.network === net ? 'selected' : ''}>${net.charAt(0).toUpperCase() + net.slice(1)}</option>`).join('')}
+                                </select>
+                                ${renderInputField('URL', social.url, `cvData.socials.${index}.url`)}
+                                <button class="remove-list-item text-red-500 hover:text-red-700 p-2" data-section="socials" data-id="${social.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="socials"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter un lien</button>
+                    `, false, 'socials')}
+                    ${renderAccordion('Expériences', 'briefcase', `
+                        ${state.cvData.experiences.map((exp, index) => `
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                ${renderInputField(`Poste ${index+1}`, exp.position, `cvData.experiences.${index}.position`)}
+                                ${renderInputField('Entreprise', exp.company, `cvData.experiences.${index}.company`)}
+                                ${renderInputField('Date de début', exp.startDate, `cvData.experiences.${index}.startDate`)}
+                                ${renderInputField('Date de fin', exp.endDate, `cvData.experiences.${index}.endDate`)}
+                                <div class="md:col-span-2">${renderTextareaField('Description', exp.description, `cvData.experiences.${index}.description`, '', 'align-left', 4, `Description de mission pour le poste de ${exp.position} chez ${exp.company}`)}</div>
+                                <div class="md:col-span-2 flex justify-between items-center">
+                                    <button class="toggle-item-visibility flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900" data-section="experiences" data-id="${exp.id}">
+                                        <i data-lucide="${state.visibility.experiences[exp.id] ? 'eye' : 'eye-off'}" class="w-4 h-4"></i>
+                                        <span>${state.visibility.experiences[exp.id] ? "Visible" : "Caché"}</span>
+                                    </button>
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="experiences" data-id="${exp.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="experiences"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une expérience</button>
+                    `, false, 'experiences')}
+                     ${renderAccordion('Compétences', 'zap', `
+                        ${state.cvData.skills.map((skill, index) => `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                ${renderInputField(`Catégorie`, skill.category, `cvData.skills.${index}.category`)}
+                                ${renderInputField(`Compétence`, skill.name, `cvData.skills.${index}.name`)}
+                                ${renderInputField(`Icône (Lucide)`, skill.icon, `cvData.skills.${index}.icon`)}
+                                <div class="flex items-center">
+                                    <input type="range" min="1" max="5" value="${skill.level}" data-path="cvData.skills.${index}.level" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 ml-4" data-section="skills" data-id="${skill.id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="skills"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une compétence</button>
+                    `, false, 'skills')}
+                    ${renderAccordion('Sections Personnalisées', 'plus-square', `
+                        ${(state.cvData.customSections || []).map((section, index) => `
+                             <div class="border-t pt-4 mt-4 first:border-t-0 first:mt-0 first:pt-0">
+                                ${renderInputField(`Titre de la section`, section.title, `cvData.customSections.${index}.title`)}
+                                ${renderTextareaField('Contenu', section.content, `cvData.customSections.${index}.content`)}
+                                <div class="flex justify-end">
+                                    <button class="remove-list-item text-red-500 hover:text-red-700 text-sm flex items-center gap-1" data-section="customSections" data-id="${section.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Supprimer la section</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="add-list-item mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-1" data-section="customSections"><i data-lucide="plus" class="w-4 h-4"></i> Ajouter une section</button>
+                    `, false, 'customSections')}
+                `, true, 'content')}
+                ${renderAccordion('Design & Mise en Page', 'palette', `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8">
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Thèmes</h4>
+                            <div class="flex flex-col space-y-2">
+                                ${Object.entries(themes).map(([key, t]) => `
+                                    <button data-theme="${key}" class="theme-btn p-2 rounded-lg border-2 text-sm transition-all ${state.activeTheme === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${t.name}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Mise en page</h4>
+                            <div class="flex flex-col space-y-2">
+                                ${Object.entries(layouts).map(([key, l]) => `
+                                    <button data-control="activeLayout" data-value="${key}" class="p-2 rounded-lg border-2 text-sm transition-all ${state.activeLayout === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${l.name}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                         <div class="md:col-span-2">
+                            <h4 class="font-semibold mb-2 text-gray-700">Palette de couleurs</h4>
+                            <div class="flex gap-3 flex-wrap items-center">
+                                ${Object.entries(palettes).map(([key, p]) => `
+                                    <div class="tooltip">
+                                        <button data-control="activePalette" data-value="${key}" class="w-8 h-8 rounded-full border-4 transition-all ${state.activePalette === key ? 'border-indigo-500 scale-110' : 'border-transparent hover:border-gray-300'}" style="background-color: ${p.primary}"></button>
+                                        <span class="tooltip-text">${p.name}</span>
+                                    </div>
+                                `).join('')}
+                                <input type="color" id="custom-color-picker" value="${(palettes[state.activePalette] || state.customPalette).primary}" class="w-8 h-8 p-0 border-none rounded-full cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <h4 class="font-semibold mb-2 text-gray-700">Police</h4>
+                            <div class="grid grid-cols-3 gap-2">
+                                ${Object.entries(fonts).map(([key, f]) => `
+                                    <button data-control="activeFont" data-value="${key}" style="font-family: ${f.family}" class="p-2 rounded-lg border-2 text-sm transition-all ${state.activeFont === key ? 'border-indigo-500 bg-indigo-50 font-semibold' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}">${f.name}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="md:col-span-2 space-y-4">
+                           <h4 class="font-semibold text-gray-700 -mb-2">Tailles & Espacements</h4>
+                           ${renderSlider('Taille police (base)', state.baseFontSize, 'baseFontSize', 8, 14, 0.5)}
+                           ${renderSlider('Taille du nom', state.nameFontSize, 'nameFontSize', 20, 40, 1)}
+                           ${renderSlider('Taille titres sections', state.sectionTitleFontSize, 'sectionTitleFontSize', 10, 18, 0.5)}
+                           ${renderSlider('Hauteur de ligne', state.lineHeight, 'lineHeight', 1.2, 2.0, 0.1)}
+                           ${renderSlider('Marge de page (rem)', state.pagePadding, 'pagePadding', 0.5, 2.5, 0.1)}
+                           ${renderSlider('Espace sections (rem)', state.sectionSpacing, 'sectionSpacing', 0.5, 2.5, 0.1)}
+                           ${renderSlider('Espace items (rem)', state.itemSpacing, 'itemSpacing', 0.5, 2.0, 0.1)}
+                        </div>
+                    </div>
+                `, true, 'design')}
+                ${renderAccordion('Détails du Design', 'wand', `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8">
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Photo de profil</h4>
+                            <div class="flex items-center gap-2">
+                                <input type="file" id="photo-upload" class="hidden" accept="image/*">
+                                <label for="photo-upload" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 text-sm flex items-center gap-2 cursor-pointer"><i data-lucide="upload-cloud"></i> Charger</label>
+                                <button id="remove-photo" class="p-2 text-red-500 hover:bg-red-100 rounded-full"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Forme de la photo</h4>
+                            <div class="flex gap-2">
+                                <button data-control="photoShape" data-value="round" class="p-2 rounded-lg border-2 ${state.photoShape === 'round' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="circle" class="w-5 h-5"></i></button>
+                                <button data-control="photoShape" data-value="square" class="p-2 rounded-lg border-2 ${state.photoShape === 'square' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="square" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Alignement de l'en-tête</h4>
+                            <div class="flex gap-2">
+                                <button data-control="headerAlignment" data-value="left" class="p-2 rounded-lg border-2 ${state.headerAlignment === 'left' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="align-left" class="w-5 h-5"></i></button>
+                                <button data-control="headerAlignment" data-value="center" class="p-2 rounded-lg border-2 ${state.headerAlignment === 'center' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="align-center" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Style des titres</h4>
+                            <div class="flex gap-2">
+                                <button data-control="sectionTitleStyle" data-value="border" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'border' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Bordure</button>
+                                <button data-control="sectionTitleStyle" data-value="background" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'background' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Fond</button>
+                                <button data-control="sectionTitleStyle" data-value="simple" class="p-2 rounded-lg border-2 ${state.sectionTitleStyle === 'simple' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}">Simple</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Style Expériences</h4>
+                            <div class="flex gap-2">
+                                <button data-control="experienceStyle" data-value="default" class="p-2 rounded-lg border-2 ${state.experienceStyle === 'default' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="list" class="w-5 h-5"></i></button>
+                                <button data-control="experienceStyle" data-value="timeline" class="p-2 rounded-lg border-2 ${state.experienceStyle === 'timeline' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="git-commit-vertical" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-gray-700">Affichage compétences</h4>
+                            <div class="flex gap-2">
+                                <button data-control="skillDisplayStyle" data-value="bars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'bars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="bar-chart-horizontal" class="w-5 h-5"></i></button>
+                                <button data-control="skillDisplayStyle" data-value="stars" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'stars' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="star" class="w-5 h-5"></i></button>
+                                <button data-control="skillDisplayStyle" data-value="radar" class="p-2 rounded-lg border-2 ${state.skillDisplayStyle === 'radar' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'}"><i data-lucide="radar" class="w-5 h-5"></i></button>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <h4 class="font-semibold mb-2 text-gray-700">Typographie des titres</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                ${renderSlider('Espacement lettres (px)', state.letterSpacing, 'letterSpacing', -1, 3, 0.1)}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Casse</label>
+                                    <select data-path="textTransform" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                        <option value="uppercase" ${state.textTransform === 'uppercase' ? 'selected' : ''}>Majuscules</option>
+                                        <option value="capitalize" ${state.textTransform === 'capitalize' ? 'selected' : ''}>Capitalize</option>
+                                        <option value="none" ${state.textTransform === 'none' ? 'selected' : ''}>Aucune</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <h4 class="font-semibold mb-2 text-gray-700">Pack d'icônes</h4>
+                             <select id="icon-pack-selector" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="custom" ${state.activeIconPack === 'custom' ? 'selected' : ''}>Personnalisé</option>
+                                ${Object.entries(iconPacks).map(([key, pack]) => `<option value="${key}" ${state.activeIconPack === key ? 'selected' : ''}>${pack.name}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                `, false, 'designDetails')}
+                ${renderAccordion('Organisation & Options', 'settings', `
+                    <h4 class="font-semibold mb-3">Organisation des sections</h4>
+                    ${state.activeLayout === 'two' ? renderTwoColumnLayoutEditor() : renderSingleColumnLayoutEditor()}
+                    <div class="mt-6 space-y-4">
+                        <h4 class="font-semibold text-gray-700">Options diverses</h4>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <label for="show-vcard-qr" class="text-sm font-medium text-gray-800">Afficher le QR Code vCard</label>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" id="show-vcard-qr" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" ${state.showVCardQR ? 'checked' : ''}/>
+                                <label for="show-vcard-qr" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                            <style>.toggle-checkbox:checked { right: 0; border-color: #4f46e5; } .toggle-checkbox:checked + .toggle-label { background-color: #4f46e5; }</style>
+                        </div>
+                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <label for="show-margin-guides" class="text-sm font-medium text-gray-800">Afficher les guides de marge</label>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" id="show-margin-guides" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" ${state.showMarginGuides ? 'checked' : ''}/>
+                                <label for="show-margin-guides" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg">
+                            <label class="text-sm font-medium text-gray-800">Séparateur de section</label>
+                             <select data-path="dividerStyle" class="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="none" ${state.dividerStyle === 'none' ? 'selected' : ''}>Aucun</option>
+                                <option value="solid" ${state.dividerStyle === 'solid' ? 'selected' : ''}>Ligne pleine</option>
+                                <option value="dotted" ${state.dividerStyle === 'dotted' ? 'selected' : ''}>Pointillés</option>
+                            </select>
+                        </div>
+                    </div>
+                `, false, 'organization')}
+                ${renderAccordion('En-tête, Pied de Page & Filigrane', 'layout-template', `
+                    <div class="space-y-4">
+                        ${renderInputField('Texte de l\'en-tête', state.headerText, 'headerText', 'Ex: {page} / Mon CV')}
+                        ${renderInputField('Texte du pied de page', state.footerText, 'footerText', 'Ex: Alexandre Dubois - {page}')}
+                        <p class="text-xs text-gray-500">Utilisez <code>{page}</code> pour le numéro de page.</p>
+                        <hr>
+                        ${renderInputField('Texte du filigrane', state.watermarkText, 'watermarkText', 'Ex: CONFIDENTIEL')}
+                        ${renderSlider('Opacité du filigrane', state.watermarkOpacity, 'watermarkOpacity', 0.05, 0.3, 0.01)}
+                    </div>
+                `, false, 'headerFooter')}
+                ${renderAccordion('Outils & Assistance', 'wrench', `
+                    ${renderCvAdvisor()}
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-2 text-gray-700">Analyseur de Mots-clés (ATS)</h4>
+                        <textarea id="job-description-input" placeholder="Collez la description du poste ici..." rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg">${state.jobDescription}</textarea>
+                        <button id="analyze-job-match" class="mt-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 text-sm flex items-center gap-2"><i data-lucide="search"></i> Analyser l'Adéquation</button>
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-2 text-gray-700">Préparation "Postuler en 1 Clic"</h4>
+                        <p class="text-xs text-gray-500 mb-2">Copiez ce texte pour le coller facilement dans les formulaires de candidature en ligne.</p>
+                        <textarea id="one-click-apply-output" rows="8" class="w-full p-2 bg-gray-100 border rounded-lg text-xs" readonly>${generateOneClickApplyText()}</textarea>
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-2 text-gray-700">Historique des Versions</h4>
+                        <div class="flex gap-2 mb-2">
+                           <input type="text" id="snapshot-name" placeholder="Nom de la version" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                           <button id="save-snapshot" class="px-4 py-2 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 text-sm">Sauver</button>
+                        </div>
+                        <div id="snapshots-list" class="space-y-1">
+                           ${renderSnapshots()}
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-2 text-gray-700">Gestion des données</h4>
+                        <div class="flex gap-2">
+                            <button id="import-data" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm flex items-center gap-2"><i data-lucide="upload"></i> Importer JSON</button>
+                            <input type="file" id="import-file" class="hidden" accept="application/json">
+                            <button id="export-data" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm flex items-center gap-2"><i data-lucide="download"></i> Exporter JSON</button>
+                        </div>
+                    </div>
+                `, false, 'tools')}
+            `;
+        }
+        
+        function renderCvScore() {
+            const score = calculateCvScore();
+            const color = score < 40 ? 'bg-red-500' : score < 80 ? 'bg-yellow-500' : 'bg-green-500';
+            return `
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700">Score du CV</h4>
+                    <div class="w-full bg-gray-200 rounded-full h-4 mt-2">
+                        <div class="${color} h-4 rounded-full text-white text-xs flex items-center justify-center" style="width: ${score}%">
+                            ${score}%
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderSnapshots() {
+            return state.snapshots.map(snapshot => `
+                <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="font-medium text-sm">${snapshot.name}</p>
+                        <p class="text-xs text-gray-500">${new Date(snapshot.date).toLocaleString()}</p>
+                    </div>
+                    <div class="flex gap-1">
+                        <button class="load-snapshot p-2 hover:bg-gray-200 rounded-full" data-id="${snapshot.id}"><i data-lucide="download-cloud" class="w-4 h-4 text-blue-600"></i></button>
+                        <button class="delete-snapshot p-2 hover:bg-gray-200 rounded-full" data-id="${snapshot.id}"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCvAdvisor() {
+            const { cvData, jobDescription } = state;
+            const advice = [];
+            if (cvData.personal.summary.length < 150) {
+                advice.push({ text: 'Votre résumé est un peu court. Essayez de le développer pour mieux accrocher le recruteur.', icon: 'info' });
+            }
+            if (cvData.experiences.length < 2) {
+                advice.push({ text: 'Pensez à ajouter au moins deux expériences professionnelles pertinentes.', icon: 'alert-triangle' });
+            }
+            const hasActionVerbs = cvData.experiences.some(exp => /(géré|optimisé|développé|créé|piloté)/i.test(exp.description));
+            if (!hasActionVerbs) {
+                 advice.push({ text: 'Utilisez des verbes d\'action (ex: "géré", "optimisé") pour décrire vos missions.', icon: 'check-circle' });
+            }
+            if (cvData.skills.length < 5) {
+                 advice.push({ text: 'Listez au moins 5 compétences clés pour valoriser votre profil.', icon: 'info' });
+            }
+            
+            // ATS Keyword check
+            if (jobDescription) {
+                const cvText = JSON.stringify(cvData).toLowerCase();
+                const keywords = jobDescription.toLowerCase().match(/\b(\w{4,})\b/g) || [];
+                const uniqueKeywords = [...new Set(keywords)];
+                const missingKeywords = uniqueKeywords.filter(kw => !cvText.includes(kw));
+                if (missingKeywords.length > 5) {
+                     advice.push({ text: `Il semble manquer des mots-clés de l'offre, comme : ${missingKeywords.slice(0,3).join(', ')}...`, icon: 'search' });
+                }
+            }
+
+            return `
+                <div>
+                    <h4 class="font-semibold mb-2 text-gray-700">Conseiller CV</h4>
+                    <div class="space-y-2">
+                        ${advice.map(item => `
+                            <div class="flex items-start gap-2 text-sm p-2 rounded-lg ${item.icon === 'alert-triangle' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}">
+                                <i data-lucide="${item.icon}" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+                                <span>${item.text}</span>
+                            </div>
+                        `).join('')}
+                        ${advice.length === 0 ? `<div class="text-sm text-gray-500">Votre CV semble bien parti !</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDraggableBlock(blockId, column) {
+            const blockNames = {personal: 'Infos Personnelles', socials: 'Réseaux & Liens', experiences: 'Expériences', projects: 'Projets', education: 'Formation', awards: 'Récompenses', skills: 'Compétences', languages: 'Langues', hobbies: 'Centres d\'intérêt'};
+            const name = blockId.startsWith('custom-') 
+                ? state.cvData.customSections.find(s => `custom-${s.id}` === blockId)?.title || 'Section perso.'
+                : blockNames[blockId];
+
+            return `
+                <div draggable="true" data-block-id="${blockId}" class="draggable-block p-3 bg-gray-100 border border-gray-200 rounded-lg cursor-move hover:bg-indigo-50 hover:border-indigo-200 transition-colors flex items-center gap-2">
+                    <i data-lucide="move" class="w-4 h-4 text-gray-500"></i>
+                    <span class="font-medium text-sm flex-grow">${name}</span>
+                    <div class="tooltip">
+                        <button class="toggle-section-visibility p-1 hover:bg-gray-300 rounded-full" data-section="${blockId}">
+                            <i data-lucide="${visibilityCheck(blockId) ? 'eye' : 'eye-off'}" class="w-4 h-4 ${visibilityCheck(blockId) ? 'text-gray-600' : 'text-gray-400'}"></i>
+                        </button>
+                        <span class="tooltip-text">${visibilityCheck(blockId) ? "Cacher" : "Afficher"}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSingleColumnLayoutEditor() {
+            return `
+                <div class="space-y-2 drop-zone" data-column="main">
+                    ${state.blockOrder.map(id => renderDraggableBlock(id, 'main')).join('')}
+                </div>
+            `;
+        }
+
+        function renderTwoColumnLayoutEditor() {
+            return `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-semibold mb-2 text-center text-gray-600">Colonne Gauche</h4>
+                            <div class="p-2 space-y-2 bg-gray-50 rounded-lg min-h-[200px] border-2 border-dashed drop-zone" data-column="left">
+                                ${state.columnAssignment.left.map(id => renderDraggableBlock(id, 'left')).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2 text-center text-gray-600">Colonne Droite</h4>
+                            <div class="p-2 space-y-2 bg-gray-50 rounded-lg min-h-[200px] border-2 border-dashed drop-zone" data-column="right">
+                                ${state.columnAssignment.right.map(id => renderDraggableBlock(id, 'right')).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 items-center">
+                        <button id="invert-columns" class="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 flex items-center justify-center gap-2 transition-colors"><i data-lucide="arrow-left-right" class="w-4 h-4"></i> Inverser</button>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">Ratio des colonnes</label>
+                             <select id="column-ratio" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                                <option value="large-right" ${state.columnRatio === 'large-right' ? 'selected' : ''}>Gauche fine / Droite large</option>
+                                <option value="equal" ${state.columnRatio === 'equal' ? 'selected' : ''}>Égales</option>
+                                <option value="large-left" ${state.columnRatio === 'large-left' ? 'selected' : ''}>Gauche large / Droite fine</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- EVENT HANDLERS & LOGIC ---
+        
+        function attachEventListeners() {
+            // Header controls
+            document.getElementById('toggle-focus-mode')?.addEventListener('click', () => setState({ focusMode: !state.focusMode }));
+            document.getElementById('randomize-design')?.addEventListener('click', handleRandomizeDesign);
+            document.getElementById('share-cv')?.addEventListener('click', handleShare);
+            document.getElementById('toggle-anonymize')?.addEventListener('click', () => setState({ isAnonymized: !state.isAnonymized }));
+            document.getElementById('export-dropdown-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('export-options').classList.toggle('hidden');
+            });
+            document.addEventListener('click', () => document.getElementById('export-options')?.classList.add('hidden'));
+
+            document.getElementById('generate-pdf')?.addEventListener('click', generatePDF);
+            document.getElementById('export-txt')?.addEventListener('click', (e) => handleExport('txt'));
+            document.getElementById('export-md')?.addEventListener('click', (e) => handleExport('md'));
+
+            // Preview controls
+            document.getElementById('zoom-in')?.addEventListener('click', () => setState({ previewScale: Math.min(1.5, state.previewScale + 0.1) }));
+            document.getElementById('zoom-out')?.addEventListener('click', () => setState({ previewScale: Math.max(0.3, state.previewScale - 0.1) }));
+            document.getElementById('zoom-reset')?.addEventListener('click', () => setState({ previewScale: state.previewMode ? 1 : 0.7 }));
+            document.getElementById('zoom-slider')?.addEventListener('input', (e) => setState({ previewScale: parseFloat(e.target.value) }));
+
+            // Editor inputs
+            document.querySelectorAll('input[data-path], textarea[data-path], select[data-path]').forEach(input => {
+                input.addEventListener('input', handleInputChange);
+            });
+            document.getElementById('column-ratio')?.addEventListener('change', (e) => setState({ columnRatio: e.target.value }));
+            document.getElementById('show-vcard-qr')?.addEventListener('change', (e) => setState({ showVCardQR: e.target.checked }));
+            document.getElementById('show-margin-guides')?.addEventListener('change', (e) => setState({ showMarginGuides: e.target.checked }));
+            document.getElementById('custom-color-picker')?.addEventListener('input', (e) => {
+                const primary = e.target.value;
+                const getContrastYIQ = (hexcolor) => {
+                    hexcolor = hexcolor.replace("#", "");
+                    const r = parseInt(hexcolor.substr(0, 2), 16);
+                    const g = parseInt(hexcolor.substr(2, 2), 16);
+                    const b = parseInt(hexcolor.substr(4, 2), 16);
+                    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+                    return (yiq >= 128) ? '#1f2937' : '#ffffff';
+                }
+                const newCustomPalette = {
+                    name: 'Personnalisée',
+                    primary: primary,
+                    secondary: '#f4f4f5',
+                    accent: primary,
+                    textOnPrimary: getContrastYIQ(primary)
+                };
+                setState({ customPalette: newCustomPalette, activePalette: 'custom' });
+            });
+            
+            // Photo upload
+            document.getElementById('photo-upload')?.addEventListener('change', handlePhotoChange);
+            document.getElementById('remove-photo')?.addEventListener('click', () => setState({ photo: null }));
+
+            // Editor buttons
+            document.querySelectorAll('.add-list-item').forEach(btn => btn.addEventListener('click', handleAddListItem));
+            document.querySelectorAll('.remove-list-item').forEach(btn => btn.addEventListener('click', handleRemoveListItem));
+            document.querySelectorAll('.toggle-item-visibility').forEach(btn => btn.addEventListener('click', handleToggleItemVisibility));
+            document.querySelectorAll('.toggle-section-visibility').forEach(btn => btn.addEventListener('click', handleToggleSectionVisibility));
+            document.querySelectorAll('.generate-ai-text').forEach(btn => btn.addEventListener('click', handleAIGenerate));
+            
+            // Tools
+            document.getElementById('job-description-input')?.addEventListener('input', (e) => setState({ jobDescription: e.target.value }));
+            document.getElementById('analyze-job-match')?.addEventListener('click', handleAnalyzeJobMatch);
+            document.getElementById('import-data')?.addEventListener('click', () => document.getElementById('import-file').click());
+            document.getElementById('import-file')?.addEventListener('change', handleImportData);
+            document.getElementById('export-data')?.addEventListener('click', handleExportData);
+            document.getElementById('save-snapshot')?.addEventListener('click', handleSaveSnapshot);
+            document.querySelectorAll('.load-snapshot').forEach(btn => btn.addEventListener('click', handleLoadSnapshot));
+            document.querySelectorAll('.delete-snapshot').forEach(btn => btn.addEventListener('click', handleDeleteSnapshot));
+
+            // Design controls
+            document.querySelectorAll('button[data-control]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const control = e.currentTarget.dataset.control;
+                    const value = e.currentTarget.dataset.value;
+                    setState({ [control]: value, activeTheme: 'custom' });
+                });
+            });
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.addEventListener('click', handleThemeChange));
+            document.getElementById('icon-pack-selector')?.addEventListener('change', handleIconPackChange);
+
+            // Accordions
+            document.querySelectorAll('.accordion-toggle').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.dataset.accordionId;
+                    const newAccordionsState = { ...state.openAccordions, [id]: !state.openAccordions[id] };
+                    setState({ openAccordions: newAccordionsState });
+                });
+            });
+            
+            // Drag and Drop
+            attachDragDropListeners();
+            
+            // Invert columns
+            document.getElementById('invert-columns')?.addEventListener('click', () => {
+                setState({ columnAssignment: { left: state.columnAssignment.right, right: state.columnAssignment.left }});
+            });
+        }
+        
+        let draggedBlock = null;
+
+        function attachDragDropListeners() {
+            document.querySelectorAll('.draggable-block').forEach(item => {
+                item.addEventListener('dragstart', e => {
+                    draggedBlock = e.target.closest('.draggable-block').dataset.blockId;
+                    e.target.closest('.draggable-block').classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                item.addEventListener('dragend', e => {
+                    e.target.closest('.draggable-block').classList.remove('dragging');
+                    draggedBlock = null;
+                });
+            });
+
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', e => {
                     e.preventDefault();
-                    handleSendMessage();
-                }
-            });
-
-            function appendMessage(content, sender, isHTML = false) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message', sender);
-                if (isHTML) {
-                    messageElement.innerHTML = content;
-                } else {
-                    messageElement.textContent = content;
-                }
-                chatbotMessages.appendChild(messageElement);
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-            }
-            
-            function appendTypingIndicator() {
-                const indicator = document.createElement('div');
-                indicator.id = 'typingIndicator';
-                indicator.classList.add('message', 'bot');
-                indicator.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
-                chatbotMessages.appendChild(indicator);
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-            }
-            
-            function removeTypingIndicator() {
-                const indicator = document.getElementById('typingIndicator');
-                if (indicator) {
-                    indicator.remove();
-                }
-            }
-            
-            function showQuickReplies(replies) {
-                const container = document.createElement('div');
-                container.className = 'quick-replies';
-                replies.forEach(replyText => {
-                    const button = document.createElement('button');
-                    button.className = 'quick-reply-btn';
-                    button.textContent = replyText;
-                    button.onclick = () => handleSendMessage(replyText);
-                    container.appendChild(button);
+                    zone.classList.add('drag-over');
                 });
-                chatbotMessages.appendChild(container);
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-            }
-            
-            function removeQuickReplies() {
-                const container = chatbotMessages.querySelector('.quick-replies');
-                if (container) {
-                    container.remove();
-                }
-            }
-            
-            function searchSite(query) {
-                const lowerQuery = query.toLowerCase();
-                const newsResults = allNews.filter(item => item.title.toLowerCase().includes(lowerQuery));
-                const tendersResults = allTenders.filter(item => item.title.toLowerCase().includes(lowerQuery) || item.location.toLowerCase().includes(lowerQuery));
+                 zone.addEventListener('dragleave', e => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    if (!draggedBlock) return;
 
-                if (newsResults.length === 0 && tendersResults.length === 0) {
-                    return "Je n'ai trouvé aucun résultat pour votre recherche. Essayez avec d'autres mots-clés.";
-                }
+                    const targetBlockEl = e.target.closest('.draggable-block');
+                    const targetBlockId = targetBlockEl ? targetBlockEl.dataset.blockId : null;
+                    const targetColumn = zone.dataset.column;
 
-                let response = "Voici ce que j'ai trouvé :<br>";
-                if (tendersResults.length > 0) {
-                    response += "<br><strong>Appels d'offre :</strong><ul>";
-                    tendersResults.forEach(item => {
-                        response += `<li><a href="#" onclick="openLink('${item.link}')">${item.title} (${item.location})</a></li>`;
-                    });
-                    response += "</ul>";
-                }
-                if (newsResults.length > 0) {
-                    response += "<br><strong>Actualités :</strong><ul>";
-                    newsResults.forEach(item => {
-                        response += `<li><a href="#" onclick="openLink('${item.link}')">${item.title}</a> (Source: ${item.source})</li>`;
-                    });
-                    response += "</ul>";
-                }
-                return response;
-            }
-
-            function getBotResponse(userInput) {
-                const lowerInput = userInput.toLowerCase();
-                
-                const intents = [
-                    { pattern: /recherche|trouve|cherche|article sur|appel d'offre pour/i, action: (input) => {
-                        const query = input.replace(/recherche|trouve|cherche|article sur|appel d'offre pour/i, "").trim();
-                        if (query.length < 3) return { text: "Veuillez préciser votre recherche avec au moins 3 caractères." };
-                        return { text: searchSite(query) };
-                    }},
-                    { pattern: /bonjour|salut|hello|yo/i, action: () => ({ text: "Bonjour ! Comment puis-je vous assister aujourd'hui ?", replies: ["Simulateurs", "Offres d'emploi", "Rechercher"] }) },
-                    { pattern: /simulateur|simulation/i, action: () => ({ text: "Nos simulateurs vous permettent de gérer des chantiers virtuels et de tester vos compétences. Vous pouvez y accéder via le menu 'Simulateurs' en haut de la page." }) },
-                    { pattern: /emploi|recrute|carrière|challenge/i, action: () => ({ text: "Nous avons des offres d'emploi et des challenges de recrutement. Consultez la section 'Nos offres d'emploi' ou 'Challenges' pour en savoir plus." }) },
-                    { pattern: /test|évaluation/i, action: () => ({ text: "Nous proposons des tests techniques et comportementaux pour évaluer vos compétences. Rendez-vous dans la section 'Tests'." }) },
-                    { pattern: /merci|remercie/i, action: () => ({ text: "De rien ! N'hésitez pas si vous avez d'autres questions." }) },
-                    { pattern: /au revoir|bye|ciao/i, action: () => ({ text: "Au revoir et à bientôt sur LTD Simulator !" }) }
-                ];
-
-                for (const intent of intents) {
-                    if (intent.pattern.test(lowerInput)) {
-                        return intent.action(lowerInput);
+                    if (state.activeLayout === 'two') {
+                        const newAssignment = {
+                            left: state.columnAssignment.left.filter(id => id !== draggedBlock),
+                            right: state.columnAssignment.right.filter(id => id !== draggedBlock)
+                        };
+                        const targetList = newAssignment[targetColumn];
+                        const dropIndex = targetBlockId ? targetList.indexOf(targetBlockId) : targetList.length;
+                        targetList.splice(dropIndex, 0, draggedBlock);
+                        setState({ columnAssignment: newAssignment });
+                    } else {
+                        const newOrder = [...state.blockOrder].filter(id => id !== draggedBlock);
+                        const dropIndex = targetBlockId ? newOrder.indexOf(targetBlockId) : newOrder.length;
+                        newOrder.splice(dropIndex, 0, draggedBlock);
+                        setState({ blockOrder: newOrder });
                     }
-                }
-
-                return { text: "Je ne suis pas sûr de comprendre. Pourriez-vous reformuler ? Vous pouvez me demander de rechercher des articles ou des appels d'offres.", replies: ["Rechercher", "Simulateurs"] };
-            }
-            
-            function startChat() {
-                appendMessage("Bonjour ! Comment puis-je vous aider aujourd'hui concernant le BTP ?", 'bot');
-                showQuickReplies(["Infos sur les simulateurs", "Chercher un appel d'offre", "Actualités du BTP"]);
-            }
-            
-            startChat();
+                    draggedBlock = null;
+                });
+            });
         }
 
+        function handleInputChange(e) {
+            const path = e.target.dataset.path;
+            const value = e.target.type === 'range' ? parseFloat(e.target.value) : e.target.value;
+            updateStateFromPath(path, value);
+            setState({ activeTheme: 'custom' });
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            updateThemeUI();
+        function updateStateFromPath(path, value) {
+            const keys = path.split('.');
+            let tempState = JSON.parse(JSON.stringify(state));
+            let current = tempState;
+            for (let i = 0; i < keys.length - 1; i++) {
+                current = current[keys[i]];
+            }
+            current[keys[keys.length - 1]] = value;
+            setState(tempState);
+        }
+        
+        function handleAddListItem(e) {
+            const section = e.currentTarget.dataset.section;
+            const newItem = {
+                id: Date.now(),
+                ...(section === 'experiences' && { company: '', position: '', startDate: '', endDate: '', description: '' }),
+                ...(section === 'projects' && { name: '', url: '', description: '' }),
+                ...(section === 'education' && { institution: '', degree: '', startDate: '', endDate: '', description: '' }),
+                ...(section === 'awards' && { name: '', issuer: '', date: '', description: '' }),
+                ...(section === 'skills' && { category: 'Nouvelle Catégorie', name: '', level: 3, icon: '' }),
+                ...(section === 'languages' && { name: '', level: '' }),
+                ...(section === 'hobbies' && { name: '', icon: 'heart' }),
+                ...(section === 'socials' && { network: 'linkedin', url: '' }),
+                ...(section === 'customSections' && { title: 'Nouvelle Section', content: '' }),
+            };
+
+            const newCvData = { ...state.cvData, [section]: [...(state.cvData[section] || []), newItem] };
             
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
+            const itemVisibilitySections = ['experiences', 'education', 'projects', 'awards', 'socials'];
+            if (itemVisibilitySections.includes(section)) {
+                const newVisibility = { ...state.visibility, [section]: { ...(state.visibility[section] || {}), [newItem.id]: true } };
+                setState({ cvData: newCvData, visibility: newVisibility });
+            } else if (section === 'customSections') {
+                const blockId = `custom-${newItem.id}`;
+                const newVisibility = { ...state.visibility, [blockId]: true };
+                const newBlockOrder = [...state.blockOrder, blockId];
+                setState({ cvData: newCvData, visibility: newVisibility, blockOrder: newBlockOrder });
+            }
+            else {
+                setState({ cvData: newCvData });
+            }
+        }
 
-            document.querySelectorAll('.animate-in').forEach(el => {
-                observer.observe(el);
+        function handleRemoveListItem(e) {
+            const section = e.currentTarget.dataset.section;
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            const newCvData = { ...state.cvData, [section]: state.cvData[section].filter(item => item.id !== id) };
+            
+            const itemVisibilitySections = ['experiences', 'education', 'projects', 'awards', 'socials'];
+            if (itemVisibilitySections.includes(section)) {
+                const newSectionVisibility = { ...state.visibility[section] };
+                delete newSectionVisibility[id];
+                const newVisibility = { ...state.visibility, [section]: newSectionVisibility };
+                setState({ cvData: newCvData, visibility: newVisibility });
+            } else if (section === 'customSections') {
+                const blockId = `custom-${id}`;
+                const newVisibility = { ...state.visibility };
+                delete newVisibility[blockId];
+                const newBlockOrder = state.blockOrder.filter(bId => bId !== blockId);
+                const newColumnAssignment = {
+                    left: state.columnAssignment.left.filter(bId => bId !== blockId),
+                    right: state.columnAssignment.right.filter(bId => bId !== blockId)
+                };
+                setState({ cvData: newCvData, visibility: newVisibility, blockOrder: newBlockOrder, columnAssignment: newColumnAssignment });
+            }
+            else {
+                setState({ cvData: newCvData });
+            }
+        }
+        
+        function handleToggleItemVisibility(e) {
+            const section = e.currentTarget.dataset.section;
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            const newVisibility = { ...state.visibility };
+            newVisibility[section][id] = !newVisibility[section][id];
+            setState({ visibility: newVisibility });
+        }
+        
+        function handleToggleSectionVisibility(e) {
+            const section = e.currentTarget.dataset.section;
+            const newVisibility = { ...state.visibility, [section]: !visibilityCheck(section) };
+            setState({ visibility: newVisibility });
+        }
+        
+        function visibilityCheck(section, id = null) {
+            if (id !== null) {
+                return state.visibility[section] && state.visibility[section][id];
+            }
+            return !!state.visibility[section];
+        }
+        
+        function handlePhotoChange(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    setState({ photo: event.target.result });
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        }
+        
+        function handleRandomizeDesign() {
+            const randomChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+            
+            setState({
+                activeTemplate: randomChoice(Object.keys(templates)),
+                activePalette: randomChoice(Object.keys(palettes)),
+                activeFont: randomChoice(Object.keys(fonts)),
+                activeLayout: randomChoice(Object.keys(layouts)),
+                sectionTitleStyle: randomChoice(['border', 'background', 'simple']),
+                skillDisplayStyle: randomChoice(['bars', 'stars']),
+                experienceStyle: randomChoice(['default', 'timeline']),
+                headerAlignment: randomChoice(['left', 'center']),
+                activeTheme: 'custom'
+            });
+        }
+
+        async function handleAIGenerate(e) {
+            const button = e.currentTarget;
+            const path = button.dataset.path;
+            const context = button.dataset.context;
+            
+            const keys = path.split('.');
+            let current = state;
+            for (let i = 0; i < keys.length; i++) {
+                current = current[keys[i]];
+            }
+            const originalText = current;
+
+            const prompt = `En tant qu'expert en recrutement, réécris et améliore le texte suivant pour un CV. Sois percutant, utilise des verbes d'action et un ton professionnel. Le contexte est : "${context}". Le texte à améliorer est : "${originalText}". Ne retourne que le texte amélioré, sans introduction ni conclusion.`;
+            
+            button.innerHTML = '<i data-lucide="loader-circle" class="animate-spin w-3 h-3"></i> IA...';
+            lucide.createIcons();
+
+            try {
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Leave empty for Canvas
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    const newText = result.candidates[0].content.parts[0].text.trim();
+                    updateStateFromPath(path, newText);
+                } else {
+                    throw new Error('Invalid AI response format');
+                }
+            } catch(error) {
+                console.error("AI Generation Error:", error);
+                alert("Une erreur est survenue lors de la communication avec l'IA.");
+            } finally {
+                button.innerHTML = '<i data-lucide="sparkles" class="w-3 h-3"></i> Améliorer avec l\'IA';
+                lucide.createIcons();
+            }
+        }
+
+        async function generatePDF() {
+            const element = document.getElementById('cv-preview-container');
+            if (!element || state.isDownloadingPdf) return;
+            
+            setState({ isDownloadingPdf: true }, false);
+            renderApp();
+
+            const originalScale = element.style.transform;
+            element.style.transform = 'scale(1)';
+
+            try {
+                const opt = {
+                    margin: 0,
+                    filename: state.isAnonymized ? 'cv_anonyme.pdf' : `CV_${state.cvData.personal.firstName}_${state.cvData.personal.lastName}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 3, useCORS: true, letterRendering: true, scrollY: -window.scrollY },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak: { mode: ['css', 'legacy'] }
+                };
+                if (window.html2pdf) {
+                    await window.html2pdf().from(element).set(opt).save();
+                } else {
+                    throw new Error("PDF library not loaded.");
+                }
+            } catch (error) {
+                console.error("PDF Generation Error:", error);
+                alert("Erreur lors de la création du PDF.");
+            } finally {
+                element.style.transform = originalScale;
+                setState({ isDownloadingPdf: false });
+            }
+        }
+        
+        function generateVCardQR() {
+            const qrContainer = document.getElementById('vcard-qr-code');
+            if (state.showVCardQR && !state.isAnonymized && window.qrcode && qrContainer) {
+                try {
+                    const { firstName, lastName, email, phone } = state.cvData.personal;
+                    const vCardData = `BEGIN:VCARD\nVERSION:3.0\nN:${lastName};${firstName}\nFN:${firstName} ${lastName}\nEMAIL:${email}\nTEL:${phone}\nEND:VCARD`;
+                    const qr = window.qrcode(0, 'M');
+                    qr.addData(vCardData);
+                    qr.make();
+                    qrContainer.innerHTML = qr.createImgTag(4, 8);
+                } catch (error) {
+                    console.error("vCard QR Code generation failed:", error);
+                    qrContainer.innerHTML = 'Error';
+                }
+            }
+        }
+        
+        function generateOneClickApplyText() {
+            const { cvData } = state;
+            let text = `**${cvData.personal.firstName} ${cvData.personal.lastName}**\n${cvData.personal.title}\n\n**Résumé**\n${cvData.personal.summary}\n\n`;
+            text += `**Expériences**\n`;
+            cvData.experiences.forEach(exp => {
+                text += `- ${exp.position} chez ${exp.company} (${exp.startDate} - ${exp.endDate})\n  ${exp.description}\n`;
+            });
+            text += `\n**Compétences**\n`;
+            cvData.skills.forEach(skill => {
+                text += `- ${skill.category}: ${skill.name}\n`;
+            });
+            return text;
+        }
+        
+        function handleExport(format) {
+            let content = '';
+            let filename = `CV_${state.cvData.personal.firstName}_${state.cvData.personal.lastName}.${format}`;
+            let mimeType = 'text/plain';
+
+            if (format === 'txt') {
+                content = generateOneClickApplyText().replace(/\*\*/g, ''); // Remove markdown bold
+            } else if (format === 'md') {
+                content = generateOneClickApplyText();
+                mimeType = 'text/markdown';
+            }
+
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function handleExportData() {
+            const dataStr = JSON.stringify(state, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'cv_data.json';
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function handleImportData(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = (e) => {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    // Basic validation
+                    if (importedState.cvData && importedState.activeTemplate) {
+                        setState(importedState);
+                    } else {
+                        alert('Fichier JSON invalide ou corrompu.');
+                    }
+                } catch (error) {
+                    alert('Erreur lors de la lecture du fichier JSON.');
+                    console.error(error);
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+            event.target.value = ''; // Reset file input
+        }
+
+        function handleSaveSnapshot() {
+            const nameInput = document.getElementById('snapshot-name');
+            const name = nameInput.value.trim() || `Version du ${new Date().toLocaleDateString()}`;
+            const newSnapshot = {
+                id: Date.now(),
+                name: name,
+                date: new Date().toISOString(),
+                state: { ...state }
+            };
+            setState({ snapshots: [...state.snapshots, newSnapshot] });
+            nameInput.value = '';
+        }
+
+        function handleLoadSnapshot(e) {
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            const snapshot = state.snapshots.find(s => s.id === id);
+            if (snapshot && confirm(`Voulez-vous charger la version "${snapshot.name}" ? Les modifications non sauvegardées seront perdues.`)) {
+                setState(snapshot.state);
+            }
+        }
+
+        function handleDeleteSnapshot(e) {
+            const id = parseInt(e.currentTarget.dataset.id, 10);
+            if (confirm('Voulez-vous vraiment supprimer cette version ?')) {
+                setState({ snapshots: state.snapshots.filter(s => s.id !== id) });
+            }
+        }
+
+        function handleIconPackChange(e) {
+            const packName = e.target.value;
+            if (packName === 'custom') {
+                setState({ activeIconPack: 'custom' });
+            } else {
+                setState({ activeIconPack: packName, sectionIcons: { ...iconPacks[packName].icons } });
+            }
+        }
+        
+        function handleThemeChange(e) {
+            const themeName = e.currentTarget.dataset.theme;
+            if (themes[themeName]) {
+                setState({ ...themes[themeName].settings, activeTheme: themeName });
+            }
+        }
+
+        function handleShare() {
+            const data = btoa(JSON.stringify(state));
+            const url = `${window.location.href.split('?')[0]}?data=${data}`;
+            
+            const modalContent = `
+                <div class="modal-backdrop">
+                    <div class="modal-content w-full max-w-2xl">
+                        <h3 class="text-xl font-bold mb-4">Partager votre CV</h3>
+                        <p class="text-sm text-gray-600 mb-2">Copiez ce lien pour partager une version en ligne de votre CV. Les modifications que vous ferez après la création de ce lien n'apparaîtront pas.</p>
+                        <input type="text" readonly value="${url}" class="w-full p-2 border rounded bg-gray-100 mb-4">
+                        <div class="flex justify-between items-center">
+                            <button id="show-analytics-btn" class="text-sm text-blue-600 hover:underline">Voir le tableau de bord (simulation)</button>
+                            <button id="close-modal-btn" class="px-4 py-2 bg-gray-200 rounded-lg">Fermer</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modal-container').innerHTML = modalContent;
+            document.getElementById('close-modal-btn').onclick = () => document.getElementById('modal-container').innerHTML = '';
+            document.getElementById('show-analytics-btn').onclick = showAnalyticsDashboard;
+        }
+        
+        function showAnalyticsDashboard() {
+             const modalContent = `
+                <div class="modal-backdrop">
+                    <div class="modal-content w-full max-w-3xl">
+                        <h3 class="text-xl font-bold mb-4">Tableau de Bord Analytique (Simulation)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mb-6">
+                            <div class="p-4 bg-blue-50 rounded-lg"><p class="text-3xl font-bold">${Math.floor(Math.random() * 100) + 10}</p><p class="text-sm text-gray-600">Vues totales</p></div>
+                            <div class="p-4 bg-green-50 rounded-lg"><p class="text-3xl font-bold">${Math.floor(Math.random() * 120) + 30}s</p><p class="text-sm text-gray-600">Temps moyen</p></div>
+                            <div class="p-4 bg-yellow-50 rounded-lg"><p class="text-3xl font-bold">${Math.floor(Math.random() * 5) + 1}</p><p class="text-sm text-gray-600">Téléchargements</p></div>
+                        </div>
+                        <div><canvas id="analytics-chart"></canvas></div>
+                        <div class="text-right mt-4">
+                            <button id="close-modal-btn" class="px-4 py-2 bg-gray-200 rounded-lg">Fermer</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modal-container').innerHTML = modalContent;
+            lucide.createIcons();
+            document.getElementById('close-modal-btn').onclick = () => document.getElementById('modal-container').innerHTML = '';
+
+            const ctx = document.getElementById('analytics-chart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    datasets: [{
+                        label: 'Vues par jour',
+                        data: Array.from({length: 7}, () => Math.floor(Math.random() * 15)),
+                        borderColor: '#4f46e5',
+                        tension: 0.1
+                    }]
+                }
+            });
+        }
+        
+        async function handleAnalyzeJobMatch() {
+            const button = document.getElementById('analyze-job-match');
+            if (!state.jobDescription) {
+                alert("Veuillez coller une description de poste d'abord.");
+                return;
+            }
+            
+            const cvText = generateOneClickApplyText();
+            const prompt = `En tant qu'expert en recrutement, analyse l'adéquation entre le CV suivant et la description de poste. Fournis une réponse structurée en Markdown avec : 1. Un score de compatibilité sur 100. 2. Une section "Points Forts" listant les éléments du CV qui correspondent bien. 3. Une section "Axes d'Amélioration" suggérant des modifications ou des ajouts au CV pour mieux correspondre à l'offre. \n\n**CV :**\n${cvText}\n\n**DESCRIPTION DE POSTE :**\n${state.jobDescription}`;
+            
+            button.innerHTML = '<i data-lucide="loader-circle" class="animate-spin w-4 h-4"></i> Analyse en cours...';
+            lucide.createIcons();
+            
+            try {
+                 let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Leave empty
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    const analysis = result.candidates[0].content.parts[0].text;
+                    showAnalysisModal(analysis);
+                } else {
+                    throw new Error('Invalid AI response format');
+                }
+            } catch (error) {
+                 console.error("AI Analysis Error:", error);
+                alert("Une erreur est survenue lors de l'analyse IA.");
+            } finally {
+                button.innerHTML = '<i data-lucide="search"></i> Analyser l\'Adéquation';
+                lucide.createIcons();
+            }
+        }
+        
+        function showAnalysisModal(analysis) {
+             const modalContent = `
+                <div class="modal-backdrop">
+                    <div class="modal-content w-full max-w-2xl prose">
+                        <h3 class="text-xl font-bold mb-4">Analyse d'Adéquation IA</h3>
+                        <div>${analysis.replace(/\n/g, '<br>')}</div>
+                        <div class="text-right mt-4">
+                            <button id="close-modal-btn" class="px-4 py-2 bg-gray-200 rounded-lg">Fermer</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modal-container').innerHTML = modalContent;
+            document.getElementById('close-modal-btn').onclick = () => document.getElementById('modal-container').innerHTML = '';
+        }
+
+        function calculateCvScore() {
+            let score = 0;
+            const weights = {
+                personal: 20,
+                summary: 15,
+                experiences: 25,
+                skills: 15,
+                education: 10,
+                socials: 5,
+                photo: 10
+            };
+            if (state.cvData.personal.firstName && state.cvData.personal.lastName && state.cvData.personal.title && state.cvData.personal.email) score += weights.personal;
+            if (state.cvData.personal.summary.length > 50) score += weights.summary;
+            if (state.cvData.experiences.length > 0) score += weights.experiences;
+            if (state.cvData.skills.length > 2) score += weights.skills;
+            if (state.cvData.education.length > 0) score += weights.education;
+            if (state.cvData.socials.length > 0) score += weights.socials;
+            if (state.photo) score += weights.photo;
+            return Math.round(score);
+        }
+
+        function renderSkillChart() {
+            const ctx = document.getElementById('skill-chart');
+            if (!ctx) return;
+
+            const { skills } = state.cvData;
+            const currentPalette = palettes[state.activePalette] || state.customPalette;
+
+            const labels = skills.map(s => s.name);
+            const data = skills.map(s => s.level);
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Niveau de Compétence',
+                        data: data,
+                        backgroundColor: `${currentPalette.primary}33`, // with opacity
+                        borderColor: currentPalette.primary,
+                        borderWidth: 2,
+                        pointBackgroundColor: currentPalette.primary,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: currentPalette.primary
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: '#e5e7eb'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12
+                                },
+                                color: '#374151'
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                max: 5,
+                                stepSize: 1,
+                                backdropColor: 'rgba(255, 255, 255, 0.75)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- INITIALIZATION ---
+        function init() {
+            const savedState = localStorage.getItem('cvState_v6');
+            let cvData = initialCvData;
+            let loadedState = {};
+            if (savedState) {
+                try {
+                    loadedState = JSON.parse(savedState);
+                    cvData = loadedState.cvData || initialCvData;
+                } catch(e) {
+                    console.error("Could not parse saved state, using defaults.", e);
+                    localStorage.removeItem('cvState_v6');
+                }
+            }
+            
+            const allSectionIds = [
+                'personal', 'socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'languages', 'hobbies',
+                ...(cvData.customSections || []).map(s => `custom-${s.id}`)
+            ];
+
+            const initialVisibility = allSectionIds.reduce((acc, id) => {
+                acc[id] = true;
+                return acc;
+            }, {});
+
+            ['experiences', 'projects', 'education', 'awards', 'socials'].forEach(section => {
+                initialVisibility[section] = {};
+                (cvData[section] || []).forEach(item => {
+                    initialVisibility[section][item.id] = true;
+                });
             });
 
-            setTimeout(() => {
-                populateTenders();
-                populateNews();
-                updateNotifButtonUI();
-            }, 1000);
+            const defaultState = {
+                cvData,
+                activeTemplate: 'modern',
+                activePalette: 'indigo',
+                activeTheme: 'custom',
+                customPalette: { primary: '#4f46e5', secondary: '#eef2ff', accent: '#3730a3', textOnPrimary: '#ffffff' },
+                backgroundColor: '#ffffff',
+                activeLayout: 'two',
+                columnRatio: 'large-right',
+                activeFont: 'sans',
+                previewMode: false,
+                isAnonymized: false,
+                isDownloadingPdf: false,
+                showVCardQR: false,
+                photo: null,
+                photoShape: 'round',
+                sectionTitleStyle: 'border',
+                experienceStyle: 'default',
+                headerAlignment: 'center',
+                previewScale: 0.7,
+                baseFontSize: 10,
+                nameFontSize: 28,
+                sectionTitleFontSize: 12,
+                lineHeight: 1.5,
+                pagePadding: 1.5,
+                sectionSpacing: 1.25,
+                itemSpacing: 1,
+                skillDisplayStyle: 'bars',
+                visibility: initialVisibility,
+                sectionIcons: {
+                    socials: 'link', experiences: 'briefcase', projects: 'projector', education: 'graduation-cap', awards: 'award', skills: 'zap', languages: 'globe', hobbies: 'heart'
+                },
+                activeIconPack: 'custom',
+                blockOrder: ['socials', 'experiences', 'projects', 'education', 'awards', 'skills', 'languages', 'hobbies', ...(cvData.customSections || []).map(s => `custom-${s.id}`)],
+                columnAssignment: {
+                    left: ['personal', 'skills', 'languages', 'hobbies'],
+                    right: ['socials', 'experiences', 'projects', 'education', 'awards']
+                },
+                openAccordions: {
+                    content: true,
+                    personalInfo: true,
+                    design: true
+                },
+                headerText: '',
+                footerText: '{page}',
+                watermarkText: '',
+                watermarkOpacity: 0.1,
+                letterSpacing: 0,
+                textTransform: 'uppercase',
+                dividerStyle: 'none',
+                showMarginGuides: false,
+                jobDescription: '',
+                snapshots: [],
+                focusMode: false
+            };
             
-            setupSlider();
-            setupChatbot(); // Initialisation du chatbot
-        });
+            let finalState = { ...defaultState, ...loadedState };
+            finalState.visibility = loadedState.visibility || initialVisibility;
+            finalState.cvData = loadedState.cvData || cvData;
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+            if (dataParam) {
+                try {
+                    const sharedState = JSON.parse(atob(dataParam));
+                    finalState = { ...finalState, ...sharedState };
+                } catch (e) {
+                    console.error("Failed to parse shared state from URL", e);
+                }
+            }
+            
+            setState(finalState, true);
+        }
+
+        // Start the application
+        init();
+
     </script>
 </body>
 </html>
