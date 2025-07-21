@@ -1493,12 +1493,31 @@
             const originalScale = element.style.transform;
             element.style.transform = 'scale(1)';
 
+            const chartCanvas = document.getElementById('skill-chart');
+            const chartImg = document.createElement('img');
+            let chartReplaced = false;
+
+            // Temporarily replace chart canvas with an image to help PDF rendering
+            if (chartCanvas && state.skillDisplayStyle === 'radar' && chartInstance) {
+                try {
+                    chartImg.src = chartInstance.toBase64Image();
+                    chartImg.style.width = '100%';
+                    chartImg.style.maxWidth = '448px'; // max-w-md
+                    chartImg.style.margin = '0 auto';
+                    chartCanvas.style.display = 'none';
+                    chartCanvas.parentNode.appendChild(chartImg);
+                    chartReplaced = true;
+                } catch (e) {
+                    console.error("Could not convert chart to image", e);
+                }
+            }
+
             try {
                 const opt = {
                     margin: 0,
                     filename: state.isAnonymized ? 'cv_anonyme.pdf' : `CV_${state.cvData.personal.firstName}_${state.cvData.personal.lastName}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 3, useCORS: true, letterRendering: true, scrollY: -window.scrollY },
+                    html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: -window.scrollY }, // Reduced scale
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                     pagebreak: { mode: ['css', 'legacy'] }
                 };
@@ -1511,6 +1530,12 @@
                 console.error("PDF Generation Error:", error);
                 alert("Erreur lors de la création du PDF.");
             } finally {
+                // Clean up chart image replacement
+                if (chartReplaced) {
+                    chartCanvas.style.display = 'block';
+                    chartCanvas.parentNode.removeChild(chartImg);
+                }
+                
                 element.style.transform = originalScale;
                 setState({ isDownloadingPdf: false });
             }
@@ -1807,6 +1832,7 @@
                     }]
                 },
                 options: {
+                    animation: false,
                     scales: {
                         r: {
                             angleLines: {
